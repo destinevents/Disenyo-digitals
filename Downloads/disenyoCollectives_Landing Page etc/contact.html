@@ -95,6 +95,9 @@ img{display:block;max-width:100%}
 
 /* RESPONSIVE */
 @media(max-width:900px){
+  .nav-links{display:none!important}
+  .hamburger{display:flex!important}
+  #mob-contact.open{display:flex!important}
   .contact-wrap{grid-template-columns:1fr}
   .form-side,.info-side{padding:3rem 2rem}
   .form-row{grid-template-columns:1fr}
@@ -108,10 +111,28 @@ img{display:block;max-width:100%}
 
 <nav class="nav" id="nav">
   <div class="nav-inner">
-    <a class="nav-back" href="Main Landing page.html">Back to Home</a>
-    <span class="nav-title">Get in Touch</span>
+    <a class="nav-logo" href="Main Landing page.html" style="font-family:var(--serif);font-size:1.1rem;font-weight:300;color:var(--warm)">Disenyo <em>Digitals</em></a>
+    <ul class="nav-links" style="display:flex;align-items:center;list-style:none">
+      <li><a href="Main Landing page.html#what" style="font-size:.68rem;letter-spacing:.13em;text-transform:uppercase;color:rgba(122,104,88,.65);padding:0 1rem;height:70px;display:flex;align-items:center;transition:color .25s" onmouseover="this.style.color='#A0664E'" onmouseout="this.style.color='rgba(122,104,88,.65)'">About</a></li>
+      <li><a href="Main Landing page.html#arms" style="font-size:.68rem;letter-spacing:.13em;text-transform:uppercase;color:rgba(122,104,88,.65);padding:0 1rem;height:70px;display:flex;align-items:center;transition:color .25s" onmouseover="this.style.color='#A0664E'" onmouseout="this.style.color='rgba(122,104,88,.65)'">Our Arms</a></li>
+      <li><a href="ai-tools.html" target="_blank" style="font-size:.68rem;letter-spacing:.13em;text-transform:uppercase;color:rgba(122,104,88,.65);padding:0 1rem;height:70px;display:flex;align-items:center;transition:color .25s" onmouseover="this.style.color='#A0664E'" onmouseout="this.style.color='rgba(122,104,88,.65)'">AI Tools</a></li>
+      <li><a href="destinevents_AYA/AYA BAGUIO LANDING.html" target="_blank" style="font-size:.68rem;letter-spacing:.13em;text-transform:uppercase;color:rgba(122,104,88,.65);padding:0 1rem;height:70px;display:flex;align-items:center;transition:color .25s" onmouseover="this.style.color='#A0664E'" onmouseout="this.style.color='rgba(122,104,88,.65)'">As You Are</a></li>
+      <li><a href="contact.html" style="font-size:.68rem;letter-spacing:.13em;text-transform:uppercase;color:#A0664E;padding:0 1rem;height:70px;display:flex;align-items:center">Contact</a></li>
+    </ul>
+    <div class="hamburger" onclick="document.getElementById('mob-contact').classList.toggle('open')" style="display:none;flex-direction:column;gap:5px;cursor:pointer;padding:.5rem">
+      <span style="width:22px;height:1.5px;background:var(--warm);display:block"></span>
+      <span style="width:22px;height:1.5px;background:var(--warm);display:block"></span>
+      <span style="width:22px;height:1.5px;background:var(--warm);display:block"></span>
+    </div>
   </div>
 </nav>
+<div id="mob-contact" style="display:none;position:fixed;top:80px;left:0;right:0;z-index:199;background:var(--bg4);border-bottom:1px solid rgba(154,135,120,.12);flex-direction:column">
+  <a href="Main Landing page.html" style="font-size:.75rem;letter-spacing:.13em;text-transform:uppercase;color:var(--taupe);padding:1rem 2rem;border-bottom:1px solid var(--rule);display:block">Home</a>
+  <a href="Main Landing page.html#what" style="font-size:.75rem;letter-spacing:.13em;text-transform:uppercase;color:var(--taupe);padding:1rem 2rem;border-bottom:1px solid var(--rule);display:block">About</a>
+  <a href="Main Landing page.html#arms" style="font-size:.75rem;letter-spacing:.13em;text-transform:uppercase;color:var(--taupe);padding:1rem 2rem;border-bottom:1px solid var(--rule);display:block">Our Arms</a>
+  <a href="ai-tools.html" target="_blank" style="font-size:.75rem;letter-spacing:.13em;text-transform:uppercase;color:var(--taupe);padding:1rem 2rem;border-bottom:1px solid var(--rule);display:block">AI Tools</a>
+  <a href="destinevents_AYA/AYA BAGUIO LANDING.html" target="_blank" style="font-size:.75rem;letter-spacing:.13em;text-transform:uppercase;color:var(--taupe);padding:1rem 2rem;border-bottom:1px solid var(--rule);display:block">As You Are</a>
+</div>
 
 <!-- HERO -->
 <div class="page-hero">
