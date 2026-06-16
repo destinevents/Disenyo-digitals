@@ -143,31 +143,53 @@
   document.addEventListener('DOMContentLoaded', loadForm);
 </script>
 
+<script>
+  function toggleMobileNav() {
+    document.getElementById('mobile-nav').classList.toggle('hidden');
+  }
+</script>
 <!-- NAVBAR -->
-<nav class="sticky top-[29px] z-50 h-14 border-b border-fog/10 bg-pine-deep/95 backdrop-blur-md">
-  <div class="mx-auto flex h-full max-w-6xl items-center gap-8 px-6">
+<nav class="sticky top-0 z-50 h-14 border-b border-fog/10 bg-pine-deep/95 backdrop-blur-md">
+  <div class="mx-auto flex h-full max-w-6xl items-center justify-between gap-8 px-4 md:px-6">
     <div class="font-display text-lg text-fog">
       <em class="italic text-gold-light">As You Are</em> Baguio
     </div>
     <div class="ml-auto hidden items-center gap-7 md:flex">
-      <a href="Downloads/disenyoCollectives_Landing%20Page%20etc/Main%20Landing%20page.html" class="font-mono text-[0.58rem] uppercase tracking-[0.14em] text-fog/60 hover:text-fog transition-colors">Home</a>
-      <a href="Downloads/disenyoCollectives_Landing%20Page%20etc/destinevents_AYA/AYA%20BAGUIO%20LANDING.html" class="font-mono text-[0.58rem] uppercase tracking-[0.14em] text-fog/60 hover:text-fog transition-colors">Community</a>
-      <a href="#" class="font-mono text-[0.58rem] uppercase tracking-[0.14em] text-fog/60 hover:text-fog transition-colors">eMagazine</a>
-      <a href="#" class="font-mono text-[0.58rem] uppercase tracking-[0.14em] text-fog/60 hover:text-fog transition-colors">SME Directory</a>
-      <a href="events-hub.html" class="font-mono text-[0.58rem] uppercase tracking-[0.14em] text-gold-light transition-colors">Events</a>
-      <a href="#" class="rounded-sm bg-gold px-5 py-1.5 font-mono text-[0.58rem] font-medium uppercase tracking-[0.14em] text-pine-deep transition-colors hover:bg-gold-light">
+      <a href="Downloads/disenyoCollectives_Landing%20Page%20etc/Main%20Landing%20page.html" class="font-mono text-[0.7rem] uppercase tracking-[0.14em] text-fog/60 hover:text-fog transition-colors">Home</a>
+      <a href="Downloads/disenyoCollectives_Landing%20Page%20etc/destinevents_AYA/AYA%20BAGUIO%20LANDING.html" class="font-mono text-[0.7rem] uppercase tracking-[0.14em] text-fog/60 hover:text-fog transition-colors">Community</a>
+      <a href="#" class="font-mono text-[0.7rem] uppercase tracking-[0.14em] text-fog/60 hover:text-fog transition-colors">eMagazine</a>
+      <a href="#" class="font-mono text-[0.7rem] uppercase tracking-[0.14em] text-fog/60 hover:text-fog transition-colors">SME Directory</a>
+      <a href="events-hub.html" class="font-mono text-[0.7rem] uppercase tracking-[0.14em] text-gold-light transition-colors">Events</a>
+      <a href="#" class="rounded-sm bg-gold px-5 py-1.5 font-mono text-[0.7rem] font-medium uppercase tracking-[0.14em] text-pine-deep transition-colors hover:bg-gold-light">
         Get Tickets
       </a>
     </div>
+    <button onclick="toggleMobileNav()" class="md:hidden flex flex-col gap-1.5 cursor-pointer">
+      <span class="h-1 w-5 bg-fog rounded"></span>
+      <span class="h-1 w-5 bg-fog rounded"></span>
+      <span class="h-1 w-5 bg-fog rounded"></span>
+    </button>
   </div>
 </nav>
+<div id="mobile-nav" class="hidden bg-pine-deep border-b border-fog/10 md:hidden">
+  <div class="flex flex-col px-4 py-3 space-y-2">
+    <a href="Downloads/disenyoCollectives_Landing%20Page%20etc/Main%20Landing%20page.html" class="font-mono text-[0.7rem] uppercase tracking-[0.14em] text-fog/60 hover:text-fog transition-colors block py-2">Home</a>
+    <a href="Downloads/disenyoCollectives_Landing%20Page%20etc/destinevents_AYA/AYA%20BAGUIO%20LANDING.html" class="font-mono text-[0.7rem] uppercase tracking-[0.14em] text-fog/60 hover:text-fog transition-colors block py-2">Community</a>
+    <a href="#" class="font-mono text-[0.7rem] uppercase tracking-[0.14em] text-fog/60 hover:text-fog transition-colors block py-2">eMagazine</a>
+    <a href="#" class="font-mono text-[0.7rem] uppercase tracking-[0.14em] text-fog/60 hover:text-fog transition-colors block py-2">SME Directory</a>
+    <a href="events-hub.html" class="font-mono text-[0.7rem] uppercase tracking-[0.14em] text-gold-light transition-colors block py-2">Events</a>
+    <a href="#" class="rounded-sm bg-gold px-5 py-2 font-mono text-[0.7rem] font-medium uppercase tracking-[0.14em] text-pine-deep transition-colors hover:bg-gold-light block text-center mt-2">
+      Get Tickets
+    </a>
+  </div>
+</div>
 
 <main class="min-h-screen bg-fog-warm">
 
   <!-- ═══════════════════════════════════════
        SECTION 1 — REGISTRATION FORM
   ═══════════════════════════════════════ -->
-  <div id="reg-form-section" class="px-6 py-12 md:py-16 border-b border-pine/10">
+  <div id="reg-form-section" class="px-4 md:px-6 py-8 md:py-12 lg:py-16 border-b border-pine/10">
     <div class="mx-auto max-w-lg">
       <a id="back-link" href="event-detail.html" class="mb-6 inline-flex items-center gap-2 font-mono text-[0.6rem] uppercase tracking-[0.16em] text-muted hover:text-pine transition-colors">
         ← Back to Event
@@ -177,7 +199,7 @@
         <span class="h-px w-6 bg-gold"></span>
         Registration
       </div>
-      <h1 id="reg-event-title" class="mb-6 font-display text-3xl text-pine">Loading…</h1>
+      <h1 id="reg-event-title" class="mb-6 font-display text-2xl md:text-3xl text-pine">Loading…</h1>
 
       <!-- Selected ticket recap -->
       <div class="rounded-lg border border-gold/30 bg-gold/5 p-4 mb-5">
