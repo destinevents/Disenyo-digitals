@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AYA Events Hub</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;1,9..144,300;1,9..144,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          pine: { DEFAULT: '#2B3228', deep: '#1D2219', mid: '#3A4436', light: '#4E5C49' },
+          fog: { DEFAULT: '#F0EDE6', 2: '#E8E4DC', warm: '#FAF8F4' },
+          gold: { DEFAULT: '#C9A84C', light: '#DEC270' },
+          moss: '#7A9B6A',
+          terra: '#8B4A35',
+          ink: '#1A1E18',
+          muted: '#6B7864',
+        },
+        fontFamily: {
+          display: ['Fraunces', 'serif'],
+          body: ['DM Sans', 'sans-serif'],
+          mono: ['DM Mono', 'monospace'],
+        },
+      }
+    }
+  }
+</script>
+<style>
+  body { font-family: 'DM Sans', sans-serif; }
+  .font-display { font-family: 'Fraunces', serif; }
+  .font-mono { font-family: 'DM Mono', monospace; }
+  .preview-banner {
+    position: sticky; top: 0; z-index: 100;
+    background: #1D2219; color: #DEC270;
+    font-family: 'DM Mono', monospace; font-size: 0.65rem;
+    letter-spacing: 0.14em; text-transform: uppercase;
+    text-align: center; padding: 6px 12px;
+    border-bottom: 1px solid rgba(240,237,230,0.1);
+  }
+</style>
+</head>
+<body class="bg-fog-warm text-ink antialiased">
+
+<!-- Supabase -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  const SUPABASE_URL  = 'https://rjuxowagbipjgvaqwgqq.supabase.co';
+  const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJqdXhvd2FnYmlwamd2YXF3Z3FxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE1NzQzOTIsImV4cCI6MjA5NzE1MDM5Mn0.8drDViHTG8CponYQCkkQP-UM4jpgZC3w0QyzDzpFZqE';
+  const db = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+
+  async function loadEvents() {
+    const { data: events, error } = await db
+      .from('events')
+      .select('*, ticket_types(*), registrations(id, payment_status)')
+      .in('status', ['on_sale','upcoming'])
+      .order('date', { ascending: true });
+
+    if (error || !events) return;
+
+    // Update section label count
+    document.getElementById('event-count').textContent = `Upcoming Events · ${events.length} event${events.length !== 1 ? 's' : ''}`;
+
+    // Render event cards
+    const grid = document.getElementById('events-grid');
+    grid.innerHTML = '';
+
+    // Featured: first event
+    const featured = events[0];
+    if (featured) {
+      const minPrice = Math.min(...featured.ticket_types.map(t => t.price));
+      const dateObj  = new Date(featured.date + 'T00:00:00');
+      const day      = dateObj.toLocaleDateString('en-PH', { day:'2-digit' });
+      const month    = dateObj.toLocaleDateString('en-PH', { month:'short' }).toUpperCase();
+      document.getElementById('featured-title').textContent = featured.title;
+      document.getElementById('featured-desc').textContent  = featured.description;
+      document.getElementById('featured-date').textContent  = `📅 ${dateObj.toLocaleDateString('en-PH', { month:'long', day:'numeric', year:'numeric' })}`;
+      document.getElementById('featured-time').textContent  = `🕐 ${featured.time_start?.slice(0,5) || ''}`;
+      document.getElementById('featured-venue').textContent = `📍 ${featured.venue}`;
+      document.getElementById('featured-price').textContent = minPrice === 0 ? 'Free' : `From ₱${minPrice.toLocaleString()}`;
+      document.getElementById('featured-link').href = `event-detail.html?slug=${featured.slug}`;
+      document.getElementById('featured-ticket-link').textContent = `Get Tickets · ${minPrice === 0 ? 'Free' : '₱' + minPrice.toLocaleString()}`;
+      document.getElementById('featured-ticket-link').href = `event-detail.html?slug=${featured.slug}`;
+      document.getElementById('featured-type').textContent = featured.type;
+    }
+
+    // Cards grid
+    events.forEach(ev => {
+      const minPrice    = Math.min(...(ev.ticket_types?.map(t => t.price) ?? [0]));
+      const confirmed   = ev.registrations?.filter(r => r.payment_status === 'confirmed').length ?? 0;
+      const totalCap    = ev.ticket_types?.reduce((s, t) => s + t.capacity, 0) ?? 0;
+      const dateObj     = new Date(ev.date + 'T00:00:00');
+      const day         = dateObj.toLocaleDateString('en-PH', { day: '2-digit' });
+      const month       = dateObj.toLocaleDateString('en-PH', { month: 'short' }).toUpperCase();
+      const isSoldOut   = confirmed >= totalCap && totalCap > 0;
+      const priceLabel  = minPrice === 0 ? 'Free' : `from ₱${minPrice.toLocaleString()}`;
+
+      const card = document.createElement('a');
+      card.href  = `event-detail.html?slug=${ev.slug}`;
+      card.className = 'group block overflow-hidden rounded-xl border border-pine/10 bg-white transition-all hover:-translate-y-1 hover:shadow-xl hover:shadow-pine/10';
+      card.innerHTML = `
+        <div class="relative flex h-32 items-center justify-center text-3xl" style="background:${ev.cover_gradient}">
+          ${ev.cover_emoji}
+          <div class="absolute right-3 top-3 rounded-md bg-gold px-2.5 py-1.5 text-center text-pine-deep">
+            <div class="font-display text-lg leading-none">${day}</div>
+            <div class="font-mono text-[0.5rem] uppercase tracking-[0.14em] leading-none">${month}</div>
+          </div>
+          ${isSoldOut ? '<div class="absolute left-3 top-3 rounded-full bg-terra/80 px-2.5 py-1 font-mono text-[0.5rem] uppercase tracking-[0.1em] text-fog">Sold Out</div>' : ''}
+        </div>
+        <div class="p-5">
+          <span class="mb-2 inline-block rounded-full bg-gold/15 px-2.5 py-0.5 font-mono text-[0.55rem] uppercase tracking-[0.12em] text-terra">${ev.type}</span>
+          <h3 class="mb-1.5 font-display text-lg leading-tight text-pine">${ev.title}</h3>
+          <p class="mb-3 line-clamp-2 text-sm leading-relaxed text-muted">${ev.description ?? ''}</p>
+          <div class="flex items-center justify-between border-t border-pine/10 pt-3 text-xs text-muted">
+            <span class="flex items-center gap-1">📍 ${ev.venue}</span>
+            <span class="font-mono font-medium text-pine">${priceLabel}</span>
+          </div>
+        </div>`;
+      grid.appendChild(card);
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', loadEvents);
+</script>
+
+<!-- ══════════════════════════════
+     NAVBAR
+══════════════════════════════ -->
+<nav class="sticky top-[29px] z-50 h-14 border-b border-fog/10 bg-pine-deep/95 backdrop-blur-md">
+  <div class="mx-auto flex h-full max-w-6xl items-center gap-8 px-6">
+    <div class="font-display text-lg text-fog">
+      <em class="italic text-gold-light">As You Are</em> Baguio
+    </div>
+    <div class="ml-auto hidden items-center gap-7 md:flex">
+      <a href="#" class="font-mono text-[0.58rem] uppercase tracking-[0.14em] text-fog/60 hover:text-fog transition-colors">Home</a>
+      <a href="#" class="font-mono text-[0.58rem] uppercase tracking-[0.14em] text-fog/60 hover:text-fog transition-colors">Community</a>
+      <a href="#" class="font-mono text-[0.58rem] uppercase tracking-[0.14em] text-fog/60 hover:text-fog transition-colors">eMagazine</a>
+      <a href="#" class="font-mono text-[0.58rem] uppercase tracking-[0.14em] text-fog/60 hover:text-fog transition-colors">SME Directory</a>
+      <a href="#" class="font-mono text-[0.58rem] uppercase tracking-[0.14em] text-gold-light transition-colors">Events</a>
+      <a href="#" class="rounded-sm bg-gold px-5 py-1.5 font-mono text-[0.58rem] font-medium uppercase tracking-[0.14em] text-pine-deep transition-colors hover:bg-gold-light">
+        Get Tickets
+      </a>
+    </div>
+  </div>
+</nav>
+
+<main>
+
+  <!-- ══════════════════════════════
+       HERO
+  ══════════════════════════════ -->
+  <section class="bg-pine-deep px-6 py-16 md:py-20">
+    <div class="mx-auto max-w-6xl">
+      <div class="mb-3 flex items-center gap-2 font-mono text-[0.6rem] uppercase tracking-[0.22em] text-gold-light">
+        <span class="h-px w-7 bg-gold"></span>
+        AYA Events Hub
+      </div>
+      <h1 class="max-w-2xl font-display text-4xl font-light leading-tight text-fog md:text-6xl">
+        Where the <em class="italic text-gold-light">community</em> gathers
+      </h1>
+      <p class="mt-4 max-w-xl text-sm leading-relaxed text-fog/60 md:text-base">
+        From Sip & Scale founder dinners to RE:BLOOM sustainability showcases — every
+        AYA event in one place. Browse, register, and get your QR ticket instantly.
+      </p>
+    </div>
+  </section>
+
+  <div class="mx-auto max-w-6xl px-6 py-12">
+
+    <!-- ══════════════════════════════
+         FEATURED BANNER
+    ══════════════════════════════ -->
+    <div class="mb-12 relative overflow-hidden rounded-2xl bg-pine-deep">
+      <div aria-hidden class="pointer-events-none absolute -right-10 -top-10 select-none whitespace-nowrap font-display text-[14rem] italic leading-none text-white/[0.03]">AYA</div>
+      <div class="relative z-10 grid gap-8 p-8 md:grid-cols-[1fr_auto] md:items-center md:p-12">
+        <div>
+          <div class="mb-4 flex items-center gap-2 font-mono text-[0.6rem] uppercase tracking-[0.22em] text-gold-light">
+            <span class="h-px w-6 bg-gold"></span>
+            Featured Event
+          </div>
+          <span id="featured-type" class="mb-3 inline-block rounded-full bg-gold/15 px-3 py-1 font-mono text-[0.58rem] uppercase tracking-[0.12em] text-gold-light">
+            RE:BLOOM
+          </span>
+          <h2 id="featured-title" class="mb-3 font-display text-3xl font-light leading-tight text-fog md:text-5xl">
+            RE:BLOOM 2026
+          </h2>
+          <p id="featured-desc" class="mb-6 max-w-xl text-sm leading-relaxed text-fog/60 md:text-base">
+            A sustainable floral retail transformation initiative for Baguio MSMEs — Refuse, Rethink, Reduce.
+          </p>
+          <div class="mb-6 flex flex-wrap gap-x-6 gap-y-2 text-sm text-fog/70">
+            <span id="featured-date" class="flex items-center gap-2">📅 July 12, 2026</span>
+            <span id="featured-time" class="flex items-center gap-2">🕐 9:00 AM</span>
+            <span id="featured-venue" class="flex items-center gap-2">📍 Baguio Convention Center</span>
+          </div>
+          <div class="flex flex-wrap gap-3">
+            <a id="featured-link" href="#" class="rounded-sm bg-gold px-7 py-3 font-mono text-[0.65rem] uppercase tracking-[0.18em] text-pine-deep transition-colors hover:bg-gold-light">
+              View Details
+            </a>
+            <a id="featured-ticket-link" href="#" class="rounded-sm border border-fog/25 px-7 py-3 font-mono text-[0.65rem] uppercase tracking-[0.18em] text-fog/75 transition-colors hover:border-fog/60 hover:text-fog">
+              Get Tickets · <span id="featured-price">Free</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════
+         SEARCH + FILTERS
+    ══════════════════════════════ -->
+    <div class="mb-8 flex flex-wrap gap-3">
+      <div class="relative min-w-[220px] flex-1">
+        <span class="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-sm opacity-45">🔍</span>
+        <input type="text" placeholder="Search events…" class="w-full rounded-md border border-pine/10 bg-white py-2.5 pl-10 pr-4 text-sm text-ink outline-none focus:border-pine-mid">
+      </div>
+      <select class="min-w-[160px] cursor-pointer rounded-md border border-pine/10 bg-white px-4 py-2.5 text-sm text-ink outline-none">
+        <option>All Categories</option>
+        <option>Sip & Scale</option>
+        <option>RE:BLOOM</option>
+        <option>Founder Session</option>
+        <option>Community Workshop</option>
+        <option>Partner Event</option>
+      </select>
+      <div class="flex rounded-md border border-pine/10 bg-white p-1 text-sm">
+        <button class="rounded px-4 py-1.5 bg-pine text-fog">upcoming</button>
+        <button class="rounded px-4 py-1.5 text-muted hover:text-pine">past</button>
+      </div>
+    </div>
+
+    <!-- Section label -->
+    <div id="event-count" class="mb-6 font-mono text-[0.6rem] uppercase tracking-[0.16em] text-muted">
+      Loading events…
+    </div>
+
+    <!-- EVENT CARDS GRID — populated by JS -->
+    <div id="events-grid" class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      <!-- skeleton -->
+      <div class="h-64 animate-pulse rounded-xl bg-pine/5"></div>
+      <div class="h-64 animate-pulse rounded-xl bg-pine/5"></div>
+    </div>
+  </div>
+</main>
+
+<!-- ══════════════════════════════
+     FOOTER
+══════════════════════════════ -->
+<footer class="bg-ink px-6 py-10 text-[0.78rem] text-fog/45">
+  <div class="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4">
+    <div class="font-display text-base text-fog/60">
+      <em class="italic text-gold-light">As You Are</em> Baguio
+    </div>
+    <div>
+      Powered by <a href="#" class="hover:text-fog/60 underline decoration-transparent hover:decoration-fog/40 transition-colors">Destine Events</a>
+      · <a href="#" class="hover:text-fog/60 underline decoration-transparent hover:decoration-fog/40 transition-colors">Built by Disenyo Digitals</a>
+      · © 2026 As You Are Baguio
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
