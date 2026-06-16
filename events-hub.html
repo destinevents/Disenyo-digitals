@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Preview — AYA Events Hub</title>
+<title>AYA Events Hub</title>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;1,9..144,300;1,9..144,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
 <script src="https://cdn.tailwindcss.com"></script>
 <script>
@@ -44,8 +44,86 @@
 </head>
 <body class="bg-fog-warm text-ink antialiased">
 
-<!-- Preview notice -->
-<div class="preview-banner">🔍 Static Design Preview — AYA Events Hub (/events) · Not connected to live data</div>
+<!-- Supabase -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  const SUPABASE_URL  = 'https://rjuxowagbipjgvaqwgqq.supabase.co';
+  const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJqdXhvd2FnYmlwamd2YXF3Z3FxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE1NzQzOTIsImV4cCI6MjA5NzE1MDM5Mn0.8drDViHTG8CponYQCkkQP-UM4jpgZC3w0QyzDzpFZqE';
+  const db = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+
+  async function loadEvents() {
+    const { data: events, error } = await db
+      .from('events')
+      .select('*, ticket_types(*), registrations(id, payment_status)')
+      .in('status', ['on_sale','upcoming'])
+      .order('date', { ascending: true });
+
+    if (error || !events) return;
+
+    // Update section label count
+    document.getElementById('event-count').textContent = `Upcoming Events · ${events.length} event${events.length !== 1 ? 's' : ''}`;
+
+    // Render event cards
+    const grid = document.getElementById('events-grid');
+    grid.innerHTML = '';
+
+    // Featured: first event
+    const featured = events[0];
+    if (featured) {
+      const minPrice = Math.min(...featured.ticket_types.map(t => t.price));
+      const dateObj  = new Date(featured.date + 'T00:00:00');
+      const day      = dateObj.toLocaleDateString('en-PH', { day:'2-digit' });
+      const month    = dateObj.toLocaleDateString('en-PH', { month:'short' }).toUpperCase();
+      document.getElementById('featured-title').textContent = featured.title;
+      document.getElementById('featured-desc').textContent  = featured.description;
+      document.getElementById('featured-date').textContent  = `📅 ${dateObj.toLocaleDateString('en-PH', { month:'long', day:'numeric', year:'numeric' })}`;
+      document.getElementById('featured-time').textContent  = `🕐 ${featured.time_start?.slice(0,5) || ''}`;
+      document.getElementById('featured-venue').textContent = `📍 ${featured.venue}`;
+      document.getElementById('featured-price').textContent = minPrice === 0 ? 'Free' : `From ₱${minPrice.toLocaleString()}`;
+      document.getElementById('featured-link').href = `event-detail.html?slug=${featured.slug}`;
+      document.getElementById('featured-ticket-link').textContent = `Get Tickets · ${minPrice === 0 ? 'Free' : '₱' + minPrice.toLocaleString()}`;
+      document.getElementById('featured-ticket-link').href = `event-detail.html?slug=${featured.slug}`;
+      document.getElementById('featured-type').textContent = featured.type;
+    }
+
+    // Cards grid
+    events.forEach(ev => {
+      const minPrice    = Math.min(...(ev.ticket_types?.map(t => t.price) ?? [0]));
+      const confirmed   = ev.registrations?.filter(r => r.payment_status === 'confirmed').length ?? 0;
+      const totalCap    = ev.ticket_types?.reduce((s, t) => s + t.capacity, 0) ?? 0;
+      const dateObj     = new Date(ev.date + 'T00:00:00');
+      const day         = dateObj.toLocaleDateString('en-PH', { day: '2-digit' });
+      const month       = dateObj.toLocaleDateString('en-PH', { month: 'short' }).toUpperCase();
+      const isSoldOut   = confirmed >= totalCap && totalCap > 0;
+      const priceLabel  = minPrice === 0 ? 'Free' : `from ₱${minPrice.toLocaleString()}`;
+
+      const card = document.createElement('a');
+      card.href  = `event-detail.html?slug=${ev.slug}`;
+      card.className = 'group block overflow-hidden rounded-xl border border-pine/10 bg-white transition-all hover:-translate-y-1 hover:shadow-xl hover:shadow-pine/10';
+      card.innerHTML = `
+        <div class="relative flex h-32 items-center justify-center text-3xl" style="background:${ev.cover_gradient}">
+          ${ev.cover_emoji}
+          <div class="absolute right-3 top-3 rounded-md bg-gold px-2.5 py-1.5 text-center text-pine-deep">
+            <div class="font-display text-lg leading-none">${day}</div>
+            <div class="font-mono text-[0.5rem] uppercase tracking-[0.14em] leading-none">${month}</div>
+          </div>
+          ${isSoldOut ? '<div class="absolute left-3 top-3 rounded-full bg-terra/80 px-2.5 py-1 font-mono text-[0.5rem] uppercase tracking-[0.1em] text-fog">Sold Out</div>' : ''}
+        </div>
+        <div class="p-5">
+          <span class="mb-2 inline-block rounded-full bg-gold/15 px-2.5 py-0.5 font-mono text-[0.55rem] uppercase tracking-[0.12em] text-terra">${ev.type}</span>
+          <h3 class="mb-1.5 font-display text-lg leading-tight text-pine">${ev.title}</h3>
+          <p class="mb-3 line-clamp-2 text-sm leading-relaxed text-muted">${ev.description ?? ''}</p>
+          <div class="flex items-center justify-between border-t border-pine/10 pt-3 text-xs text-muted">
+            <span class="flex items-center gap-1">📍 ${ev.venue}</span>
+            <span class="font-mono font-medium text-pine">${priceLabel}</span>
+          </div>
+        </div>`;
+      grid.appendChild(card);
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', loadEvents);
+</script>
 
 <!-- ══════════════════════════════
      NAVBAR
@@ -102,26 +180,26 @@
             <span class="h-px w-6 bg-gold"></span>
             Featured Event
           </div>
-          <span class="mb-3 inline-block rounded-full bg-gold/15 px-3 py-1 font-mono text-[0.58rem] uppercase tracking-[0.12em] text-gold-light">
+          <span id="featured-type" class="mb-3 inline-block rounded-full bg-gold/15 px-3 py-1 font-mono text-[0.58rem] uppercase tracking-[0.12em] text-gold-light">
             RE:BLOOM
           </span>
-          <h2 class="mb-3 font-display text-3xl font-light leading-tight text-fog md:text-5xl">
+          <h2 id="featured-title" class="mb-3 font-display text-3xl font-light leading-tight text-fog md:text-5xl">
             RE:BLOOM 2026
           </h2>
-          <p class="mb-6 max-w-xl text-sm leading-relaxed text-fog/60 md:text-base">
+          <p id="featured-desc" class="mb-6 max-w-xl text-sm leading-relaxed text-fog/60 md:text-base">
             A sustainable floral retail transformation initiative for Baguio MSMEs — Refuse, Rethink, Reduce.
           </p>
           <div class="mb-6 flex flex-wrap gap-x-6 gap-y-2 text-sm text-fog/70">
-            <span class="flex items-center gap-2">📅 July 12, 2026</span>
-            <span class="flex items-center gap-2">🕐 9:00 AM</span>
-            <span class="flex items-center gap-2">📍 Baguio Convention Center</span>
+            <span id="featured-date" class="flex items-center gap-2">📅 July 12, 2026</span>
+            <span id="featured-time" class="flex items-center gap-2">🕐 9:00 AM</span>
+            <span id="featured-venue" class="flex items-center gap-2">📍 Baguio Convention Center</span>
           </div>
           <div class="flex flex-wrap gap-3">
-            <a href="#" class="rounded-sm bg-gold px-7 py-3 font-mono text-[0.65rem] uppercase tracking-[0.18em] text-pine-deep transition-colors hover:bg-gold-light">
+            <a id="featured-link" href="#" class="rounded-sm bg-gold px-7 py-3 font-mono text-[0.65rem] uppercase tracking-[0.18em] text-pine-deep transition-colors hover:bg-gold-light">
               View Details
             </a>
-            <a href="#" class="rounded-sm border border-fog/25 px-7 py-3 font-mono text-[0.65rem] uppercase tracking-[0.18em] text-fog/75 transition-colors hover:border-fog/60 hover:text-fog">
-              Get Tickets · Free
+            <a id="featured-ticket-link" href="#" class="rounded-sm border border-fog/25 px-7 py-3 font-mono text-[0.65rem] uppercase tracking-[0.18em] text-fog/75 transition-colors hover:border-fog/60 hover:text-fog">
+              Get Tickets · <span id="featured-price">Free</span>
             </a>
           </div>
         </div>
@@ -151,81 +229,15 @@
     </div>
 
     <!-- Section label -->
-    <div class="mb-6 font-mono text-[0.6rem] uppercase tracking-[0.16em] text-muted">
-      Upcoming Events · 2 events
+    <div id="event-count" class="mb-6 font-mono text-[0.6rem] uppercase tracking-[0.16em] text-muted">
+      Loading events…
     </div>
 
-    <!-- ══════════════════════════════
-         EVENT CARDS GRID
-    ══════════════════════════════ -->
-    <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-
-      <!-- Card 1: Builder's Circle -->
-      <a href="event-detail.html" class="group block overflow-hidden rounded-xl border border-pine/10 bg-white transition-all hover:-translate-y-1 hover:shadow-xl hover:shadow-pine/10">
-        <div class="relative flex h-32 items-center justify-center bg-gradient-to-br from-[#1D2A3A] to-[#2D5A8E] text-3xl">
-          💡
-          <div class="absolute right-3 top-3 rounded-md bg-gold px-2.5 py-1.5 text-center text-pine-deep">
-            <div class="font-display text-lg leading-none">28</div>
-            <div class="font-mono text-[0.5rem] uppercase tracking-[0.14em] leading-none">JUN</div>
-          </div>
-        </div>
-        <div class="p-5">
-          <span class="mb-2 inline-block rounded-full bg-gold/15 px-2.5 py-0.5 font-mono text-[0.55rem] uppercase tracking-[0.12em] text-terra">
-            Founder Session
-          </span>
-          <h3 class="mb-1.5 font-display text-lg leading-tight text-pine">AYA Builder's Circle — June Session</h3>
-          <p class="mb-3 line-clamp-2 text-sm leading-relaxed text-muted">A facilitated circle for Baguio's entrepreneurs, creators & ecosystem builders</p>
-          <div class="flex items-center justify-between border-t border-pine/10 pt-3 text-xs text-muted">
-            <span class="flex items-center gap-1">📍 Location TBA</span>
-            <span class="font-mono font-medium text-pine">from ₱300</span>
-          </div>
-        </div>
-      </a>
-
-      <!-- Card 2: RE:BLOOM -->
-      <a href="#" class="group block overflow-hidden rounded-xl border border-pine/10 bg-white transition-all hover:-translate-y-1 hover:shadow-xl hover:shadow-pine/10">
-        <div class="relative flex h-32 items-center justify-center bg-gradient-to-br from-[#3A2228] to-[#8B5A5A] text-3xl">
-          🌸
-          <div class="absolute right-3 top-3 rounded-md bg-gold px-2.5 py-1.5 text-center text-pine-deep">
-            <div class="font-display text-lg leading-none">12</div>
-            <div class="font-mono text-[0.5rem] uppercase tracking-[0.14em] leading-none">JUL</div>
-          </div>
-        </div>
-        <div class="p-5">
-          <span class="mb-2 inline-block rounded-full bg-gold/15 px-2.5 py-0.5 font-mono text-[0.55rem] uppercase tracking-[0.12em] text-terra">
-            RE:BLOOM
-          </span>
-          <h3 class="mb-1.5 font-display text-lg leading-tight text-pine">RE:BLOOM 2026</h3>
-          <p class="mb-3 line-clamp-2 text-sm leading-relaxed text-muted">A sustainable floral retail transformation initiative for Baguio MSMEs</p>
-          <div class="flex items-center justify-between border-t border-pine/10 pt-3 text-xs text-muted">
-            <span class="flex items-center gap-1">📍 Baguio Convention Center</span>
-            <span class="font-mono font-medium text-pine">Free</span>
-          </div>
-        </div>
-      </a>
-
-      <!-- Card 3: Founder Session (draft / coming soon) -->
-      <div class="group block overflow-hidden rounded-xl border border-dashed border-pine/15 bg-white/50">
-        <div class="relative flex h-32 items-center justify-center bg-gradient-to-br from-[#2B3228] to-[#4E5C49] text-3xl opacity-60">
-          💡
-          <div class="absolute right-3 top-3 rounded-md bg-gold/60 px-2.5 py-1.5 text-center text-pine-deep">
-            <div class="font-display text-lg leading-none">09</div>
-            <div class="font-mono text-[0.5rem] uppercase tracking-[0.14em] leading-none">AUG</div>
-          </div>
-        </div>
-        <div class="p-5">
-          <span class="mb-2 inline-block rounded-full bg-pine/5 px-2.5 py-0.5 font-mono text-[0.55rem] uppercase tracking-[0.12em] text-muted">
-            Founder Session · Draft
-          </span>
-          <h3 class="mb-1.5 font-display text-lg leading-tight text-pine">Founder Session 01: Building in Baguio</h3>
-          <p class="mb-3 line-clamp-2 text-sm leading-relaxed text-muted">An honest conversation series for early-stage founders — coming soon</p>
-          <div class="flex items-center justify-between border-t border-pine/10 pt-3 text-xs text-muted">
-            <span class="flex items-center gap-1">📍 Location TBA</span>
-            <span class="font-mono font-medium text-muted">Not yet published</span>
-          </div>
-        </div>
-      </div>
-
+    <!-- EVENT CARDS GRID — populated by JS -->
+    <div id="events-grid" class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      <!-- skeleton -->
+      <div class="h-64 animate-pulse rounded-xl bg-pine/5"></div>
+      <div class="h-64 animate-pulse rounded-xl bg-pine/5"></div>
     </div>
   </div>
 </main>

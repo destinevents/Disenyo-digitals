@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Preview — Registration & Confirmation</title>
+<title>Registration — AYA Events</title>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;1,9..144,300;1,9..144,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
 <script src="https://cdn.tailwindcss.com"></script>
 <script>
@@ -46,7 +46,102 @@
 </head>
 <body class="bg-fog-warm text-ink antialiased">
 
-<div class="preview-banner">🔍 Static Design Preview — Registration Form & Confirmation Page · Not connected to live data</div>
+<!-- Supabase -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  const SUPABASE_URL  = 'https://rjuxowagbipjgvaqwgqq.supabase.co';
+  const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJqdXhvd2FnYmlwamd2YXF3Z3FxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE1NzQzOTIsImV4cCI6MjA5NzE1MDM5Mn0.8drDViHTG8CponYQCkkQP-UM4jpgZC3w0QyzDzpFZqE';
+  const db = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+
+  const params     = new URLSearchParams(window.location.search);
+  const eventSlug  = params.get('slug')   || 'builders-circle-june-2026';
+  const ticketId   = params.get('ticket') || null;
+  let   currentEvent      = null;
+  let   currentTicketType = null;
+  let   selectedArchetype = 'Founder';
+
+  async function loadForm() {
+    const { data: ev } = await db.from('events').select('*, ticket_types(*)').eq('slug', eventSlug).single();
+    if (!ev) return;
+    currentEvent = ev;
+
+    // Set ticket type
+    currentTicketType = ticketId
+      ? ev.ticket_types.find(t => t.id === ticketId)
+      : ev.ticket_types[0];
+
+    document.getElementById('reg-event-title').textContent = ev.title;
+    document.getElementById('back-link').href = `event-detail.html?slug=${eventSlug}`;
+
+    if (currentTicketType) {
+      document.getElementById('reg-ticket-name').textContent  = currentTicketType.name;
+      document.getElementById('reg-ticket-price').textContent = currentTicketType.price === 0 ? 'Free' : '₱' + currentTicketType.price.toLocaleString();
+    }
+  }
+
+  // Archetype selection
+  function selectArchetype(el, name) {
+    document.querySelectorAll('.join-type-btn').forEach(b => b.classList.remove('selected'));
+    el.classList.add('selected');
+    selectedArchetype = name;
+  }
+
+  async function submitRegistration(e) {
+    e.preventDefault();
+    const btn = document.getElementById('submit-btn');
+    btn.textContent = 'Submitting…';
+    btn.disabled = true;
+
+    const payload = {
+      event_id:       currentEvent?.id,
+      ticket_type_id: currentTicketType?.id,
+      full_name:      document.getElementById('f-name').value.trim(),
+      email:          document.getElementById('f-email').value.trim(),
+      mobile:         document.getElementById('f-mobile').value.trim(),
+      business:       document.getElementById('f-business').value.trim() || null,
+      industry:       document.getElementById('f-industry').value || null,
+      social_link:    document.getElementById('f-social').value.trim() || null,
+      archetype:      selectedArchetype,
+      special_notes:  document.getElementById('f-notes').value.trim() || null,
+      newsletter_opt: document.getElementById('opt-newsletter').checked,
+      networking_opt: document.getElementById('opt-networking').checked,
+      payment_status: currentTicketType?.price === 0 ? 'confirmed' : 'pending',
+      payment_method: currentTicketType?.price === 0 ? 'free' : null,
+      amount_paid:    currentTicketType?.price === 0 ? 0 : null,
+    };
+
+    const { data, error } = await db.from('registrations').insert(payload).select().single();
+
+    if (error) {
+      alert('Something went wrong: ' + error.message);
+      btn.textContent = 'Continue to Payment →';
+      btn.disabled = false;
+      return;
+    }
+
+    // Show confirmation section
+    document.getElementById('reg-form-section').classList.add('hidden');
+    document.getElementById('reg-confirm-section').classList.remove('hidden');
+    document.getElementById('conf-name').textContent    = data.full_name;
+    document.getElementById('conf-reg-code').textContent = data.reg_code;
+    document.getElementById('conf-email').textContent   = data.email;
+    document.getElementById('conf-event').textContent   = currentEvent.title;
+    const dateObj = new Date(currentEvent.date + 'T00:00:00');
+    document.getElementById('conf-date').textContent    = '📅 ' + dateObj.toLocaleDateString('en-PH', { month:'long', day:'numeric', year:'numeric' });
+    document.getElementById('conf-time').textContent    = '🕐 ' + (currentEvent.time_start?.slice(0,5) || '') + (currentEvent.time_end ? ' – ' + currentEvent.time_end.slice(0,5) : '');
+    document.getElementById('conf-venue').textContent   = '📍 ' + currentEvent.venue;
+    document.getElementById('conf-ticket').textContent  = '🎟️ ' + (currentTicketType?.name || '') + ' · ' + (currentTicketType?.price === 0 ? 'Free' : '₱' + currentTicketType?.price.toLocaleString());
+    document.getElementById('conf-back-link').href      = `event-detail.html?slug=${eventSlug}`;
+
+    if (currentTicketType?.price === 0) {
+      document.getElementById('payment-section').classList.add('hidden');
+      document.getElementById('conf-status-badge').textContent = 'Confirmed';
+      document.getElementById('conf-status-badge').className   = 'mt-3 inline-block rounded-full px-3 py-1 font-mono text-[0.55rem] uppercase tracking-[0.12em] bg-moss/15 text-moss';
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', loadForm);
+</script>
 
 <!-- NAVBAR -->
 <nav class="sticky top-[29px] z-50 h-14 border-b border-fog/10 bg-pine-deep/95 backdrop-blur-md">
@@ -72,56 +167,61 @@
   <!-- ═══════════════════════════════════════
        SECTION 1 — REGISTRATION FORM
   ═══════════════════════════════════════ -->
-  <div class="px-6 py-12 md:py-16 border-b border-pine/10">
+  <div id="reg-form-section" class="px-6 py-12 md:py-16 border-b border-pine/10">
     <div class="mx-auto max-w-lg">
-      <a href="event-detail.html" class="mb-6 inline-flex items-center gap-2 font-mono text-[0.6rem] uppercase tracking-[0.16em] text-muted hover:text-pine transition-colors">
-        ← Back to AYA Builder's Circle — June Session
+      <a id="back-link" href="event-detail.html" class="mb-6 inline-flex items-center gap-2 font-mono text-[0.6rem] uppercase tracking-[0.16em] text-muted hover:text-pine transition-colors">
+        ← Back to Event
       </a>
 
       <div class="mb-2 flex items-center gap-2 font-mono text-[0.6rem] uppercase tracking-[0.22em] text-gold">
         <span class="h-px w-6 bg-gold"></span>
         Registration
       </div>
-      <h1 class="mb-6 font-display text-3xl text-pine">AYA Builder's Circle — June Session</h1>
+      <h1 id="reg-event-title" class="mb-6 font-display text-3xl text-pine">Loading…</h1>
 
       <!-- Selected ticket recap -->
       <div class="rounded-lg border border-gold/30 bg-gold/5 p-4 mb-5">
         <div class="font-mono text-[0.55rem] uppercase tracking-[0.12em] text-terra">Selected Ticket</div>
         <div class="mt-1 flex items-baseline justify-between">
-          <span class="font-display text-lg text-pine">Builder's Circle Pass</span>
-          <span class="font-display text-lg text-pine">₱500</span>
+          <span id="reg-ticket-name" class="font-display text-lg text-pine">—</span>
+          <span id="reg-ticket-price" class="font-display text-lg text-pine">—</span>
         </div>
       </div>
 
-      <form class="space-y-5">
+      <form id="reg-form" onsubmit="submitRegistration(event)" class="space-y-5">
         <div class="grid gap-4 sm:grid-cols-2">
           <div>
             <label class="mb-1.5 block font-mono text-[0.6rem] uppercase tracking-[0.1em] text-muted">Full Name *</label>
-            <input type="text" placeholder="Juan Dela Cruz" class="w-full rounded-md border border-pine/15 bg-white px-4 py-2.5 text-sm text-ink outline-none focus:border-pine-mid">
+            <input id="f-name" type="text" placeholder="Juan Dela Cruz" required class="w-full rounded-md border border-pine/15 bg-white px-4 py-2.5 text-sm text-ink outline-none focus:border-pine-mid">
           </div>
           <div>
             <label class="mb-1.5 block font-mono text-[0.6rem] uppercase tracking-[0.1em] text-muted">Business / Organization</label>
-            <input type="text" placeholder="Optional" class="w-full rounded-md border border-pine/15 bg-white px-4 py-2.5 text-sm text-ink outline-none focus:border-pine-mid">
+            <input id="f-business" type="text" placeholder="Optional" class="w-full rounded-md border border-pine/15 bg-white px-4 py-2.5 text-sm text-ink outline-none focus:border-pine-mid">
           </div>
           <div>
             <label class="mb-1.5 block font-mono text-[0.6rem] uppercase tracking-[0.1em] text-muted">Email Address *</label>
-            <input type="email" placeholder="you@example.com" class="w-full rounded-md border border-pine/15 bg-white px-4 py-2.5 text-sm text-ink outline-none focus:border-pine-mid">
+            <input id="f-email" type="email" placeholder="you@example.com" required class="w-full rounded-md border border-pine/15 bg-white px-4 py-2.5 text-sm text-ink outline-none focus:border-pine-mid">
           </div>
           <div>
             <label class="mb-1.5 block font-mono text-[0.6rem] uppercase tracking-[0.1em] text-muted">Mobile Number *</label>
-            <input type="text" placeholder="+63 9XX XXX XXXX" class="w-full rounded-md border border-pine/15 bg-white px-4 py-2.5 text-sm text-ink outline-none focus:border-pine-mid">
+            <input id="f-mobile" type="text" placeholder="+63 9XX XXX XXXX" required class="w-full rounded-md border border-pine/15 bg-white px-4 py-2.5 text-sm text-ink outline-none focus:border-pine-mid">
           </div>
           <div>
             <label class="mb-1.5 block font-mono text-[0.6rem] uppercase tracking-[0.1em] text-muted">Industry</label>
-            <select class="w-full rounded-md border border-pine/15 bg-white px-4 py-2.5 text-sm text-ink outline-none focus:border-pine-mid">
+            <select id="f-industry" class="w-full rounded-md border border-pine/15 bg-white px-4 py-2.5 text-sm text-ink outline-none focus:border-pine-mid">
               <option>Select industry…</option>
               <option>Tech & Digital</option>
               <option>Events & Hospitality</option>
+              <option>Food & Beverage</option>
+              <option>Retail & Commerce</option>
+              <option>Arts & Culture</option>
+              <option>Education</option>
+              <option>Other</option>
             </select>
           </div>
           <div>
             <label class="mb-1.5 block font-mono text-[0.6rem] uppercase tracking-[0.1em] text-muted">Social Media Link</label>
-            <input type="text" placeholder="https://instagram.com/yourhandle" class="w-full rounded-md border border-pine/15 bg-white px-4 py-2.5 text-sm text-ink outline-none focus:border-pine-mid">
+            <input id="f-social" type="text" placeholder="https://instagram.com/yourhandle" class="w-full rounded-md border border-pine/15 bg-white px-4 py-2.5 text-sm text-ink outline-none focus:border-pine-mid">
           </div>
         </div>
 
@@ -129,7 +229,7 @@
         <div>
           <label class="mb-1.5 block font-mono text-[0.6rem] uppercase tracking-[0.1em] text-muted">Which best describes you? <span class="text-muted/60">(optional)</span></label>
           <div class="grid gap-2 sm:grid-cols-2">
-            <div class="join-type-btn selected flex items-start gap-3">
+            <div class="join-type-btn selected flex items-start gap-3" onclick="selectArchetype(this,'Founder')">
               <span class="text-lg leading-none">🧠</span>
               <span>
                 <span class="flex items-baseline gap-1.5">
@@ -183,16 +283,16 @@
         <!-- Community opt-ins -->
         <div class="space-y-3 rounded-lg border border-pine/10 bg-fog/40 p-4">
           <label class="flex items-start gap-3 text-sm text-ink/80">
-            <input type="checkbox" checked class="mt-0.5 h-4 w-4 rounded border-pine/30 accent-pine">
+            <input id="opt-newsletter" type="checkbox" checked class="mt-0.5 h-4 w-4 rounded border-pine/30 accent-pine">
             <span>Join the AYA Community Newsletter — get updates on future events, eMagazine issues, and SME features.</span>
           </label>
           <label class="flex items-start gap-3 text-sm text-ink/80">
-            <input type="checkbox" checked class="mt-0.5 h-4 w-4 rounded border-pine/30 accent-pine">
+            <input id="opt-networking" type="checkbox" checked class="mt-0.5 h-4 w-4 rounded border-pine/30 accent-pine">
             <span>Be included in future networking and business opportunities with the AYA community.</span>
           </label>
         </div>
 
-        <button class="w-full rounded-sm bg-gold px-6 py-3.5 font-mono text-[0.65rem] uppercase tracking-[0.18em] text-pine-deep hover:bg-gold-light transition-colors">
+        <button id="submit-btn" type="submit" class="w-full rounded-sm bg-gold px-6 py-3.5 font-mono text-[0.65rem] uppercase tracking-[0.18em] text-pine-deep hover:bg-gold-light transition-colors">
           Continue to Payment →
         </button>
         <p class="text-center text-[0.7rem] text-muted">
@@ -205,7 +305,7 @@
   <!-- ═══════════════════════════════════════
        SECTION 2 — CONFIRMATION PAGE
   ═══════════════════════════════════════ -->
-  <div class="px-6 py-12 md:py-16 bg-fog">
+  <div id="reg-confirm-section" class="hidden px-6 py-12 md:py-16 bg-fog">
     <div class="mx-auto max-w-lg">
 
       <div class="mb-8 text-center">
@@ -216,8 +316,8 @@
 
       <!-- QR Ticket -->
       <div class="mb-6 rounded-xl border border-pine/10 bg-white p-6 text-center">
-        <div class="mb-1 font-mono text-[0.55rem] uppercase tracking-[0.16em] text-terra">AYA Builder's Circle — June Session</div>
-        <h2 class="mb-4 font-display text-xl text-pine">Juan Dela Cruz</h2>
+        <div id="conf-event" class="mb-1 font-mono text-[0.55rem] uppercase tracking-[0.16em] text-terra">AYA Builder's Circle — June Session</div>
+        <h2 id="conf-name" class="mb-4 font-display text-xl text-pine">—</h2>
         <div class="mx-auto h-48 w-48 rounded-lg bg-pine/5 flex items-center justify-center border border-pine/10">
           <svg width="140" height="140" viewBox="0 0 100 100" fill="none">
             <rect width="100" height="100" fill="#F0EDE6"/>
@@ -229,8 +329,8 @@
             </g>
           </svg>
         </div>
-        <p class="mt-3 font-mono text-[0.6rem] text-muted">AYA-MD3K9F2A-X7QPLR8</p>
-        <span class="mt-3 inline-block rounded-full px-3 py-1 font-mono text-[0.55rem] uppercase tracking-[0.12em] bg-gold/15 text-terra">
+        <p id="conf-reg-code" class="mt-3 font-mono text-[0.6rem] text-muted">—</p>
+        <span id="conf-status-badge" class="mt-3 inline-block rounded-full px-3 py-1 font-mono text-[0.55rem] uppercase tracking-[0.12em] bg-gold/15 text-terra">
           Pending Payment
         </span>
       </div>
@@ -239,15 +339,15 @@
       <div class="mb-6 rounded-xl border border-pine/10 bg-white p-5">
         <h3 class="mb-3 font-display text-lg text-pine">Event Details</h3>
         <div class="space-y-1.5 text-sm text-ink/80">
-          <div>📅 June 28, 2026</div>
-          <div>🕐 3:00 PM – 5:00 PM</div>
-          <div>📍 Location TBA</div>
-          <div>🎟️ Builder's Circle Pass · ₱500</div>
+          <div id="conf-date">📅 —</div>
+          <div id="conf-time">🕐 —</div>
+          <div id="conf-venue">📍 —</div>
+          <div id="conf-ticket">🎟️ —</div>
         </div>
       </div>
 
       <!-- Payment instructions -->
-      <div class="mb-6 rounded-xl border border-gold/30 bg-gold/5 p-5">
+      <div id="payment-section" class="mb-6 rounded-xl border border-gold/30 bg-gold/5 p-5">
         <h3 class="mb-2 font-display text-lg text-pine">Complete Your Payment</h3>
         <p class="mb-4 text-sm text-ink/80">
           Pay <strong>₱500</strong> to confirm your slot. The fastest way is via our PayMongo checkout (card, GCash, or Maya all accepted there):
@@ -281,13 +381,13 @@
         <a href="events-hub.html" class="flex-1 rounded-sm border border-pine/15 px-6 py-3 text-center font-mono text-[0.6rem] uppercase tracking-[0.16em] text-pine hover:bg-pine/5 transition-colors">
           Browse More Events
         </a>
-        <a href="event-detail.html" class="flex-1 rounded-sm bg-pine px-6 py-3 text-center font-mono text-[0.6rem] uppercase tracking-[0.16em] text-fog hover:bg-pine-mid transition-colors">
+        <a id="conf-back-link" href="event-detail.html" class="flex-1 rounded-sm bg-pine px-6 py-3 text-center font-mono text-[0.6rem] uppercase tracking-[0.16em] text-fog hover:bg-pine-mid transition-colors">
           Back to Event
         </a>
       </div>
 
       <p class="mt-6 text-center text-xs text-muted">
-        A confirmation email with your QR ticket has been sent to <span class="font-medium">juan@example.com</span>.
+        A confirmation email with your QR ticket has been sent to <span id="conf-email" class="font-medium">—</span>.
       </p>
     </div>
   </div>
