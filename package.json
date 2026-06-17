@@ -1,0 +1,9 @@
+{
+  "name": "disenyo-digitals",
+  "version": "1.0.0",
+  "private": true,
+  "description": "AYA x Destine Events registration site with PayMongo checkout",
+  "engines": {
+    "node": ">=18"
+  }
+}
