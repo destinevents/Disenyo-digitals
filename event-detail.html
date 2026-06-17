@@ -56,7 +56,7 @@
 
     const { data: ev, error } = await db
       .from('events')
-      .select('*, ticket_types(*), registrations(id,payment_status)')
+      .select('*, ticket_types(*), registrations(id,ticket_type_id,payment_status)')
       .eq('slug', slug)
       .single();
 
@@ -90,15 +90,16 @@
     const ticketContainer = document.getElementById('ticket-list');
     if (ticketContainer) {
       ticketContainer.innerHTML = '';
-      const confirmedMap = {};
-      ev.registrations.forEach(r => {
-        // count by ticket_type_id not available here, so just count all
-      });
+      const confirmedByTicket = ev.registrations.reduce((map, registration) => {
+        if (registration.payment_status !== 'confirmed' || !registration.ticket_type_id) return map;
+        map[registration.ticket_type_id] = (map[registration.ticket_type_id] || 0) + 1;
+        return map;
+      }, {});
 
       ev.ticket_types
         .sort((a,b) => a.sort_order - b.sort_order)
         .forEach(t => {
-          const confirmed = ev.registrations.filter(r => r.payment_status === 'confirmed').length;
+          const confirmed = confirmedByTicket[t.id] || 0;
           const remaining = t.capacity - confirmed;
           const isFree    = t.price === 0;
           const soldOut   = remaining <= 0;
@@ -116,11 +117,16 @@
             </div>
             <div class="flex flex-shrink-0 flex-col items-end gap-2">
               <span class="font-display text-lg text-pine">${isFree ? 'Free' : '₱' + t.price.toLocaleString()}</span>
-              <a href="registration-flow.html?slug=${ev.slug}&ticket=${t.id}" class="whitespace-nowrap rounded-sm ${soldOut ? 'bg-pine/40 cursor-not-allowed' : 'bg-pine hover:bg-pine-mid'} px-4 py-1.5 font-mono text-[0.58rem] uppercase tracking-[0.12em] text-fog transition-colors">${soldOut ? 'Full' : 'Select'}</a>
+              <a href="${soldOut ? '#' : `registration-flow.html?slug=${ev.slug}&ticket=${t.id}`}" class="whitespace-nowrap rounded-sm ${soldOut ? 'bg-pine/40 cursor-not-allowed pointer-events-none' : 'bg-pine hover:bg-pine-mid'} px-4 py-1.5 font-mono text-[0.58rem] uppercase tracking-[0.12em] text-fog transition-colors">${soldOut ? 'Full' : 'Select'}</a>
             </div>
           </div>`;
         });
     }
+
+    const ticketLinks = [document.getElementById('nav-get-tickets'), document.getElementById('mobile-get-tickets')];
+    ticketLinks.forEach(link => {
+      if (link) link.href = `registration-flow.html?slug=${ev.slug}`;
+    });
   }
 
   function setText(id, val) {
@@ -155,7 +161,7 @@
       <a href="#" class="font-mono text-[0.7rem] uppercase tracking-[0.14em] text-fog/60 hover:text-fog transition-colors">eMagazine</a>
       <a href="#" class="font-mono text-[0.7rem] uppercase tracking-[0.14em] text-fog/60 hover:text-fog transition-colors">SME Directory</a>
       <a href="events-hub.html" class="font-mono text-[0.7rem] uppercase tracking-[0.14em] text-gold-light transition-colors">Events</a>
-      <a href="registration-flow.html" class="rounded-sm bg-gold px-5 py-1.5 font-mono text-[0.7rem] font-medium uppercase tracking-[0.14em] text-pine-deep transition-colors hover:bg-gold-light">
+      <a id="nav-get-tickets" href="registration-flow.html" class="rounded-sm bg-gold px-5 py-1.5 font-mono text-[0.7rem] font-medium uppercase tracking-[0.14em] text-pine-deep transition-colors hover:bg-gold-light">
         Get Tickets
       </a>
     </div>
@@ -173,7 +179,7 @@
     <a href="#" class="font-mono text-[0.7rem] uppercase tracking-[0.14em] text-fog/60 hover:text-fog transition-colors block py-2">eMagazine</a>
     <a href="#" class="font-mono text-[0.7rem] uppercase tracking-[0.14em] text-fog/60 hover:text-fog transition-colors block py-2">SME Directory</a>
     <a href="events-hub.html" class="font-mono text-[0.7rem] uppercase tracking-[0.14em] text-gold-light transition-colors block py-2">Events</a>
-    <a href="registration-flow.html" class="rounded-sm bg-gold px-5 py-2 font-mono text-[0.7rem] font-medium uppercase tracking-[0.14em] text-pine-deep transition-colors hover:bg-gold-light block text-center mt-2">
+    <a id="mobile-get-tickets" href="registration-flow.html" class="rounded-sm bg-gold px-5 py-2 font-mono text-[0.7rem] font-medium uppercase tracking-[0.14em] text-pine-deep transition-colors hover:bg-gold-light block text-center mt-2">
       Get Tickets
     </a>
   </div>

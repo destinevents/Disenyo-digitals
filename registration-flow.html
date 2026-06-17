@@ -76,6 +76,9 @@
     if (currentTicketType) {
       document.getElementById('reg-ticket-name').textContent  = currentTicketType.name;
       document.getElementById('reg-ticket-price').textContent = currentTicketType.price === 0 ? 'Free' : '₱' + currentTicketType.price.toLocaleString();
+      document.getElementById('payment-copy').innerHTML = currentTicketType.price === 0
+        ? 'Your registration will be confirmed immediately after submission.'
+        : `Pay <strong>₱${currentTicketType.price.toLocaleString()}</strong> to confirm your slot. The fastest way is via our PayMongo checkout (card, GCash, or Maya all accepted there):`;
     }
   }
 
@@ -299,7 +302,7 @@
 
         <div>
           <label class="mb-1.5 block font-mono text-[0.6rem] uppercase tracking-[0.1em] text-muted">Special Notes</label>
-          <textarea class="w-full rounded-md border border-pine/15 bg-white px-4 py-2.5 text-sm text-ink outline-none focus:border-pine-mid min-h-[70px] resize-none" placeholder="Dietary restrictions, accessibility needs, etc. (optional)"></textarea>
+          <textarea id="f-notes" class="w-full rounded-md border border-pine/15 bg-white px-4 py-2.5 text-sm text-ink outline-none focus:border-pine-mid min-h-[70px] resize-none" placeholder="Dietary restrictions, accessibility needs, etc. (optional)"></textarea>
         </div>
 
         <!-- Community opt-ins -->
@@ -371,7 +374,7 @@
       <!-- Payment instructions -->
       <div id="payment-section" class="mb-6 rounded-xl border border-gold/30 bg-gold/5 p-5">
         <h3 class="mb-2 font-display text-lg text-pine">Complete Your Payment</h3>
-        <p class="mb-4 text-sm text-ink/80">
+        <p id="payment-copy" class="mb-4 text-sm text-ink/80">
           Pay <strong>₱500</strong> to confirm your slot. The fastest way is via our PayMongo checkout (card, GCash, or Maya all accepted there):
         </p>
         <a href="#" class="mb-4 block w-full rounded-sm bg-gold px-6 py-3.5 text-center font-mono text-[0.65rem] uppercase tracking-[0.18em] text-pine-deep hover:bg-gold-light transition-colors">
