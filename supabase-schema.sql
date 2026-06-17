@@ -59,6 +59,9 @@ create table if not exists registrations (
   registered_at   timestamptz default now()
 );
 
+create unique index if not exists registrations_event_email_unique
+  on registrations (event_id, lower(email));
+
 -- ══════════════════════════════════════════════════
 -- ROW LEVEL SECURITY
 -- ══════════════════════════════════════════════════

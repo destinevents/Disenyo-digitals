@@ -60,25 +60,73 @@
   let   currentTicketType = null;
   let   selectedArchetype = 'Founder';
 
+  function setFormStatus(message, kind = 'error') {
+    const status = document.getElementById('form-status');
+    if (!status) return;
+    status.textContent = message;
+    status.className = kind === 'success'
+      ? 'mb-5 rounded-md border border-moss/20 bg-moss/5 px-4 py-3 font-mono text-[0.55rem] uppercase tracking-[0.12em] text-moss'
+      : 'mb-5 rounded-md border border-terra/20 bg-terra/5 px-4 py-3 font-mono text-[0.55rem] uppercase tracking-[0.12em] text-terra';
+    status.classList.remove('hidden');
+  }
+
+  function clearFormStatus() {
+    const status = document.getElementById('form-status');
+    if (!status) return;
+    status.textContent = '';
+    status.classList.add('hidden');
+  }
+
   async function loadForm() {
-    const { data: ev } = await db.from('events').select('*, ticket_types(*)').eq('slug', eventSlug).single();
-    if (!ev) return;
-    currentEvent = ev;
+    const submitBtn = document.getElementById('submit-btn');
 
-    // Set ticket type
-    currentTicketType = ticketId
-      ? ev.ticket_types.find(t => t.id === ticketId)
-      : ev.ticket_types[0];
+    try {
+      const { data: ev, error } = await db.from('events').select('*, ticket_types(*)').eq('slug', eventSlug).single();
+      if (error || !ev) throw error || new Error('Event not found');
 
-    document.getElementById('reg-event-title').textContent = ev.title;
-    document.getElementById('back-link').href = `event-detail.html?slug=${eventSlug}`;
+      currentEvent = ev;
 
-    if (currentTicketType) {
-      document.getElementById('reg-ticket-name').textContent  = currentTicketType.name;
-      document.getElementById('reg-ticket-price').textContent = currentTicketType.price === 0 ? 'Free' : '₱' + currentTicketType.price.toLocaleString();
-      document.getElementById('payment-copy').innerHTML = currentTicketType.price === 0
-        ? 'Your registration will be confirmed immediately after submission.'
-        : `Pay <strong>₱${currentTicketType.price.toLocaleString()}</strong> to confirm your slot. The fastest way is via our PayMongo checkout (card, GCash, or Maya all accepted there):`;
+      if (!ev.ticket_types || ev.ticket_types.length === 0) {
+        currentTicketType = null;
+        document.getElementById('reg-event-title').textContent = ev.title;
+        document.getElementById('back-link').href = `event-detail.html?slug=${eventSlug}`;
+        document.getElementById('payment-section').classList.add('hidden');
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Tickets Unavailable';
+        setFormStatus('This event has no ticket types available yet. Please check back later.');
+        return;
+      }
+
+      // Set ticket type
+      currentTicketType = ticketId
+        ? ev.ticket_types.find(t => t.id === ticketId)
+        : ev.ticket_types[0];
+
+      if (!currentTicketType) {
+        currentTicketType = ev.ticket_types[0];
+        setFormStatus('That ticket was unavailable, so the first available ticket was selected.', 'success');
+      }
+
+      document.getElementById('reg-event-title').textContent = ev.title;
+      document.getElementById('back-link').href = `event-detail.html?slug=${eventSlug}`;
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Continue to Payment →';
+
+      clearFormStatus();
+
+      if (currentTicketType) {
+        document.getElementById('reg-ticket-name').textContent  = currentTicketType.name;
+        document.getElementById('reg-ticket-price').textContent = currentTicketType.price === 0 ? 'Free' : '₱' + currentTicketType.price.toLocaleString();
+        document.getElementById('payment-copy').innerHTML = currentTicketType.price === 0
+          ? 'Your registration will be confirmed immediately after submission.'
+          : `Pay <strong>₱${currentTicketType.price.toLocaleString()}</strong> to confirm your slot. The fastest way is via our PayMongo checkout (card, GCash, or Maya all accepted there):`;
+      }
+    } catch (err) {
+      currentEvent = null;
+      currentTicketType = null;
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Unavailable';
+      setFormStatus('Unable to load ticket details right now. Please refresh and try again.');
     }
   }
 
@@ -95,12 +143,39 @@
     btn.textContent = 'Submitting…';
     btn.disabled = true;
 
+    clearFormStatus();
+
+    if (!currentEvent) {
+      setFormStatus('The event details are not ready yet. Please refresh and try again.');
+      btn.textContent = 'Continue to Payment →';
+      btn.disabled = false;
+      return;
+    }
+
+    if (!currentTicketType) {
+      setFormStatus('Please select a valid ticket before continuing.');
+      btn.textContent = 'Continue to Payment →';
+      btn.disabled = false;
+      return;
+    }
+
+    const fullName = document.getElementById('f-name').value.trim();
+    const email = document.getElementById('f-email').value.trim();
+    const mobile = document.getElementById('f-mobile').value.trim();
+
+    if (!fullName || !email || !mobile) {
+      setFormStatus('Please complete the required fields before continuing.');
+      btn.textContent = 'Continue to Payment →';
+      btn.disabled = false;
+      return;
+    }
+
     const payload = {
       event_id:       currentEvent?.id,
       ticket_type_id: currentTicketType?.id,
-      full_name:      document.getElementById('f-name').value.trim(),
-      email:          document.getElementById('f-email').value.trim(),
-      mobile:         document.getElementById('f-mobile').value.trim(),
+      full_name:      fullName,
+      email:          email,
+      mobile:         mobile,
       business:       document.getElementById('f-business').value.trim() || null,
       industry:       document.getElementById('f-industry').value || null,
       social_link:    document.getElementById('f-social').value.trim() || null,
@@ -113,10 +188,24 @@
       amount_paid:    currentTicketType?.price === 0 ? 0 : null,
     };
 
-    const { data, error } = await db.from('registrations').insert(payload).select().single();
+    let data = null;
+    let error = null;
+
+    try {
+      const result = await db.from('registrations').insert(payload).select().single();
+      data = result.data;
+      error = result.error;
+    } catch (err) {
+      error = err;
+    }
 
     if (error) {
-      alert('Something went wrong: ' + error.message);
+      const message = error.code === '23505'
+        ? 'This email is already registered for this event. Please use another email or contact support if you already signed up.'
+        : /network|fetch|failed to fetch/i.test(error.message || '')
+          ? 'Network error. Please check your connection and try again.'
+          : 'Something went wrong while saving your registration. Please try again.';
+      setFormStatus(message);
       btn.textContent = 'Continue to Payment →';
       btn.disabled = false;
       return;
@@ -212,6 +301,8 @@
           <span id="reg-ticket-price" class="font-display text-lg text-pine">—</span>
         </div>
       </div>
+
+      <div id="form-status" class="hidden"></div>
 
       <form id="reg-form" onsubmit="submitRegistration(event)" class="space-y-5">
         <div class="grid gap-4 sm:grid-cols-2">
