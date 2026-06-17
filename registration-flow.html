@@ -77,6 +77,28 @@
     status.classList.add('hidden');
   }
 
+  function normalizeMobile(value) {
+    return value.replace(/[\s\-().]/g, '').trim();
+  }
+
+  function isValidEmail(value) {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+  }
+
+  function isValidPhilippineMobile(value) {
+    const normalized = normalizeMobile(value);
+    return /^(?:\+63|0)9\d{9}$/.test(normalized);
+  }
+
+  function isValidUrl(value) {
+    try {
+      new URL(value);
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
   async function loadForm() {
     const submitBtn = document.getElementById('submit-btn');
 
@@ -162,6 +184,36 @@
     const fullName = document.getElementById('f-name').value.trim();
     const email = document.getElementById('f-email').value.trim();
     const mobile = document.getElementById('f-mobile').value.trim();
+    const industry = document.getElementById('f-industry').value;
+    const socialLink = document.getElementById('f-social').value.trim();
+
+    if (fullName.length < 2) {
+      setFormStatus('Please enter your full name.');
+      btn.textContent = 'Continue to Payment →';
+      btn.disabled = false;
+      return;
+    }
+
+    if (!isValidEmail(email)) {
+      setFormStatus('Please enter a valid email address.');
+      btn.textContent = 'Continue to Payment →';
+      btn.disabled = false;
+      return;
+    }
+
+    if (!isValidPhilippineMobile(mobile)) {
+      setFormStatus('Please enter a valid Philippine mobile number, like +63 9XX XXX XXXX.');
+      btn.textContent = 'Continue to Payment →';
+      btn.disabled = false;
+      return;
+    }
+
+    if (socialLink && !isValidUrl(socialLink)) {
+      setFormStatus('Please enter a valid social media link, or leave it blank.');
+      btn.textContent = 'Continue to Payment →';
+      btn.disabled = false;
+      return;
+    }
 
     if (!fullName || !email || !mobile) {
       setFormStatus('Please complete the required fields before continuing.');
@@ -175,10 +227,10 @@
       ticket_type_id: currentTicketType?.id,
       full_name:      fullName,
       email:          email,
-      mobile:         mobile,
+      mobile:         normalizeMobile(mobile),
       business:       document.getElementById('f-business').value.trim() || null,
-      industry:       document.getElementById('f-industry').value || null,
-      social_link:    document.getElementById('f-social').value.trim() || null,
+      industry:       industry || null,
+      social_link:    socialLink || null,
       archetype:      selectedArchetype,
       special_notes:  document.getElementById('f-notes').value.trim() || null,
       newsletter_opt: document.getElementById('opt-newsletter').checked,
@@ -320,12 +372,12 @@
           </div>
           <div>
             <label class="mb-1.5 block font-mono text-[0.6rem] uppercase tracking-[0.1em] text-muted">Mobile Number *</label>
-            <input id="f-mobile" type="text" placeholder="+63 9XX XXX XXXX" required class="w-full rounded-md border border-pine/15 bg-white px-4 py-2.5 text-sm text-ink outline-none focus:border-pine-mid">
+            <input id="f-mobile" type="tel" inputmode="tel" placeholder="+63 9XX XXX XXXX" required class="w-full rounded-md border border-pine/15 bg-white px-4 py-2.5 text-sm text-ink outline-none focus:border-pine-mid">
           </div>
           <div>
             <label class="mb-1.5 block font-mono text-[0.6rem] uppercase tracking-[0.1em] text-muted">Industry</label>
             <select id="f-industry" class="w-full rounded-md border border-pine/15 bg-white px-4 py-2.5 text-sm text-ink outline-none focus:border-pine-mid">
-              <option>Select industry…</option>
+              <option value="" selected>Select industry…</option>
               <option>Tech & Digital</option>
               <option>Events & Hospitality</option>
               <option>Food & Beverage</option>
