@@ -151,14 +151,17 @@
     .pricing-section .section-label { color:var(--gold); }
     .pricing-section .section-title { color:var(--cream); margin-bottom:16px; }
     .pricing-sub { text-align:center; font-size:0.95rem; color:rgba(245,236,215,0.6); margin-bottom:52px; max-width:440px; margin-left:auto; margin-right:auto; }
-    .pricing-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:20px; max-width:900px; margin:0 auto; }
+    .pricing-grid { display:flex; flex-wrap:wrap; justify-content:center; gap:20px; max-width:920px; margin:0 auto; }
     .price-card {
+      flex:0 1 270px;
       background:rgba(255,255,255,0.04); border:1.5px solid rgba(201,168,76,0.15);
       border-radius:20px; padding:36px 32px; display:flex; flex-direction:column; gap:20px;
       transition:border-color 0.25s, transform 0.25s;
     }
     .price-card:hover { border-color:rgba(201,168,76,0.5); transform:translateY(-4px); }
     .price-card.featured { background:rgba(201,168,76,0.08); border-color:var(--gold); }
+    .price-card.managed { background:rgba(201,168,76,0.05); border-color:rgba(201,168,76,0.3); }
+    .price-card.managed:hover { border-color:rgba(201,168,76,0.6); }
     .price-tier { font-size:0.65rem; font-weight:700; letter-spacing:0.2em; text-transform:uppercase; color:var(--gold); }
     .price-name { font-family:'DM Serif Display',serif; font-size:1.6rem; color:var(--cream); }
     .price-desc { font-size:0.85rem; color:rgba(245,236,215,0.55); line-height:1.6; margin-top:-8px; }
@@ -437,6 +440,50 @@
           <strong style="color:var(--cream);">Contact us and let's collaborate.</strong>
         </p>
         <a href="https://wa.me/639065713298" class="price-btn price-btn-outline" target="_blank">Let's Collaborate →</a>
+      </div>
+      <div class="price-card managed card-reveal" style="transition-delay:.24s">
+        <div class="price-tier">Managed Services · disenyoOPC</div>
+        <div class="price-name">Essential</div>
+        <p class="price-desc">Everything your website or app needs to stay online, safe, and worry-free.</p>
+        <div class="price-amount">
+          <span class="price-currency">₱</span>
+          <span class="price-number">1,500</span>
+          <span class="price-period">&nbsp;/ month</span>
+        </div>
+        <ul class="price-features">
+          <li>Secure cloud hosting</li>
+          <li>Server &amp; deployment, handled for you</li>
+          <li>Daily database monitoring</li>
+          <li>Monthly system maintenance</li>
+          <li>Security updates &amp; patches</li>
+          <li>Weekly automatic backups</li>
+          <li>Bug fixes &amp; monitoring</li>
+          <li>Email &amp; remote support</li>
+          <li>Up to 2 hours of support / month</li>
+        </ul>
+        <a href="https://wa.me/639065713298" class="price-btn price-btn-outline" target="_blank">Get Essential →</a>
+      </div>
+      <div class="price-card managed card-reveal" style="transition-delay:.32s">
+        <div class="price-tier">Managed Services · disenyoOPC Priority</div>
+        <div class="price-name">Priority</div>
+        <p class="price-desc">For a growing negosyo — closer care, faster help, and more hands-on time.</p>
+        <div class="price-amount">
+          <span class="price-currency">₱</span>
+          <span class="price-number">3,500</span>
+          <span class="price-period">&nbsp;/ month</span>
+        </div>
+        <ul class="price-features">
+          <li>Secure hosting for up to 3 sites</li>
+          <li>Priority deployment &amp; setup</li>
+          <li>Real-time database monitoring</li>
+          <li>Weekly system maintenance</li>
+          <li>Security updates &amp; fast patches</li>
+          <li>Daily automatic backups</li>
+          <li>Priority bug fixes</li>
+          <li>Email &amp; remote support (screen-share)</li>
+          <li>Up to 5 hours of support / month</li>
+        </ul>
+        <a href="https://wa.me/639065713298" class="price-btn price-btn-gold" target="_blank">Get Priority →</a>
       </div>
     </div>
   </section>
