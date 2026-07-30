@@ -831,6 +831,115 @@
     }
 
     /* ══════════════════════
+   §2.5 VISION · MISSION · VALUES
+══════════════════════ */
+    .vmv {
+      max-width: 1100px;
+      margin: 5rem auto 0;
+      padding-top: 4.5rem;
+      border-top: 1px solid var(--rule)
+    }
+
+    .vmv-head {
+      text-align: center
+    }
+
+    .vm-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+      max-width: 1100px;
+      margin: 3.5rem auto 0
+    }
+
+    .vm-card {
+      padding: 2.4rem 2.2rem;
+      border: 1px solid var(--rule);
+      background: var(--white);
+      border-radius: 12px;
+      transition: border-color .3s, transform .3s
+    }
+
+    .vm-card:hover {
+      border-color: rgba(160, 102, 78, .3);
+      transform: translateY(-3px)
+    }
+
+    .vm-icon {
+      display: block;
+      color: var(--clay);
+      font-size: 1.4rem;
+      margin-bottom: 1rem
+    }
+
+    .vm-title {
+      font-family: var(--serif);
+      font-size: 1.5rem;
+      font-weight: 300;
+      color: var(--warm);
+      margin-bottom: .9rem
+    }
+
+    .vm-text {
+      font-size: .92rem;
+      color: var(--taupe);
+      line-height: 1.85
+    }
+
+    .cv-wrap {
+      max-width: 1100px;
+      margin: 4rem auto 0;
+      text-align: center
+    }
+
+    .cv-grid {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 1.5rem 1rem;
+      margin-top: 2rem;
+      text-align: left
+    }
+
+    .cv-card {
+      flex: 0 1 190px;
+      padding: 1.4rem 1.2rem;
+      border-top: 2px solid var(--clay);
+      background: rgba(255, 255, 255, .5)
+    }
+
+    .cv-card strong {
+      display: block;
+      font-family: var(--serif);
+      font-size: 1.05rem;
+      font-weight: 400;
+      color: var(--warm);
+      margin-bottom: .5rem
+    }
+
+    .cv-card span {
+      font-size: .8rem;
+      color: var(--taupe);
+      line-height: 1.65
+    }
+
+    @media (max-width:820px) {
+      .vm-grid {
+        grid-template-columns: 1fr
+      }
+
+      .cv-grid {
+        grid-template-columns: 1fr 1fr
+      }
+    }
+
+    @media (max-width:520px) {
+      .cv-grid {
+        grid-template-columns: 1fr
+      }
+    }
+
+    /* ══════════════════════
    §3 TWO ARMS
 ══════════════════════ */
     .arms-grid {
@@ -1669,6 +1778,7 @@
       </a>
       <ul class="nav-links">
         <li><a href="#what">About</a></li>
+        <li><a href="#values">Vision &amp; Values</a></li>
         <li><a href="#arms">Our Arms</a></li>
         <li><a href="ai-tools.html" target="_blank">AI Tools</a></li>
         <li><a href="https://asyouarebaguio.com/" target="_blank">As You Are</a></li>
@@ -1687,6 +1797,7 @@
   </nav>
   <div class="mob-nav" id="mob">
     <a href="#what" onclick="this.parentElement.classList.remove('open')">About</a>
+    <a href="#values" onclick="this.parentElement.classList.remove('open')">Vision &amp; Values</a>
     <a href="#arms" onclick="this.parentElement.classList.remove('open')">Our Arms</a>
     <a href="ai-tools.html" target="_blank">AI Tools</a>
     <a href="https://asyouarebaguio.com/" target="_blank">As You Are</a>
@@ -1850,6 +1961,67 @@
             <strong>Experience &amp; Community Engine — Destine Events</strong>
             <span>Creates experiences, produces events, and co-hosts community platforms — including As You Are Baguio,
               a creator and media collective founded by Monica Joy Fernandez.</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- VISION · MISSION · VALUES -->
+    <div class="vmv" id="values">
+      <div class="vmv-head">
+        <span class="lbl" style="text-align:center">Who We Are</span>
+        <h2 class="h2">What we<br><em>stand for.</em></h2>
+        <div class="rule c"></div>
+      </div>
+
+      <!-- VISION + MISSION -->
+      <div class="vm-grid">
+        <div class="vm-card">
+          <span class="vm-icon">◇</span>
+          <h3 class="vm-title">Vision</h3>
+          <p class="vm-text">To be a trusted leader in event management and information technology, delivering innovative
+            solutions and exceptional experiences that empower businesses, organizations, and communities.</p>
+        </div>
+        <div class="vm-card">
+          <span class="vm-icon">✦</span>
+          <h3 class="vm-title">Mission</h3>
+          <p class="vm-text">To create memorable events and provide reliable technology solutions through strategic
+            planning, technical expertise, creativity, and a client-centered approach while building long-term
+            partnerships founded on trust, quality, and continuous improvement.</p>
+        </div>
+      </div>
+
+      <!-- CORE VALUES -->
+      <div class="cv-wrap">
+        <span class="lbl" style="text-align:center;display:block">Core Values</span>
+        <div class="cv-grid">
+          <div class="cv-card">
+            <strong>Integrity</strong>
+            <span>We conduct business with honesty, transparency, and accountability.</span>
+          </div>
+          <div class="cv-card">
+            <strong>Excellence</strong>
+            <span>We strive for the highest standards in every project and service we deliver.</span>
+          </div>
+          <div class="cv-card">
+            <strong>Innovation</strong>
+            <span>We embrace creativity and technology to develop impactful solutions.</span>
+          </div>
+          <div class="cv-card">
+            <strong>Client Commitment</strong>
+            <span>We prioritize our clients' needs and build lasting relationships through exceptional service.</span>
+          </div>
+          <div class="cv-card">
+            <strong>Collaboration</strong>
+            <span>We believe teamwork and strong partnerships drive success.</span>
+          </div>
+          <div class="cv-card">
+            <strong>Reliability</strong>
+            <span>We deliver consistent, dependable, and timely results.</span>
+          </div>
+          <div class="cv-card">
+            <strong>Continuous Improvement</strong>
+            <span>We continuously learn, adapt, and improve to exceed expectations.</span>
           </div>
         </div>
       </div>
