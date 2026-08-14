@@ -1,0 +1,1559 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Partner With Us | Disenyo Digitals</title>
+<meta name="description" content="Meet the Destinevents + Disenyo Digitals partner network — trusted people connecting businesses to event styling, creative services, and practical digital systems.">
+
+<!-- Open Graph -->
+<meta property="og:title" content="Partner With Us | Disenyo Digitals">
+<meta property="og:description" content="Meet the people helping Destinevents + Disenyo Digitals connect with businesses, organizations, and opportunities.">
+<meta property="og:type" content="website">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500;1,600&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+  /* ==========================================================================
+     DESIGN TOKENS
+     Pulled from the live disenyodigitals.com brand: warm cream background,
+     terracotta/brown accent, Playfair Display serif headlines + tracked
+     uppercase sans labels, pill buttons, soft rounded media.
+     ========================================================================== */
+  :root{
+    --bg:            #F4EFE6;
+    --bg-alt:        #FAF8F2;
+    --surface:       #FFFFFF;
+    --ink:           #453A30;
+    --ink-soft:      #6E6155;
+    --muted:         #71634F;
+    --accent:        #A9754A;
+    --accent-dark:   #7C5334;
+    --accent-soft:   #EFE1CC;
+    --accent-tint:   #F7EEE1;
+    --accent-deep:   #63431F;
+    --line:          #E3D8C6;
+    --white:         #FFFFFF;
+
+    --font-display:  'Playfair Display', Georgia, serif;
+    --font-sans:     'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+
+    --container:     1200px;
+    --radius-sm:     10px;
+    --radius-md:     18px;
+    --radius-lg:     28px;
+    --radius-pill:   999px;
+
+    --shadow-soft:   0 20px 50px -25px rgba(69, 58, 48, 0.35);
+    --shadow-lift:   0 30px 60px -20px rgba(69, 58, 48, 0.28);
+
+    --ease: cubic-bezier(.22,.61,.36,1);
+  }
+
+  *,*::before,*::after{ box-sizing:border-box; }
+  html{ scroll-behavior:smooth; }
+  @media (prefers-reduced-motion: reduce){
+    html{ scroll-behavior:auto; }
+    *,*::before,*::after{ animation-duration:0.001ms !important; animation-iteration-count:1 !important; transition-duration:0.001ms !important; scroll-behavior:auto !important; }
+  }
+
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--ink);
+    font-family:var(--font-sans);
+    font-weight:400;
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+
+  img{ max-width:100%; display:block; }
+  a{ color:inherit; text-decoration:none; }
+  ul{ margin:0; padding:0; list-style:none; }
+  button{ font-family:inherit; }
+
+  .container{
+    width:100%;
+    max-width:var(--container);
+    margin:0 auto;
+    padding:0 32px;
+  }
+
+  .skip-link{
+    position:absolute; left:-999px; top:0;
+    background:var(--accent); color:#fff; padding:12px 20px;
+    border-radius:0 0 10px 0; z-index:1000; font-size:14px;
+  }
+  .skip-link:focus{ left:0; }
+
+  :focus-visible{
+    outline:2px solid var(--accent-dark);
+    outline-offset:3px;
+  }
+
+  h1,h2,h3{
+    font-family:var(--font-display);
+    color:var(--ink);
+    margin:0;
+    font-weight:600;
+    letter-spacing:-0.01em;
+  }
+
+  .eyebrow{
+    display:inline-flex;
+    align-items:center;
+    gap:10px;
+    font-size:12.5px;
+    font-weight:600;
+    letter-spacing:0.18em;
+    text-transform:uppercase;
+    color:var(--accent-dark);
+    margin:0 0 18px;
+  }
+  .eyebrow::before{
+    content:'';
+    width:26px; height:1px;
+    background:var(--accent);
+    display:inline-block;
+  }
+  .eyebrow .mark{ font-size:13px; letter-spacing:0; }
+
+  .section-head{
+    max-width:720px;
+    margin-bottom:56px;
+  }
+  .section-head.center{ margin-left:auto; margin-right:auto; text-align:center; }
+  .section-head h2{ font-size:clamp(30px,4vw,44px); line-height:1.2; }
+
+  .lede{
+    font-size:19px;
+    line-height:1.7;
+    color:var(--ink-soft);
+    margin:22px 0 0;
+    max-width:620px;
+  }
+
+  section{ position:relative; }
+
+  /* Buttons */
+  .btn{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+    padding:17px 34px;
+    border-radius:var(--radius-pill);
+    font-size:13px;
+    font-weight:600;
+    letter-spacing:0.14em;
+    text-transform:uppercase;
+    white-space:nowrap;
+    cursor:pointer;
+    border:1.5px solid transparent;
+    transition:transform .35s var(--ease), box-shadow .35s var(--ease), background .3s ease, color .3s ease, border-color .3s ease;
+  }
+  .btn-primary{
+    background:var(--accent-dark);
+    color:#fff;
+    box-shadow:0 14px 30px -14px rgba(124,83,52,0.55);
+  }
+  .btn-primary:hover{
+    background:var(--accent-deep);
+    transform:translateY(-2px);
+    box-shadow:0 18px 34px -14px rgba(124,83,52,0.65);
+  }
+  .btn-secondary{
+    background:transparent;
+    color:var(--accent-dark);
+    border-color:var(--accent);
+  }
+  .btn-secondary:hover{
+    background:var(--accent);
+    color:#fff;
+    transform:translateY(-2px);
+  }
+  .btn-ghost{
+    background:transparent;
+    color:var(--ink);
+    border-color:var(--line);
+    padding:13px 26px;
+    font-size:12px;
+  }
+  .btn-ghost:hover{ border-color:var(--accent); color:var(--accent-dark); }
+  .btn[aria-disabled="true"]{ opacity:.55; cursor:not-allowed; }
+
+  .btn-row{ display:flex; gap:16px; flex-wrap:wrap; align-items:center; }
+
+  /* ==========================================================================
+     HEADER / NAV
+     ========================================================================== */
+  .site-header{
+    position:sticky; top:0; z-index:100;
+    background:rgba(250,248,242,0.86);
+    backdrop-filter:blur(10px);
+    -webkit-backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--line);
+  }
+  .nav-row{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:20px 32px;
+  }
+  .wordmark{
+    display:flex; align-items:baseline; gap:10px;
+    font-family:var(--font-display);
+  }
+  .wordmark .script{
+    font-style:italic; font-weight:600; font-size:22px; color:var(--accent-dark);
+  }
+  .wordmark .rest{
+    font-family:var(--font-sans); font-weight:700; font-size:14px;
+    letter-spacing:0.06em; color:var(--ink);
+  }
+  .wordmark .divider{ width:1px; height:16px; background:var(--line); }
+  .wordmark .tag{
+    font-family:var(--font-sans); font-size:11px; letter-spacing:0.14em;
+    text-transform:uppercase; color:var(--muted);
+  }
+
+  .nav-actions{ display:flex; align-items:center; gap:18px; }
+  .nav-links-desktop{ display:none; align-items:center; gap:30px; }
+  .nav-links-desktop a{
+    font-size:13.5px; font-weight:500; color:var(--ink-soft);
+    transition:color .25s ease;
+    position:relative;
+  }
+  .nav-links-desktop a:hover{ color:var(--accent-dark); }
+
+  .menu-btn{
+    width:44px; height:44px; border-radius:50%;
+    background:transparent; border:1px solid var(--line);
+    display:flex; align-items:center; justify-content:center;
+    cursor:pointer; flex-shrink:0;
+  }
+  .menu-btn span{ display:block; width:16px; height:1.5px; background:var(--ink); position:relative; }
+  .menu-btn span::before,.menu-btn span::after{
+    content:''; position:absolute; left:0; width:16px; height:1.5px; background:var(--ink);
+  }
+  .menu-btn span::before{ top:-5px; } .menu-btn span::after{ top:5px; }
+
+  .mobile-panel{
+    position:fixed; inset:0; z-index:200;
+    background:var(--bg-alt);
+    display:flex; flex-direction:column;
+    padding:24px 32px 40px;
+    transform:translateX(100%);
+    transition:transform .45s var(--ease);
+    overflow-y:auto;
+  }
+  .mobile-panel.open{ transform:translateX(0); }
+  .mobile-panel-top{ display:flex; justify-content:flex-end; margin-bottom:40px; }
+  .mobile-panel nav{ display:flex; flex-direction:column; gap:6px; margin-top:20px; }
+  .mobile-panel nav a{
+    font-family:var(--font-display); font-size:30px; font-weight:500;
+    padding:14px 0; border-bottom:1px solid var(--line); color:var(--ink);
+  }
+  .mobile-panel .panel-cta{ margin-top:32px; }
+  .mobile-panel .panel-foot{ margin-top:auto; padding-top:30px; font-size:13px; color:var(--muted); }
+
+  /* ==========================================================================
+     HERO
+     ========================================================================== */
+  .hero{
+    padding:88px 0 60px;
+    overflow:hidden;
+  }
+  .hero-grid{
+    display:grid;
+    grid-template-columns:1fr;
+    gap:56px;
+    align-items:center;
+  }
+  .hero h1{
+    font-size:clamp(38px, 6.4vw, 72px);
+    line-height:1.08;
+  }
+  .hero h1 em{
+    font-style:italic; color:var(--accent-dark); font-weight:600;
+  }
+  .hero .lede-primary{
+    font-size:20px; color:var(--ink-soft); margin:26px 0 6px; max-width:520px;
+    line-height:1.65;
+  }
+  .hero .lede-secondary{
+    font-size:16px; color:var(--ink-soft); margin:0 0 10px; max-width:540px; line-height:1.75;
+  }
+  .hero .lede-tertiary{
+    font-size:15px; color:var(--muted); margin:0 0 34px; max-width:520px; line-height:1.75;
+  }
+
+  .hero-visual{
+    position:relative;
+    min-height:380px;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .hero-blob{
+    position:absolute; width:320px; height:320px; border-radius:50%;
+    background:radial-gradient(circle at 30% 30%, var(--accent-soft), transparent 70%);
+    filter:blur(10px);
+    top:10%; left:50%; transform:translateX(-50%);
+    z-index:0;
+  }
+  .hero-card{
+    position:relative; z-index:1;
+    background:var(--surface);
+    border-radius:var(--radius-lg);
+    border:1px solid var(--line);
+    box-shadow:var(--shadow-soft);
+    padding:26px;
+    width:250px;
+  }
+  .hero-card.card-a{ transform:rotate(-6deg) translate(-38px, 10px); }
+  .hero-card.card-b{ transform:rotate(5deg) translate(38px, -34px); }
+  .hero-card .mark{
+    width:44px; height:44px; border-radius:50%;
+    background:var(--accent-tint); color:var(--accent-dark);
+    display:flex; align-items:center; justify-content:center;
+    font-size:18px; margin-bottom:16px;
+  }
+  .hero-card .swatch{
+    height:100px; border-radius:var(--radius-md); margin-bottom:16px;
+    background:linear-gradient(135deg, var(--accent-soft), var(--bg-alt));
+  }
+  .hero-card p{ margin:0; font-size:13px; font-weight:600; color:var(--ink); }
+  .hero-card span{ display:block; font-size:11.5px; color:var(--muted); margin-top:3px; }
+
+  .floaty{ animation:floaty 6s ease-in-out infinite; }
+  .floaty.delay{ animation-delay:1.4s; }
+  @keyframes floaty{
+    0%,100%{ transform:translateY(0) rotate(var(--r,0deg)); }
+    50%{ transform:translateY(-14px) rotate(var(--r,0deg)); }
+  }
+
+  /* Marquee ticker */
+  .ticker-wrap{
+    border-top:1px solid var(--line);
+    border-bottom:1px solid var(--line);
+    background:var(--bg-alt);
+    overflow:hidden;
+    padding:16px 0;
+    margin-top:56px;
+  }
+  .ticker{
+    display:flex; width:max-content;
+    animation:ticker 32s linear infinite;
+    gap:0;
+  }
+  @keyframes ticker{ from{ transform:translateX(0); } to{ transform:translateX(-50%); } }
+  .ticker span{
+    font-size:13px; font-weight:600; letter-spacing:0.14em; text-transform:uppercase;
+    color:var(--muted); padding:0 22px; white-space:nowrap;
+  }
+  .ticker span em{ color:var(--accent); font-style:normal; margin-right:22px; }
+
+  /* ==========================================================================
+     BRIDGE / CAPABILITIES ("What Can We Help With?")
+     Deliberately light — a bridge into the portfolio, not a full services block.
+     ========================================================================== */
+  .bridge{ padding:64px 0; border-top:1px solid var(--line); }
+  .bridge-grid{
+    display:grid; grid-template-columns:1fr; gap:20px; margin-top:48px;
+  }
+  .bridge-card{
+    border:1px solid var(--line); border-radius:var(--radius-md);
+    padding:30px 28px; background:var(--surface);
+  }
+  .bridge-card .mark{
+    width:38px; height:38px; border-radius:50%;
+    background:var(--accent-tint); color:var(--accent-dark);
+    display:flex; align-items:center; justify-content:center;
+    font-size:15px; margin-bottom:18px;
+  }
+  .bridge-card h3{
+    font-family:var(--font-sans); font-size:13px; font-weight:600;
+    letter-spacing:0.1em; text-transform:uppercase; color:var(--ink);
+    margin-bottom:16px;
+  }
+  .bridge-card ul{ display:flex; flex-direction:column; gap:9px; }
+  .bridge-card li{
+    font-size:14px; color:var(--ink-soft); display:flex; gap:8px; align-items:flex-start;
+  }
+  .bridge-card li::before{ content:'—'; color:var(--accent); flex-shrink:0; }
+
+  /* Heading block that introduces the demo/portfolio section below */
+  .build-head{ padding:96px 0 0; }
+
+  /* ==========================================================================
+     EDITORIAL SERVICE SECTIONS
+     ========================================================================== */
+  .service{
+    padding:80px 0;
+    border-top:1px solid var(--line);
+  }
+  .service-grid{
+    display:grid;
+    grid-template-columns:1fr;
+    gap:48px;
+    align-items:center;
+  }
+  .service.alt .service-grid{ direction:ltr; }
+  .service-copy h2{
+    font-size:clamp(30px,4.2vw,46px);
+    line-height:1.16;
+    margin-bottom:20px;
+  }
+  .service-copy > p.desc{
+    font-size:17px; color:var(--ink-soft); line-height:1.8; margin:0 0 32px; max-width:480px;
+  }
+  /* Media placeholder (PortfolioMedia) */
+  .media-frame{
+    position:relative;
+    border-radius:var(--radius-lg);
+    overflow:hidden;
+    background:linear-gradient(160deg, var(--accent-tint) 0%, var(--bg-alt) 60%, var(--surface) 100%);
+    border:1px solid var(--line);
+    box-shadow:var(--shadow-soft);
+    aspect-ratio:4/5;
+    display:flex; align-items:center; justify-content:center;
+    isolation:isolate;
+  }
+  .media-frame.landscape{ aspect-ratio:16/10; }
+  .media-frame.square{ aspect-ratio:1/1; }
+  .media-frame::after{
+    content:''; position:absolute; inset:0;
+    background:
+      radial-gradient(circle at 20% 15%, rgba(169,117,74,0.14), transparent 45%),
+      radial-gradient(circle at 85% 85%, rgba(169,117,74,0.10), transparent 50%);
+    z-index:0;
+  }
+  .media-frame img,.media-frame video{
+    width:100%; height:100%; object-fit:cover; position:absolute; inset:0; z-index:0;
+  }
+  .media-placeholder-inner{
+    position:relative; z-index:1;
+    display:flex; flex-direction:column; align-items:center; gap:14px;
+    text-align:center; padding:30px;
+  }
+  .media-placeholder-inner .ph-icon{
+    width:58px; height:58px; border-radius:50%;
+    border:1.5px dashed var(--accent);
+    display:flex; align-items:center; justify-content:center;
+    color:var(--accent-dark); font-size:20px;
+  }
+  .media-placeholder-inner .ph-label{
+    font-size:12px; font-weight:600; letter-spacing:0.14em; text-transform:uppercase;
+    color:var(--accent-dark);
+  }
+  .media-placeholder-inner .ph-sub{
+    font-size:12.5px; color:var(--muted); max-width:220px; line-height:1.6;
+  }
+  .media-badge{
+    position:absolute; top:18px; left:18px; z-index:2;
+    background:rgba(255,255,255,0.85); backdrop-filter:blur(6px);
+    padding:7px 14px; border-radius:var(--radius-pill);
+    font-size:10.5px; font-weight:600; letter-spacing:0.12em; text-transform:uppercase;
+    color:var(--accent-dark); border:1px solid var(--line);
+  }
+
+  /* ==========================================================================
+     DEMO LINK (shared — used inside the "See What We Build" blocks)
+     ========================================================================== */
+  .demo-link{
+    display:inline-flex; align-items:center; gap:8px;
+    font-size:12.5px; font-weight:600; letter-spacing:0.08em; text-transform:uppercase;
+    color:var(--accent-dark);
+    border-bottom:1px solid var(--accent);
+    padding-bottom:2px;
+    margin-top:6px;
+  }
+  .demo-note{ font-size:12px; color:var(--muted); margin-top:10px; display:none; }
+  .demo-note.show{ display:block; }
+
+  /* ==========================================================================
+     WHY WORK WITH US
+     ========================================================================== */
+  .why{ padding:96px 0; border-top:1px solid var(--line); background:var(--bg-alt); }
+  .why-grid{
+    display:grid; grid-template-columns:repeat(2,1fr); gap:2px;
+    margin-top:56px;
+    background:var(--line);
+    border-radius:var(--radius-lg);
+    overflow:hidden;
+  }
+  .why-card{
+    background:var(--surface); padding:40px 34px;
+  }
+  .why-card .idx{
+    font-family:var(--font-display); font-style:italic; font-size:15px; color:var(--accent-dark); display:block; margin-bottom:18px;
+  }
+  .why-card h3{ font-size:20px; margin-bottom:12px; }
+  .why-card p{ margin:0; color:var(--ink-soft); font-size:14.5px; line-height:1.75; }
+
+  /* ==========================================================================
+     CONTACT
+     ========================================================================== */
+  .contact{ padding:100px 0; border-top:1px solid var(--line); }
+  .contact-head{ max-width:640px; }
+  .contact-head h2{ font-size:clamp(32px,5vw,52px); line-height:1.14; margin-bottom:20px; }
+  .contact-head p{ font-size:17px; color:var(--ink-soft); line-height:1.8; margin:0 0 34px; }
+
+  .contact-tracks{
+    /* auto-fit so tracks stay even whether there are 2 or 3 cards */
+    display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); gap:20px; margin:52px 0 0;
+  }
+  .track-card{
+    border:1px solid var(--line); border-radius:var(--radius-md);
+    padding:26px; background:var(--bg-alt);
+  }
+  .track-card .mark{ color:var(--accent); font-size:16px; margin-bottom:10px; display:block; }
+  .track-card h3{ font-size:16.5px; margin-bottom:8px; }
+  .track-card p{ margin:0; font-size:13.8px; color:var(--ink-soft); line-height:1.65; }
+
+  .contact-layout{
+    display:grid; grid-template-columns:1fr; gap:60px;
+    margin-top:64px;
+  }
+
+  .contact-form{
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-radius:var(--radius-lg);
+    padding:40px;
+    box-shadow:var(--shadow-soft);
+  }
+  .form-row{ display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-bottom:20px; }
+  .field{ display:flex; flex-direction:column; gap:8px; margin-bottom:20px; }
+  .field label{ font-size:12.5px; font-weight:600; letter-spacing:0.06em; text-transform:uppercase; color:var(--ink); }
+  .field input, .field select, .field textarea{
+    font-family:var(--font-sans); font-size:15px; color:var(--ink);
+    padding:14px 16px; border-radius:var(--radius-sm);
+    border:1.5px solid var(--line); background:var(--bg-alt);
+    transition:border-color .25s ease, background .25s ease;
+    width:100%;
+  }
+  .field input:focus, .field select:focus, .field textarea:focus{
+    outline:none; border-color:var(--accent); background:var(--surface);
+  }
+  .field textarea{ resize:vertical; min-height:130px; font-family:var(--font-sans); }
+  .field select{ appearance:none; -webkit-appearance:none;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='9'><path d='M1 1l6 6 6-6' stroke='%23A9754A' stroke-width='1.6' fill='none' fill-rule='evenodd'/></svg>");
+    background-repeat:no-repeat; background-position:right 16px center;
+  }
+  .form-foot{ display:flex; align-items:center; gap:18px; flex-wrap:wrap; margin-top:8px; }
+  .form-note{ font-size:12.5px; color:var(--muted); }
+  .form-success{
+    display:none; align-items:center; gap:10px;
+    background:var(--accent-tint); color:var(--accent-dark);
+    padding:16px 18px; border-radius:var(--radius-sm); font-size:14px; font-weight:500;
+    margin-top:18px;
+  }
+  .form-success.show{ display:flex; }
+
+  /* Final CTA banner */
+  .final-cta{
+    padding:90px 0;
+    text-align:center;
+    background:linear-gradient(180deg, var(--bg-alt), var(--accent-tint));
+    border-top:1px solid var(--line);
+  }
+  .final-cta h2{ font-size:clamp(28px,4.4vw,42px); line-height:1.3; max-width:680px; margin:0 auto 34px; }
+  .final-cta h2 .line{ display:block; }
+  .final-cta h2 em{ font-style:italic; color:var(--accent-dark); }
+
+  /* Freelancer profile */
+  .profile{ padding:96px 0; border-top:1px solid var(--line); }
+  .profile-card{
+    display:grid; grid-template-columns:auto 1fr; gap:36px; align-items:center;
+    background:var(--surface); border:1px solid var(--line); border-radius:var(--radius-lg);
+    padding:44px; box-shadow:var(--shadow-soft);
+  }
+  .profile-photo{
+    width:150px; height:150px; border-radius:50%;
+    background:var(--accent-tint); border:1.5px dashed var(--accent);
+    display:flex; align-items:center; justify-content:center;
+    color:var(--accent-dark); font-size:12px; font-weight:600; letter-spacing:0.1em; text-transform:uppercase;
+    text-align:center; flex-shrink:0;
+  }
+  .profile-name{ font-size:20px; font-weight:600; color:var(--ink); margin:14px 0 2px; }
+  .profile-role{ font-size:13.5px; color:var(--accent-dark); font-weight:600; letter-spacing:0.04em; margin-bottom:14px; }
+  .profile-desc{ font-size:14.5px; color:var(--ink-soft); line-height:1.75; max-width:440px; margin-bottom:18px; }
+  .profile-contacts{ display:flex; flex-wrap:wrap; gap:14px 28px; }
+  .profile-contacts div{ font-size:13.5px; color:var(--ink); }
+  .profile-contacts span{ display:block; font-size:11px; text-transform:uppercase; letter-spacing:0.1em; color:var(--muted); margin-bottom:3px; }
+
+  /* Partner Network — reuses .profile-card in a repeating, add/remove-friendly grid */
+  .partner-grid{
+    display:grid; grid-template-columns:1fr; gap:24px; margin-top:56px;
+  }
+  .profile-card.compact{
+    grid-template-columns:1fr; text-align:center; justify-items:center;
+    padding:36px 30px;
+  }
+  .profile-card.compact .profile-photo{ width:110px; height:110px; font-size:11px; }
+  .profile-card.compact .profile-name{ font-size:18px; margin:16px 0 2px; }
+  .profile-card.compact .profile-desc{ max-width:none; }
+  .partner-tags{ font-size:12.5px; color:var(--muted); margin:2px 0 20px; }
+  .partner-tags strong{ color:var(--ink); }
+  .partner-cta{
+    display:inline-flex; align-items:center; gap:6px;
+    font-size:12px; font-weight:600; letter-spacing:0.1em; text-transform:uppercase;
+    color:var(--accent-dark); border-bottom:1px solid var(--accent); padding-bottom:2px;
+    transition:gap .25s ease;
+  }
+  .partner-cta:hover{ gap:10px; }
+
+  /* ==========================================================================
+     AI TOOLS PARTNER TRACK
+     Additive block for partners who want to market/promote the AI tools.
+     Uses existing design tokens only — no shared component styles were changed,
+     so removing this block plus the .ai-track section leaves the page as it was.
+     ========================================================================== */
+  .ai-track{ padding:96px 0; border-top:1px solid var(--line); background:var(--bg-alt); }
+  .ai-track-grid{
+    display:grid; grid-template-columns:1fr; gap:48px; align-items:start; margin-top:52px;
+  }
+  .ai-track-grid h3{
+    font-family:var(--font-sans); font-size:13px; font-weight:600;
+    letter-spacing:0.1em; text-transform:uppercase; color:var(--ink);
+    margin-bottom:20px;
+  }
+  .ai-tool-list{ display:grid; grid-template-columns:1fr; gap:12px; }
+  .ai-tool{
+    display:flex; gap:14px; align-items:flex-start;
+    background:var(--surface); border:1px solid var(--line);
+    border-radius:var(--radius-md); padding:16px 18px;
+    transition:border-color .25s ease, transform .25s var(--ease);
+  }
+  a.ai-tool:hover{ border-color:var(--accent); transform:translateY(-2px); }
+  .ai-tool .mark{
+    width:32px; height:32px; border-radius:50%; flex-shrink:0;
+    background:var(--accent-tint); color:var(--accent-dark);
+    display:flex; align-items:center; justify-content:center; font-size:14px;
+  }
+  .ai-tool .name{ font-size:14px; font-weight:600; color:var(--ink); }
+  .ai-tool .who{ font-size:12.5px; color:var(--muted); margin-top:2px; }
+
+  .ai-steps{ display:flex; flex-direction:column; gap:22px; }
+  .ai-step{ display:flex; gap:16px; align-items:flex-start; }
+  .ai-step .idx{
+    font-family:var(--font-display); font-style:italic; font-size:15px;
+    color:var(--accent-dark); flex-shrink:0; padding-top:2px; width:26px;
+  }
+  .ai-step h4{
+    font-family:var(--font-display); font-size:18px; font-weight:600;
+    color:var(--ink); margin:0 0 6px; letter-spacing:-0.01em;
+  }
+  .ai-step p{ margin:0; font-size:14px; color:var(--ink-soft); line-height:1.75; }
+  .ai-track .btn-row{ margin-top:34px; }
+  .ai-note{
+    font-size:12.5px; color:var(--muted); line-height:1.7;
+    margin:22px 0 0; max-width:520px;
+  }
+
+  /* Footer */
+  .site-footer{ border-top:1px solid var(--line); padding:56px 0 36px; background:var(--bg-alt); }
+  .footer-grid{ display:flex; justify-content:space-between; align-items:flex-start; gap:32px; flex-wrap:wrap; }
+  .footer-links{ display:flex; gap:26px; flex-wrap:wrap; }
+  .footer-links a{ font-size:13.5px; color:var(--ink-soft); }
+  .footer-links a:hover{ color:var(--accent-dark); }
+  .footer-meta{ font-size:12.5px; color:var(--muted); margin-top:30px; }
+
+  /* Scroll reveal */
+  .reveal{ opacity:0; transform:translateY(26px); transition:opacity .8s var(--ease), transform .8s var(--ease); }
+  .reveal.is-visible{ opacity:1; transform:translateY(0); }
+
+  /* ==========================================================================
+     RESPONSIVE
+     ========================================================================== */
+  @media (min-width:860px){
+    .nav-links-desktop{ display:flex; }
+    .hero-grid{ grid-template-columns:1.1fr 0.9fr; }
+    .partner-grid{ grid-template-columns:repeat(3,1fr); }
+    /* auto-fit so a capability card can be added/removed without an orphan row */
+    .bridge-grid{ grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); }
+    .ai-track-grid{ grid-template-columns:1fr 1fr; }
+    .ai-tool-list{ grid-template-columns:1fr 1fr; }
+    .service-grid{ grid-template-columns:1fr 1fr; }
+    .service.alt .service-grid > .service-copy{ order:2; }
+    .service.alt .service-grid > .service-media{ order:1; }
+    .contact-layout{ grid-template-columns:0.9fr 1.1fr; }
+  }
+
+  /* Nav gained an "AI Tools" link — tighten spacing so the row still fits
+     between the desktop breakpoint and ~1000px. */
+  @media (min-width:860px) and (max-width:1000px){
+    .nav-links-desktop{ gap:20px; }
+    .nav-links-desktop a{ font-size:13px; }
+  }
+
+  @media (max-width:859px){
+    .why-grid{ grid-template-columns:1fr; }
+    .contact-tracks{ grid-template-columns:1fr; }
+    .form-row{ grid-template-columns:1fr; }
+    .profile-card{ grid-template-columns:1fr; text-align:center; justify-items:center; }
+    .profile-contacts{ justify-content:center; }
+  }
+
+  @media (max-width:600px){
+    .container{ padding:0 20px; }
+    .nav-row{ padding:16px 20px; }
+    .hero{ padding:44px 0 40px; }
+    .service{ padding:56px 0; }
+    .intro{ padding:64px 0; }
+    .bridge, .why, .contact, .profile, .ai-track{ padding:64px 0; }
+    .final-cta{ padding:64px 0; }
+    .btn{ width:100%; }
+    .btn-row{ flex-direction:column; align-items:stretch; }
+    .contact-form{ padding:26px; }
+    .wordmark .tag{ display:none; }
+  }
+</style>
+</head>
+<body>
+
+<a class="skip-link" href="#main">Skip to content</a>
+
+<!-- ==========================================================================
+     HEADER
+     ========================================================================== -->
+<header class="site-header">
+  <div class="nav-row">
+    <a class="wordmark" href="index.html" aria-label="Disenyo Digitals home">
+      <span class="script">disenyo</span><span class="rest">DIGITALS</span>
+      <span class="divider" aria-hidden="true"></span>
+      <span class="tag">Partner With Us</span>
+    </a>
+    <div class="nav-actions">
+      <nav class="nav-links-desktop" aria-label="Primary">
+        <a href="#partner-network">Partner Network</a>
+        <a href="#ai-tools-partners">AI Tools</a>
+        <a href="#capabilities">Capabilities</a>
+        <a href="#see-what-we-build">Our Work</a>
+        <a href="#contact">Contact</a>
+      </nav>
+      <a href="#contact" class="btn btn-secondary nav-links-desktop" style="padding:12px 24px;">Talk to Us</a>
+      <button class="menu-btn" id="menuOpen" aria-haspopup="true" aria-expanded="false" aria-controls="mobilePanel" aria-label="Open menu">
+        <span></span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<div class="mobile-panel" id="mobilePanel" role="dialog" aria-modal="true" aria-label="Mobile menu">
+  <div class="mobile-panel-top">
+    <button class="menu-btn" id="menuClose" aria-label="Close menu">✕</button>
+  </div>
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="#partner-network">Partner Network</a>
+    <a href="#ai-tools-partners">AI Tools</a>
+    <a href="#capabilities">Capabilities</a>
+    <a href="#see-what-we-build">Our Work</a>
+    <a href="#why">Why Us</a>
+    <a href="#contact">Contact</a>
+  </nav>
+  <div class="panel-cta">
+    <a href="#contact" class="btn btn-primary">Talk to Us</a>
+  </div>
+  <p class="panel-foot">Disenyo Digitals Collective OPC · Baguio City, Philippines</p>
+</div>
+
+<!-- ==========================================================================
+     MAIN
+     ========================================================================== -->
+<main id="main">
+
+  <!-- HERO -->
+  <section class="hero" aria-labelledby="hero-heading">
+    <div class="container">
+      <div class="hero-grid">
+        <div>
+          <p class="eyebrow"><span class="mark">✦⬡</span> Partner Network</p>
+          <h1 id="hero-heading">Partner With Us</h1>
+          <p class="lede-primary">Good businesses grow through good connections.</p>
+          <p class="lede-secondary">Meet the people helping Destinevents + Disenyo Digitals connect with businesses, organizations, and opportunities.</p>
+          <p class="lede-tertiary">Our growing partner network brings together trusted people who believe in what we're building and help introduce our work to businesses and organizations that may need it.</p>
+          <div class="btn-row">
+            <a href="#contact" class="btn btn-primary">Talk to Us</a>
+            <a href="#see-what-we-build" class="btn btn-secondary">Explore Our Work</a>
+          </div>
+        </div>
+
+        <div class="hero-visual" aria-hidden="true">
+          <div class="hero-blob"></div>
+          <div class="hero-card card-a floaty" style="--r:-6deg;">
+            <div class="mark">✦</div>
+            <div class="swatch"></div>
+            <p>Destinevents</p>
+            <span>Events & experiences</span>
+          </div>
+          <div class="hero-card card-b floaty delay" style="--r:5deg;">
+            <div class="mark">⬡</div>
+            <div class="swatch"></div>
+            <p>Disenyo Digitals</p>
+            <span>Digital systems</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="ticker-wrap" aria-hidden="true">
+      <div class="ticker">
+        <span><em>✦</em>Partner Network<em>⬡</em>Destinevents<em>✦</em>Disenyo Digitals<em>⬡</em>Events & Styling<em>✦</em>Business Systems<em>⬡</em>Marketing & Creative<em>✦</em>Baguio City</span>
+        <span><em>✦</em>Partner Network<em>⬡</em>Destinevents<em>✦</em>Disenyo Digitals<em>⬡</em>Events & Styling<em>✦</em>Business Systems<em>⬡</em>Marketing & Creative<em>✦</em>Baguio City</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- OUR PARTNER NETWORK -->
+  <section class="profile" id="partner-network" aria-labelledby="partner-heading">
+    <div class="container">
+      <div class="section-head">
+        <p class="eyebrow"><span class="mark">✦⬡</span> Our Network</p>
+        <h2 id="partner-heading">Our Partner Network</h2>
+        <p class="lede"><strong>People. Connections. Possibilities.</strong> These are trusted people helping us introduce Destinevents and Disenyo Digitals to new businesses, organizations, and opportunities.</p>
+      </div>
+
+      <!--
+        PARTNER CARD TEMPLATE
+        Each partner is one <article class="profile-card compact reveal"> block.
+        To add a partner: copy one full block and paste it inside .partner-grid.
+        To remove a partner: delete their block.
+        Replace every [BRACKETED] placeholder with real, confirmed details —
+        do not invent names, roles, bios, or photos.
+      -->
+      <div class="partner-grid">
+        <article class="profile-card compact reveal">
+          <div class="profile-photo" aria-hidden="true">[PHOTO]</div>
+          <div>
+            <h3 class="profile-name">[PARTNER 1 NAME]</h3>
+            <p class="profile-role">[Partner role — e.g. Marketing & Business Development Partner]</p>
+            <p class="profile-desc">[Short introduction — one or two sentences on how this person helps connect businesses to Destinevents + Disenyo Digitals.]</p>
+            <p class="partner-tags"><strong>Connects through:</strong> [Specialty] · [Specialty] · [Specialty]</p>
+            <a href="#contact" class="partner-cta">Connect →</a>
+          </div>
+        </article>
+
+        <article class="profile-card compact reveal">
+          <div class="profile-photo" aria-hidden="true">[PHOTO]</div>
+          <div>
+            <h3 class="profile-name">[PARTNER 2 NAME]</h3>
+            <p class="profile-role">[Partner role]</p>
+            <p class="profile-desc">[Short introduction — one or two sentences on how this person helps connect businesses to Destinevents + Disenyo Digitals.]</p>
+            <p class="partner-tags"><strong>Connects through:</strong> [Specialty] · [Specialty] · [Specialty]</p>
+            <a href="#contact" class="partner-cta">Connect →</a>
+          </div>
+        </article>
+
+        <article class="profile-card compact reveal">
+          <div class="profile-photo" aria-hidden="true">[PHOTO]</div>
+          <div>
+            <h3 class="profile-name">[PARTNER 3 NAME]</h3>
+            <p class="profile-role">[Partner role]</p>
+            <p class="profile-desc">[Short introduction — one or two sentences on how this person helps connect businesses to Destinevents + Disenyo Digitals.]</p>
+            <p class="partner-tags"><strong>Connects through:</strong> [Specialty] · [Specialty] · [Specialty]</p>
+            <a href="#contact" class="partner-cta">Connect →</a>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==========================================================================
+       PROMOTE OUR AI TOOLS — AI Tools Partner Track
+       For partners whose interest is marketing/promoting the AI tools rather
+       than (or in addition to) introducing event or systems clients.
+       Self-contained: this <section> plus the "AI TOOLS PARTNER TRACK" CSS block
+       are the only pieces this feature adds to the page body.
+       ========================================================================== -->
+  <section class="ai-track" id="ai-tools-partners" aria-labelledby="ai-track-heading">
+    <div class="container">
+      <div class="section-head">
+        <p class="eyebrow"><span class="mark">⬡</span> AI Tools Partner Track</p>
+        <h2 id="ai-track-heading">Promote Our AI Tools</h2>
+        <p class="lede">Some partners connect us to events. Some connect us to businesses that need a system. Others help get our AI tools into the hands of the Filipinos they were built for — students, SMEs, creators, and communities.</p>
+      </div>
+
+      <div class="ai-track-grid">
+        <div class="reveal">
+          <h3>What you'd be promoting</h3>
+          <div class="ai-tool-list">
+            <a class="ai-tool" href="ai-tools.html" target="_blank" rel="noopener">
+              <span class="mark" aria-hidden="true">⬡</span>
+              <span>
+                <span class="name">Business Plan Studio</span>
+                <span class="who">SMEs · Students</span>
+              </span>
+            </a>
+            <a class="ai-tool" href="ai-tools.html" target="_blank" rel="noopener">
+              <span class="mark" aria-hidden="true">⬡</span>
+              <span>
+                <span class="name">Digital Readiness</span>
+                <span class="who">SMEs · Institutions</span>
+              </span>
+            </a>
+            <a class="ai-tool" href="ai-tools.html" target="_blank" rel="noopener">
+              <span class="mark" aria-hidden="true">⬡</span>
+              <span>
+                <span class="name">Brand Architect</span>
+                <span class="who">Professionals · SMEs</span>
+              </span>
+            </a>
+            <a class="ai-tool" href="ai-tools.html" target="_blank" rel="noopener">
+              <span class="mark" aria-hidden="true">⬡</span>
+              <span>
+                <span class="name">Content Machine</span>
+                <span class="who">Creators · SMEs</span>
+              </span>
+            </a>
+            <a class="ai-tool" href="ai-tools.html" target="_blank" rel="noopener">
+              <span class="mark" aria-hidden="true">⬡</span>
+              <span>
+                <span class="name">CarouselCraft</span>
+                <span class="who">Creators · Marketers</span>
+              </span>
+            </a>
+            <a class="ai-tool" href="ai-tools.html" target="_blank" rel="noopener">
+              <span class="mark" aria-hidden="true">⬡</span>
+              <span>
+                <span class="name">Bayanihan Hub</span>
+                <span class="who">LGUs · Communities</span>
+              </span>
+            </a>
+          </div>
+          <!--
+            TOOL LIST NOTE FOR WHOEVER MAINTAINS THIS:
+            These six mirror the tools listed on the live AI Tools page. When a
+            new tool ships there, copy one <a class="ai-tool"> block and update
+            the name + audience. Each link points at the AI Tools page rather
+            than an individual tool URL so this list can't go stale/broken.
+          -->
+          <p class="ai-note">The tools are free to try, so a partner can send someone straight to the page and let the tool speak for itself — no demo call or setup required.</p>
+        </div>
+
+        <div class="reveal">
+          <h3>What promoting actually looks like</h3>
+          <div class="ai-steps">
+            <div class="ai-step">
+              <span class="idx">01</span>
+              <div>
+                <h4>Tell us how you'd reach people</h4>
+                <p>Social content, your own community or org, campus groups, business networks, LGU contacts — whatever channel you already have. There's no minimum audience.</p>
+              </div>
+            </div>
+            <div class="ai-step">
+              <span class="idx">02</span>
+              <div>
+                <h4>We get you oriented</h4>
+                <p>A walkthrough of what each tool does and who it's for, so you're never promoting something you haven't seen work.</p>
+              </div>
+            </div>
+            <div class="ai-step">
+              <span class="idx">03</span>
+              <div>
+                <h4>You share, we handle the rest</h4>
+                <p>Send people to the tools or route interested businesses back to us. We take it from there — onboarding, support, and follow-through stay on our side.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="btn-row">
+            <a href="#contact-form" class="btn btn-primary" data-prefill-need="Promote / Market Our AI Tools">Promote Our AI Tools</a>
+            <a href="ai-tools.html" class="btn btn-secondary" target="_blank" rel="noopener">See the Tools</a>
+          </div>
+          <p class="ai-note">
+            Interested but not sure which tools fit your audience? Reach out anyway — we'll figure out the right fit together.
+            <!--
+              [PROJECT OWNER] TO CONFIRM: partner terms, promo kit/assets, and any
+              arrangement details are handled in conversation, not published here —
+              consistent with the QA rule that commission/referral terms stay internal.
+            -->
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- WHAT CAN WE HELP WITH? (bridge into the portfolio) -->
+  <section class="bridge" id="capabilities" aria-labelledby="capabilities-heading">
+    <div class="container">
+      <div class="section-head">
+        <h2 id="capabilities-heading">What Can We Help With?</h2>
+        <p class="lede">From unforgettable events to practical digital systems, our network helps businesses find the right creative and digital solutions.</p>
+      </div>
+
+      <div class="bridge-grid">
+        <div class="bridge-card reveal">
+          <div class="mark">✦</div>
+          <h3>Events & Styling</h3>
+          <ul>
+            <li>Event concepts</li>
+            <li>Event styling</li>
+            <li>Corporate events</li>
+            <li>Brand activations</li>
+            <li>Creative direction</li>
+          </ul>
+        </div>
+        <div class="bridge-card reveal">
+          <div class="mark">⬡</div>
+          <h3>Marketing & Creative</h3>
+          <ul>
+            <li>Content</li>
+            <li>Digital presence</li>
+            <li>Campaigns</li>
+            <li>Creative execution</li>
+            <li>Business development</li>
+          </ul>
+        </div>
+        <div class="bridge-card reveal">
+          <div class="mark">⬡</div>
+          <h3>Business Systems</h3>
+          <ul>
+            <li>Payroll</li>
+            <li>Inventory</li>
+            <li>Enrollment</li>
+            <li>Ticketing</li>
+            <li>Custom business workflows</li>
+          </ul>
+        </div>
+        <div class="bridge-card reveal">
+          <div class="mark">⬡</div>
+          <h3>AI Tools</h3>
+          <ul>
+            <li>Business planning</li>
+            <li>Digital readiness</li>
+            <li>Branding &amp; content</li>
+            <li>Community &amp; LGU tools</li>
+            <li>Free to try, built for Filipinos</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SEE WHAT WE BUILD -->
+  <section class="build-head" id="see-what-we-build" aria-labelledby="build-heading">
+    <div class="container">
+      <div class="section-head center">
+        <p class="eyebrow" style="justify-content:center;"><span class="mark">✦⬡</span> Portfolio</p>
+        <h2 id="build-heading">See What We Build</h2>
+        <p class="lede" style="margin-left:auto; margin-right:auto;">From events to business systems, explore some of the work our network helps bring to businesses and organizations.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- DEMO 01 — EVENT STYLING -->
+  <section class="service" id="demo-event-styling" aria-labelledby="demo-01-heading">
+    <div class="container">
+      <div class="service-grid">
+        <div class="service-copy reveal">
+          <p class="eyebrow"><span class="mark">✦</span> 01 — Event Styling</p>
+          <h2 id="demo-01-heading">Designed to be experienced.</h2>
+          <p class="desc">Event styling, visual concepts, installations, corporate events, and creative experiences delivered through Destinevents.</p>
+          <a href="#contact" class="btn btn-primary">Discuss an Event</a>
+        </div>
+        <div class="service-media reveal">
+          <article class="media-frame" data-portfolio-media data-type="image" data-src="" data-alt="Event styling — Reel, video, or gallery to be added" data-orientation="portrait">
+            <span class="media-badge">Reel / Photo / Gallery</span>
+            <div class="media-placeholder-inner">
+              <div class="ph-icon">✦</div>
+              <span class="ph-label">Event Styling Reel / Image</span>
+              <span class="ph-sub">Drop in a vertical Reel, MP4, landscape photo, or gallery — the frame adapts automatically.</span>
+            </div>
+          </article>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- DEMO 02 — PAYROLL SYSTEM -->
+  <section class="service alt" id="demo-payroll" aria-labelledby="demo-02-heading">
+    <div class="container">
+      <div class="service-grid">
+        <div class="service-media reveal">
+          <article class="media-frame landscape" data-portfolio-media data-type="image" data-src="" data-alt="Payroll system demo">
+            <span class="media-badge">Screenshot / Demo</span>
+            <div class="media-placeholder-inner">
+              <div class="ph-icon">⬡</div>
+              <span class="ph-label">Payroll Screenshot / Demo</span>
+              <span class="ph-sub">Swap in a product screenshot, screen recording, or Reel.</span>
+            </div>
+          </article>
+        </div>
+        <div class="service-copy reveal">
+          <p class="eyebrow"><span class="mark">⬡</span> 02 — Business Systems</p>
+          <h2 id="demo-02-heading">Less manual work. More visibility.</h2>
+          <p class="desc">A practical payroll workflow designed to help businesses organize employee information, payroll processes, records, and reporting.</p>
+          <a href="#" class="demo-link" data-demo-link data-demo-url="">View Demo</a>
+          <p class="demo-note" data-demo-note>Demo link coming soon — add the project URL to activate.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- DEMO 03 — INVENTORY SYSTEM -->
+  <section class="service" id="demo-inventory" aria-labelledby="demo-03-heading">
+    <div class="container">
+      <div class="service-grid">
+        <div class="service-copy reveal">
+          <p class="eyebrow"><span class="mark">⬡</span> 03 — Business Systems</p>
+          <h2 id="demo-03-heading">Know your stock. Know your business.</h2>
+          <p class="desc">An inventory management solution designed to help businesses monitor stock, movement, and operational information more efficiently.</p>
+          <a href="#" class="demo-link" data-demo-link data-demo-url="">View Demo</a>
+          <p class="demo-note" data-demo-note>Demo link coming soon — add the project URL to activate.</p>
+        </div>
+        <div class="service-media reveal">
+          <article class="media-frame landscape" data-portfolio-media data-type="image" data-src="" data-alt="Inventory system demo">
+            <span class="media-badge">Screenshot / Demo</span>
+            <div class="media-placeholder-inner">
+              <div class="ph-icon">⬡</div>
+              <span class="ph-label">Inventory Screenshot / Demo</span>
+              <span class="ph-sub">Swap in a product screenshot or screen recording.</span>
+            </div>
+          </article>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- DEMO 04 — ENROLLMENT SYSTEM -->
+  <section class="service alt" id="demo-enrollment" aria-labelledby="demo-04-heading">
+    <div class="container">
+      <div class="service-grid">
+        <div class="service-media reveal">
+          <article class="media-frame landscape" data-portfolio-media data-type="image" data-src="" data-alt="Enrollment system demo">
+            <span class="media-badge">Screenshot / Demo</span>
+            <div class="media-placeholder-inner">
+              <div class="ph-icon">⬡</div>
+              <span class="ph-label">Enrollment Screenshot / Demo</span>
+              <span class="ph-sub">Swap in a product screenshot or screen recording.</span>
+            </div>
+          </article>
+        </div>
+        <div class="service-copy reveal">
+          <p class="eyebrow"><span class="mark">⬡</span> 04 — Business Systems</p>
+          <h2 id="demo-04-heading">From registration to organized records.</h2>
+          <p class="desc">Digital enrollment and registration workflows designed to make information collection, applicant management, and processing easier.</p>
+          <a href="https://fae-puce.vercel.app" class="demo-link" data-demo-link data-demo-url="https://fae-puce.vercel.app" target="_blank" rel="noopener">View Demo</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- DEMO 05 — TICKETING SYSTEM -->
+  <section class="service" id="demo-ticketing" aria-labelledby="demo-05-heading">
+    <div class="container">
+      <div class="service-grid">
+        <div class="service-copy reveal">
+          <p class="eyebrow"><span class="mark">⬡</span> 05 — Business Systems</p>
+          <h2 id="demo-05-heading">Make every registration count.</h2>
+          <p class="desc">Digital ticketing and registration workflows for events, communities, and organizations.</p>
+          <a href="#" class="demo-link" data-demo-link data-demo-url="">View Demo</a>
+          <p class="demo-note" data-demo-note>Demo link coming soon — add the project URL to activate.</p>
+        </div>
+        <div class="service-media reveal">
+          <article class="media-frame landscape" data-portfolio-media data-type="image" data-src="" data-alt="Ticketing system demo">
+            <span class="media-badge">Screenshot / Reel / Demo</span>
+            <div class="media-placeholder-inner">
+              <div class="ph-icon">⬡</div>
+              <span class="ph-label">Ticketing Screenshot / Demo</span>
+              <span class="ph-sub">Swap in a product screenshot, screen recording, or Reel.</span>
+            </div>
+          </article>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- DEMO 06 — KUSINAIQ -->
+  <section class="service alt" id="demo-kusinaiq" aria-labelledby="demo-06-heading">
+    <div class="container">
+      <div class="service-grid">
+        <div class="service-media reveal">
+          <article class="media-frame landscape" data-portfolio-media data-type="image" data-src="" data-alt="KusinaIQ interface demo">
+            <span class="media-badge">Interface / Demo</span>
+            <div class="media-placeholder-inner">
+              <div class="ph-icon">⬡</div>
+              <span class="ph-label">KusinaIQ™ Interface / Demo</span>
+              <span class="ph-sub">Swap in interface visuals, a demo video, or a Reel.</span>
+            </div>
+          </article>
+        </div>
+        <div class="service-copy reveal">
+          <p class="eyebrow"><span class="mark">⬡</span> 06 — Business Systems</p>
+          <h2 id="demo-06-heading">Restaurant operations, organized.</h2>
+          <p class="desc">KusinaIQ™ is a cloud-based restaurant operations platform designed to bring inventory, workflows, records, and operational visibility into one practical system.</p>
+          <a href="#" class="demo-link" data-demo-link data-demo-url="">View Demo</a>
+          <p class="demo-note" data-demo-note>Demo link coming soon — add the project URL to activate.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- DEMO 07 — AI TOOLS -->
+  <section class="service" id="demo-ai-tools" aria-labelledby="demo-07-heading">
+    <div class="container">
+      <div class="service-grid">
+        <div class="service-copy reveal">
+          <p class="eyebrow"><span class="mark">⬡</span> 07 — AI Tools</p>
+          <h2 id="demo-07-heading">AI that speaks our language.</h2>
+          <p class="desc">A free suite of Taglish-aware AI tools for Filipino students, SMEs, creators, and communities — business planning, digital readiness, branding, content, and more. Live now, and the easiest thing in our portfolio for a partner to share.</p>
+          <a href="ai-tools.html" class="demo-link" data-demo-link data-demo-url="ai-tools.html" target="_blank" rel="noopener">View Demo</a>
+        </div>
+        <div class="service-media reveal">
+          <article class="media-frame landscape" data-portfolio-media data-type="image" data-src="" data-alt="AI Tools platform demo">
+            <span class="media-badge">Screenshot / Demo</span>
+            <div class="media-placeholder-inner">
+              <div class="ph-icon">⬡</div>
+              <span class="ph-label">AI Tools Screenshot / Demo</span>
+              <span class="ph-sub">Screenshot the live AI Tools page, or swap in a short screen recording of a tool in use.</span>
+            </div>
+          </article>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- WHY WORK WITH US -->
+  <section class="why" id="why" aria-labelledby="why-heading">
+    <div class="container">
+      <div class="section-head">
+        <p class="eyebrow">Why Us</p>
+        <h2 id="why-heading">Not just another contact list.</h2>
+      </div>
+
+      <div class="why-grid">
+        <div class="why-card reveal">
+          <span class="idx">01</span>
+          <h3>Creative Thinking</h3>
+          <p>We understand how businesses need to look, communicate, and show up.</p>
+        </div>
+        <div class="why-card reveal">
+          <span class="idx">02</span>
+          <h3>Real-World Execution</h3>
+          <p>Our work comes from actual events, SMEs, organizations, and operational projects.</p>
+        </div>
+        <div class="why-card reveal">
+          <span class="idx">03</span>
+          <h3>Digital + Human</h3>
+          <p>We combine creative execution with technology instead of treating them as separate worlds.</p>
+        </div>
+        <div class="why-card reveal">
+          <span class="idx">04</span>
+          <h3>Built Around Your Business</h3>
+          <p>We don't force every client into the same template. We start with the problem and build from there.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACT / LEAD SECTION -->
+  <section class="contact" id="contact" aria-labelledby="contact-heading">
+    <div class="container">
+      <div class="contact-head">
+        <p class="eyebrow">Let's Work Together</p>
+        <h2 id="contact-heading">Have a project in mind?</h2>
+        <p>Whether you need an event styled, a business system organized, or you'd like to introduce us to someone who does — let's start with a conversation.</p>
+        <a href="#contact-form" class="btn btn-primary">Start a Conversation</a>
+      </div>
+
+      <div class="contact-tracks">
+        <div class="track-card reveal">
+          <span class="mark">✦</span>
+          <h3>Event Styling</h3>
+          <p>For styling, creative concepts, event visuals, and on-ground requirements.</p>
+        </div>
+        <div class="track-card reveal">
+          <span class="mark">⬡</span>
+          <h3>Business Systems</h3>
+          <p>For payroll, inventory, enrollment, ticketing, and custom workflow solutions.</p>
+        </div>
+        <div class="track-card reveal">
+          <span class="mark">⬡</span>
+          <h3>AI Tools</h3>
+          <p>For using the tools in your business — or for helping us promote them to yours.</p>
+        </div>
+      </div>
+
+      <div class="contact-layout">
+        <div class="reveal">
+          <h3 style="font-size:20px; margin-bottom:14px;">What happens after you reach out</h3>
+          <p style="color:var(--ink-soft); font-size:14.5px; line-height:1.8; max-width:380px;">
+            We'll follow up to understand what you need — an event, a system, or both — then walk you through timelines, scope, and next steps. No obligation, just a conversation.
+          </p>
+        </div>
+
+        <form class="contact-form reveal" id="contact-form" novalidate>
+          <!--
+            INTEGRATION NOTE FOR DEVELOPER:
+            This form currently prevents default submission and shows a success
+            message client-side. Wire it up by either:
+              1) Adding a form backend action (e.g. Formspree, Netlify Forms,
+                 Basin) to the <form> tag and removing preventDefault() in the
+                 JS below, or
+              2) Sending the FormData via fetch() to your own API endpoint
+                 inside the submit handler (search "CONTACT FORM SUBMIT" in
+                 the <script> at the bottom of this file).
+            A honeypot field is included for basic spam protection.
+          -->
+          <div class="form-row">
+            <div class="field">
+              <label for="f-name">Name</label>
+              <input type="text" id="f-name" name="name" required autocomplete="name">
+            </div>
+            <div class="field">
+              <label for="f-org">Business / Organization</label>
+              <input type="text" id="f-org" name="organization" autocomplete="organization">
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="field">
+              <label for="f-email">Email</label>
+              <input type="email" id="f-email" name="email" required autocomplete="email">
+            </div>
+            <div class="field">
+              <label for="f-need">What do you need?</label>
+              <select id="f-need" name="need" required>
+                <option value="" disabled selected>Select one</option>
+                <option>Introduce a Business / Partnership</option>
+                <option>Promote / Market Our AI Tools</option>
+                <option>AI Tools for My Business</option>
+                <option>Event Styling</option>
+                <option>Payroll System</option>
+                <option>Inventory System</option>
+                <option>Enrollment System</option>
+                <option>Ticketing System</option>
+                <option>Custom Digital System</option>
+                <option>Other</option>
+              </select>
+            </div>
+          </div>
+          <div class="field">
+            <label for="f-message">Message</label>
+            <textarea id="f-message" name="message" required placeholder="Tell us a bit about your event or the system you have in mind."></textarea>
+          </div>
+          <!-- Honeypot (leave empty; bots tend to fill it) -->
+          <div style="position:absolute; left:-9999px;" aria-hidden="true">
+            <label for="f-company">Leave blank</label>
+            <input type="text" id="f-company" name="company" tabindex="-1" autocomplete="off">
+          </div>
+
+          <div class="form-foot">
+            <button type="submit" class="btn btn-primary">Submit</button>
+            <span class="form-note">We typically reply within 1–2 business days.</span>
+          </div>
+          <div class="form-success" id="formSuccess" role="status" aria-live="polite">
+            Thanks — your message is ready to send. Connect this form to your inbox to receive it.
+          </div>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- FINAL CTA -->
+  <section class="final-cta" aria-labelledby="final-cta-heading">
+    <div class="container">
+      <h2 id="final-cta-heading">
+        <span class="line">Have an opportunity for us?</span>
+        <span class="line">Maybe you need an event styled.</span>
+        <span class="line">Maybe your business needs a system.</span>
+        <span class="line">Maybe you know someone who needs one.</span>
+        <span class="line"><em>Let's talk.</em></span>
+      </h2>
+      <div class="btn-row" style="justify-content:center;">
+        <a href="#contact-form" class="btn btn-primary">Introduce a Business</a>
+        <a href="#contact-form" class="btn btn-secondary">Talk to Us</a>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- ==========================================================================
+     FOOTER
+     ========================================================================== -->
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-grid">
+      <a class="wordmark" href="index.html">
+        <span class="script">disenyo</span><span class="rest">DIGITALS</span>
+      </a>
+      <nav class="footer-links" aria-label="Footer">
+        <a href="index.html">Home</a>
+        <a href="#partner-network">Partner Network</a>
+        <a href="#ai-tools-partners">AI Tools</a>
+        <a href="#capabilities">Capabilities</a>
+        <a href="#see-what-we-build">Our Work</a>
+        <a href="#contact">Contact</a>
+      </nav>
+    </div>
+    <p class="footer-meta">Disenyo Digitals Collective OPC · Baguio City, Philippines · © 2026</p>
+  </div>
+</footer>
+
+<script>
+(function(){
+  "use strict";
+
+  /* Mobile menu */
+  var openBtn = document.getElementById('menuOpen');
+  var closeBtn = document.getElementById('menuClose');
+  var panel = document.getElementById('mobilePanel');
+
+  function openPanel(){
+    panel.classList.add('open');
+    openBtn.setAttribute('aria-expanded','true');
+    document.body.style.overflow = 'hidden';
+  }
+  function closePanel(){
+    panel.classList.remove('open');
+    openBtn.setAttribute('aria-expanded','false');
+    document.body.style.overflow = '';
+  }
+  openBtn.addEventListener('click', openPanel);
+  closeBtn.addEventListener('click', closePanel);
+  panel.querySelectorAll('a').forEach(function(a){
+    a.addEventListener('click', closePanel);
+  });
+  document.addEventListener('keydown', function(e){
+    if(e.key === 'Escape') closePanel();
+  });
+
+  /* Scroll reveal */
+  var revealEls = document.querySelectorAll('.reveal');
+  if('IntersectionObserver' in window){
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(entry){
+        if(entry.isIntersecting){
+          entry.target.classList.add('is-visible');
+          io.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
+    revealEls.forEach(function(el){ io.observe(el); });
+  } else {
+    revealEls.forEach(function(el){ el.classList.add('is-visible'); });
+  }
+
+  /* ==========================================================================
+     PortfolioMedia — reusable media renderer
+     Every element with [data-portfolio-media] is a placeholder slot.
+     Replace media later by editing the config array below (or by setting
+     data-type / data-src / data-poster / data-alt / data-link attributes
+     directly on the element in HTML) — no other markup changes required.
+
+     Supported types: "image", "video", "embed"
+       image  -> { type:'image', src, alt, link? }
+       video  -> { type:'video', src, poster, alt, link? }
+       embed  -> { type:'embed', src (iframe url), alt, link? }
+     ========================================================================== */
+  function renderPortfolioMedia(el, data){
+    if(!data || !data.src) return; // no source yet — keep the placeholder visible
+    var badge = el.querySelector('.media-badge');
+    var inner = el.querySelector('.media-placeholder-inner');
+    if(inner) inner.remove();
+
+    var node;
+    if(data.type === 'video'){
+      node = document.createElement('video');
+      node.src = data.src;
+      if(data.poster) node.poster = data.poster;
+      node.controls = true;
+      node.playsInline = true;
+      node.preload = 'metadata';
+    } else if(data.type === 'embed'){
+      node = document.createElement('iframe');
+      node.src = data.src;
+      node.loading = 'lazy';
+      node.style.border = '0';
+      node.style.width = '100%';
+      node.style.height = '100%';
+      node.allow = 'autoplay; fullscreen; picture-in-picture';
+      node.setAttribute('allowfullscreen','');
+    } else {
+      node = document.createElement('img');
+      node.src = data.src;
+      node.loading = 'lazy';
+      node.alt = data.alt || '';
+    }
+    el.appendChild(node);
+    if(badge) badge.remove();
+
+    if(data.link){
+      el.style.cursor = 'pointer';
+      el.addEventListener('click', function(){ window.open(data.link, '_blank', 'noopener'); });
+    }
+  }
+
+  // Config-driven hook: reads data-* attributes already present on each slot.
+  // To replace a placeholder, either edit the HTML attributes directly, or
+  // populate this object with { "<data-alt value>": {type, src, poster, link} }
+  // and it will override the HTML attributes at render time.
+  var mediaOverrides = {
+    // Example:
+    // "Payroll system demo": { type:'image', src:'/images/payroll-screenshot.jpg' }
+  };
+
+  document.querySelectorAll('[data-portfolio-media]').forEach(function(el){
+    var alt = el.getAttribute('data-alt') || '';
+    var config = mediaOverrides[alt] || {
+      type: el.getAttribute('data-type') || 'image',
+      src: el.getAttribute('data-src') || '',
+      poster: el.getAttribute('data-poster') || '',
+      alt: alt,
+      link: el.getAttribute('data-link') || ''
+    };
+    renderPortfolioMedia(el, config);
+  });
+
+  /* Demo links — avoid dead/broken links when no URL has been set yet */
+  document.querySelectorAll('[data-demo-link]').forEach(function(a){
+    var url = a.getAttribute('data-demo-url');
+    if(!url){
+      a.addEventListener('click', function(e){
+        e.preventDefault();
+        var note = a.parentElement.querySelector('[data-demo-note]');
+        if(note) note.classList.add('show');
+      });
+    }
+  });
+
+  /* CONTACT FORM SUBMIT */
+  var form = document.getElementById('contact-form');
+  var success = document.getElementById('formSuccess');
+  form.addEventListener('submit', function(e){
+    e.preventDefault(); // remove this line once a real form backend/action is wired up
+    if(!form.checkValidity()){
+      form.reportValidity();
+      return;
+    }
+    // TODO: send form data to your backend/service here, e.g.:
+    // fetch('/api/contact', { method:'POST', body: new FormData(form) });
+    success.classList.add('show');
+    form.reset();
+  });
+
+  /* ==========================================================================
+     PREFILL "What do you need?" — used by the AI Tools Partner Track CTA.
+     Any link with data-prefill-need="<exact option text>" preselects that
+     option before scrolling to the form. Purely additive: if the option text
+     is ever renamed, the link still scrolls, it just doesn't preselect.
+     ========================================================================== */
+  var needSelect = document.getElementById('f-need');
+  document.querySelectorAll('[data-prefill-need]').forEach(function(link){
+    link.addEventListener('click', function(){
+      if(!needSelect) return;
+      var wanted = link.getAttribute('data-prefill-need');
+      Array.prototype.forEach.call(needSelect.options, function(opt){
+        if(opt.text === wanted) needSelect.value = opt.value || opt.text;
+      });
+    });
+  });
+
+})();
+</script>
+
+</body>
+</html>
