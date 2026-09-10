@@ -86,9 +86,10 @@
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
   }
 
-  function isValidPhilippineMobile(value) {
+  function isValidMobile(value) {
     const normalized = normalizeMobile(value);
-    return /^(?:\+63|0)9\d{9}$/.test(normalized);
+    // Local PH format (09XXXXXXXXX) or any international E.164 number (+countrycode...)
+    return /^09\d{9}$/.test(normalized) || /^\+[1-9]\d{6,14}$/.test(normalized);
   }
 
   function isValidUrl(value) {
@@ -294,8 +295,8 @@
       return;
     }
 
-    if (!isValidPhilippineMobile(mobile)) {
-      setFormStatus('Please enter a valid Philippine mobile number, like +63 9XX XXX XXXX.');
+    if (!isValidMobile(mobile)) {
+      setFormStatus('Please enter a valid mobile number with your country code, like +63 917 123 4567 or +1 415 555 0123.');
       btn.textContent = 'Continue to Payment →';
       btn.disabled = false;
       return;
@@ -483,7 +484,7 @@
           </div>
           <div>
             <label class="mb-1.5 block font-mono text-[0.6rem] uppercase tracking-[0.1em] text-muted">Mobile Number *</label>
-            <input id="f-mobile" type="tel" inputmode="tel" placeholder="+63 9XX XXX XXXX" required class="w-full rounded-md border border-pine/15 bg-white px-4 py-2.5 text-sm text-ink outline-none focus:border-pine-mid">
+            <input id="f-mobile" type="tel" inputmode="tel" placeholder="+[country code] mobile number" required class="w-full rounded-md border border-pine/15 bg-white px-4 py-2.5 text-sm text-ink outline-none focus:border-pine-mid">
           </div>
           <div>
             <label class="mb-1.5 block font-mono text-[0.6rem] uppercase tracking-[0.1em] text-muted">Industry</label>
