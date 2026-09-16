@@ -473,6 +473,138 @@
   .demo-note.show{ display:block; }
 
   /* ==========================================================================
+     SERVICE FEATURE LIST + STARTING RATE
+     Used inside .service-copy for each portfolio/service block.
+     ========================================================================== */
+  .feature-list{
+    display:grid; grid-template-columns:1fr; gap:11px;
+    margin:0 0 28px; max-width:460px;
+  }
+  .feature-list li{
+    display:flex; gap:11px; align-items:flex-start;
+    font-size:14.5px; color:var(--ink-soft); line-height:1.6;
+  }
+  .feature-list li::before{
+    content:'✓';
+    flex-shrink:0; width:21px; height:21px; border-radius:50%;
+    background:var(--accent-tint); color:var(--accent-dark);
+    display:flex; align-items:center; justify-content:center;
+    font-size:11px; font-weight:700; margin-top:1px;
+  }
+  .rate{
+    display:inline-flex; align-items:baseline; gap:8px;
+    background:var(--accent-tint); border:1px solid var(--accent-soft);
+    border-radius:var(--radius-pill); padding:10px 20px;
+    margin:0 0 28px;
+    font-size:11.5px; font-weight:600; letter-spacing:0.14em; text-transform:uppercase;
+    color:var(--muted);
+  }
+  .rate strong{
+    font-family:var(--font-display); font-size:19px; font-weight:600;
+    letter-spacing:0; text-transform:none; color:var(--accent-dark);
+  }
+
+  /* ==========================================================================
+     MANAGED SERVICES PACKAGES
+     ========================================================================== */
+  .plans{ padding:96px 0; border-top:1px solid var(--line); background:var(--bg-alt); }
+  .plans-intro{ display:grid; grid-template-columns:1fr; gap:44px; align-items:start; }
+  .plans-intro > div > p{ font-size:16px; color:var(--ink-soft); line-height:1.8; margin:0; max-width:460px; }
+  .care-list{ display:grid; grid-template-columns:1fr; gap:22px; }
+  .care-item{ display:flex; gap:16px; align-items:flex-start; }
+  .care-item .mark{
+    width:38px; height:38px; border-radius:50%; flex-shrink:0;
+    background:var(--accent-tint); color:var(--accent-dark);
+    display:flex; align-items:center; justify-content:center; font-size:15px;
+  }
+  .care-item h4{
+    font-family:var(--font-sans); font-size:14px; font-weight:600;
+    color:var(--ink); margin:0 0 5px;
+  }
+  .care-item p{ margin:0; font-size:13.5px; color:var(--ink-soft); line-height:1.7; }
+
+  .plans-lead{
+    margin-top:56px; padding-bottom:6px;
+  }
+  .plans-lead h3{
+    font-family:var(--font-sans); font-size:13px; font-weight:600;
+    letter-spacing:0.12em; text-transform:uppercase; color:var(--ink); margin-bottom:8px;
+  }
+  .plans-lead p{ margin:0; font-size:14.5px; color:var(--ink-soft); }
+
+  .plan-grid{ display:grid; grid-template-columns:1fr; gap:18px; margin-top:28px; }
+  .plan-card{
+    background:var(--surface); border:1px solid var(--line);
+    border-radius:var(--radius-md); overflow:hidden;
+    display:flex; flex-direction:column;
+    transition:transform .3s var(--ease), box-shadow .3s var(--ease);
+  }
+  .plan-card:hover{ transform:translateY(-3px); box-shadow:var(--shadow-soft); }
+  .plan-body{ padding:28px 24px 22px; display:flex; flex-direction:column; flex:1; }
+  .plan-card .mark{
+    width:44px; height:44px; border-radius:50%;
+    background:var(--accent-tint); color:var(--accent-dark);
+    display:flex; align-items:center; justify-content:center;
+    font-size:17px; margin-bottom:18px;
+  }
+  .plan-name{
+    font-family:var(--font-sans); font-size:12.5px; font-weight:700;
+    letter-spacing:0.12em; text-transform:uppercase; color:var(--ink);
+    margin:0 0 14px;
+  }
+  .plan-price{
+    font-family:var(--font-display); font-size:23px; font-weight:600;
+    color:var(--accent-dark); line-height:1.3;
+  }
+  .plan-period{ font-size:12px; color:var(--muted); margin:4px 0 20px; }
+  .plan-best{
+    border-top:1px solid var(--line); padding-top:16px; margin-top:auto;
+    font-size:13.3px; color:var(--ink-soft); line-height:1.7;
+  }
+  .plan-best span{
+    display:block; font-weight:600; color:var(--accent-dark);
+    font-size:12.5px; margin-bottom:5px;
+  }
+  .plan-tag{
+    padding:11px 18px; font-size:10.5px; font-weight:700;
+    letter-spacing:0.12em; text-transform:uppercase;
+    color:#fff; background:var(--accent);
+  }
+  .plan-tag.t1{ background:#BE9B75; }
+  .plan-tag.t2{ background:var(--accent); }
+  .plan-tag.t3{ background:var(--accent-dark); }
+  .plan-tag.t4{ background:var(--accent-deep); }
+  .plan-tag.t5{ background:#3F4A3A; }
+
+  .plan-included{
+    margin-top:26px; background:var(--surface);
+    border:1px solid var(--line); border-radius:var(--radius-md);
+    padding:28px 26px;
+  }
+  .plan-included h3{
+    font-family:var(--font-sans); font-size:12.5px; font-weight:600;
+    letter-spacing:0.12em; text-transform:uppercase; color:var(--ink); margin-bottom:20px;
+  }
+  .included-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(190px,1fr)); gap:18px; }
+  .included-item{ display:flex; gap:11px; align-items:flex-start; font-size:13.3px; color:var(--ink-soft); line-height:1.6; }
+  .included-item .mark{ color:var(--accent); flex-shrink:0; }
+
+  .model-row{ display:grid; grid-template-columns:1fr; gap:16px; margin-top:26px; }
+  .model-step{
+    background:var(--accent-tint); border:1px solid var(--accent-soft);
+    border-radius:var(--radius-md); padding:22px 24px;
+  }
+  .model-step .idx{
+    font-family:var(--font-display); font-style:italic; font-size:14px;
+    color:var(--accent-dark); display:block; margin-bottom:8px;
+  }
+  .model-step h4{
+    font-family:var(--font-sans); font-size:12.5px; font-weight:700;
+    letter-spacing:0.1em; text-transform:uppercase; color:var(--ink); margin:0 0 8px;
+  }
+  .model-step p{ margin:0; font-size:13.3px; color:var(--ink-soft); line-height:1.7; }
+
+  /* ==========================================================================
      WHY WORK WITH US
      ========================================================================== */
   .why{ padding:96px 0; border-top:1px solid var(--line); background:var(--bg-alt); }
@@ -517,41 +649,34 @@
     margin-top:64px;
   }
 
-  .contact-form{
+  .contact-card{
     background:var(--surface);
     border:1px solid var(--line);
     border-radius:var(--radius-lg);
     padding:40px;
     box-shadow:var(--shadow-soft);
   }
-  .form-row{ display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-bottom:20px; }
-  .field{ display:flex; flex-direction:column; gap:8px; margin-bottom:20px; }
-  .field label{ font-size:12.5px; font-weight:600; letter-spacing:0.06em; text-transform:uppercase; color:var(--ink); }
-  .field input, .field select, .field textarea{
-    font-family:var(--font-sans); font-size:15px; color:var(--ink);
-    padding:14px 16px; border-radius:var(--radius-sm);
-    border:1.5px solid var(--line); background:var(--bg-alt);
-    transition:border-color .25s ease, background .25s ease;
-    width:100%;
+  .contact-card h3{ font-size:24px; margin-bottom:12px; }
+  .contact-card > p{
+    margin:0 0 26px; font-size:14.5px; color:var(--ink-soft); line-height:1.8; max-width:400px;
   }
-  .field input:focus, .field select:focus, .field textarea:focus{
-    outline:none; border-color:var(--accent); background:var(--surface);
+  .contact-note{ font-size:12.5px; color:var(--muted); margin:14px 0 0; }
+  .contact-details{
+    display:grid; grid-template-columns:1fr; gap:18px;
+    margin-top:32px; padding-top:28px; border-top:1px solid var(--line);
   }
-  .field textarea{ resize:vertical; min-height:130px; font-family:var(--font-sans); }
-  .field select{ appearance:none; -webkit-appearance:none;
-    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='9'><path d='M1 1l6 6 6-6' stroke='%23A9754A' stroke-width='1.6' fill='none' fill-rule='evenodd'/></svg>");
-    background-repeat:no-repeat; background-position:right 16px center;
-  }
-  .form-foot{ display:flex; align-items:center; gap:18px; flex-wrap:wrap; margin-top:8px; }
-  .form-note{ font-size:12.5px; color:var(--muted); }
-  .form-success{
-    display:none; align-items:center; gap:10px;
+  .contact-details li{ display:flex; gap:14px; align-items:flex-start; }
+  .contact-details .mark{
+    width:34px; height:34px; border-radius:50%; flex-shrink:0;
     background:var(--accent-tint); color:var(--accent-dark);
-    padding:16px 18px; border-radius:var(--radius-sm); font-size:14px; font-weight:500;
-    margin-top:18px;
+    display:flex; align-items:center; justify-content:center; font-size:14px;
   }
-  .form-success.show{ display:flex; }
-
+  .contact-details span.label{
+    display:block; font-size:10.5px; font-weight:600; letter-spacing:0.12em;
+    text-transform:uppercase; color:var(--muted); margin-bottom:2px;
+  }
+  .contact-details .value{ font-size:14.5px; color:var(--ink); }
+  .contact-details a.value:hover{ color:var(--accent-dark); }
   /* Final CTA banner */
   .final-cta{
     padding:90px 0;
@@ -608,54 +733,6 @@
   }
   .partner-cta:hover{ gap:10px; }
 
-  /* ==========================================================================
-     AI TOOLS PARTNER TRACK
-     Additive block for partners who want to market/promote the AI tools.
-     Uses existing design tokens only — no shared component styles were changed,
-     so removing this block plus the .ai-track section leaves the page as it was.
-     ========================================================================== */
-  .ai-track{ padding:96px 0; border-top:1px solid var(--line); background:var(--bg-alt); }
-  .ai-track-grid{
-    display:grid; grid-template-columns:1fr; gap:48px; align-items:start; margin-top:52px;
-  }
-  .ai-track-grid h3{
-    font-family:var(--font-sans); font-size:13px; font-weight:600;
-    letter-spacing:0.1em; text-transform:uppercase; color:var(--ink);
-    margin-bottom:20px;
-  }
-  .ai-tool-list{ display:grid; grid-template-columns:1fr; gap:12px; }
-  .ai-tool{
-    display:flex; gap:14px; align-items:flex-start;
-    background:var(--surface); border:1px solid var(--line);
-    border-radius:var(--radius-md); padding:16px 18px;
-    transition:border-color .25s ease, transform .25s var(--ease);
-  }
-  a.ai-tool:hover{ border-color:var(--accent); transform:translateY(-2px); }
-  .ai-tool .mark{
-    width:32px; height:32px; border-radius:50%; flex-shrink:0;
-    background:var(--accent-tint); color:var(--accent-dark);
-    display:flex; align-items:center; justify-content:center; font-size:14px;
-  }
-  .ai-tool .name{ font-size:14px; font-weight:600; color:var(--ink); }
-  .ai-tool .who{ font-size:12.5px; color:var(--muted); margin-top:2px; }
-
-  .ai-steps{ display:flex; flex-direction:column; gap:22px; }
-  .ai-step{ display:flex; gap:16px; align-items:flex-start; }
-  .ai-step .idx{
-    font-family:var(--font-display); font-style:italic; font-size:15px;
-    color:var(--accent-dark); flex-shrink:0; padding-top:2px; width:26px;
-  }
-  .ai-step h4{
-    font-family:var(--font-display); font-size:18px; font-weight:600;
-    color:var(--ink); margin:0 0 6px; letter-spacing:-0.01em;
-  }
-  .ai-step p{ margin:0; font-size:14px; color:var(--ink-soft); line-height:1.75; }
-  .ai-track .btn-row{ margin-top:34px; }
-  .ai-note{
-    font-size:12.5px; color:var(--muted); line-height:1.7;
-    margin:22px 0 0; max-width:520px;
-  }
-
   /* Footer */
   .site-footer{ border-top:1px solid var(--line); padding:56px 0 36px; background:var(--bg-alt); }
   .footer-grid{ display:flex; justify-content:space-between; align-items:flex-start; gap:32px; flex-wrap:wrap; }
@@ -678,12 +755,16 @@
     .partner-grid{ grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); }
     /* auto-fit so a capability card can be added/removed without an orphan row */
     .bridge-grid{ grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); }
-    .ai-track-grid{ grid-template-columns:1fr 1fr; }
-    .ai-tool-list{ grid-template-columns:1fr 1fr; }
     .service-grid{ grid-template-columns:1fr 1fr; }
     .service.alt .service-grid > .service-copy{ order:2; }
     .service.alt .service-grid > .service-media{ order:1; }
     .contact-layout{ grid-template-columns:0.9fr 1.1fr; }
+    /* Managed services packages */
+    .plans-intro{ grid-template-columns:0.85fr 1.15fr; }
+    .care-list{ grid-template-columns:1fr 1fr; }
+    /* auto-fit so a plan tier can be added or removed without an orphan row */
+    .plan-grid{ grid-template-columns:repeat(auto-fit,minmax(215px,1fr)); }
+    .model-row{ grid-template-columns:repeat(3,1fr); }
   }
 
   /* Nav gained an "AI Tools" link — tighten spacing so the row still fits
@@ -707,11 +788,11 @@
     .hero{ padding:44px 0 40px; }
     .service{ padding:56px 0; }
     .intro{ padding:64px 0; }
-    .bridge, .why, .contact, .profile, .ai-track{ padding:64px 0; }
+    .bridge, .why, .contact, .profile, .plans{ padding:64px 0; }
     .final-cta{ padding:64px 0; }
     .btn{ width:100%; }
     .btn-row{ flex-direction:column; align-items:stretch; }
-    .contact-form{ padding:26px; }
+    .contact-card{ padding:26px; }
     .wordmark .tag{ display:none; }
   }
 </style>
@@ -733,12 +814,12 @@
     <div class="nav-actions">
       <nav class="nav-links-desktop" aria-label="Primary">
         <a href="#partner-network">Partner Network</a>
-        <a href="#ai-tools-partners">AI Tools</a>
+        <a href="ai-tools.html">AI Tools</a>
         <a href="#capabilities">Capabilities</a>
         <a href="#see-what-we-build">Our Work</a>
         <a href="#contact">Contact</a>
       </nav>
-      <a href="#contact" class="btn btn-secondary nav-links-desktop" style="padding:12px 24px;">Talk to Us</a>
+      <a href="https://calendly.com/disenyodigitalsdemo" class="btn btn-secondary nav-links-desktop" style="padding:12px 24px;" target="_blank" rel="noopener">Talk to Us</a>
       <button class="menu-btn" id="menuOpen" aria-haspopup="true" aria-expanded="false" aria-controls="mobilePanel" aria-label="Open menu">
         <span></span>
       </button>
@@ -753,14 +834,14 @@
   <nav>
     <a href="index.html">Home</a>
     <a href="#partner-network">Partner Network</a>
-    <a href="#ai-tools-partners">AI Tools</a>
+    <a href="ai-tools.html">AI Tools</a>
     <a href="#capabilities">Capabilities</a>
     <a href="#see-what-we-build">Our Work</a>
     <a href="#why">Why Us</a>
     <a href="#contact">Contact</a>
   </nav>
   <div class="panel-cta">
-    <a href="#contact" class="btn btn-primary">Talk to Us</a>
+    <a href="https://calendly.com/disenyodigitalsdemo" class="btn btn-primary" target="_blank" rel="noopener">Talk to Us</a>
   </div>
   <p class="panel-foot">Disenyo Digitals Collective OPC · Baguio City, Philippines</p>
 </div>
@@ -781,7 +862,7 @@
           <p class="lede-secondary">Meet the people helping Destinevents + Disenyo Digitals connect with businesses, organizations, and opportunities.</p>
           <p class="lede-tertiary">Our growing partner network brings together trusted people who believe in what we're building and help introduce our work to businesses and organizations that may need it.</p>
           <div class="btn-row">
-            <a href="#contact" class="btn btn-primary">Talk to Us</a>
+            <a href="https://calendly.com/disenyodigitalsdemo" class="btn btn-primary" target="_blank" rel="noopener">Talk to Us</a>
             <a href="#see-what-we-build" class="btn btn-secondary">Explore Our Work</a>
           </div>
         </div>
@@ -855,121 +936,6 @@
     </div>
   </section>
 
-  <!-- ==========================================================================
-       PROMOTE OUR AI TOOLS — AI Tools Partner Track
-       For partners whose interest is marketing/promoting the AI tools rather
-       than (or in addition to) introducing event or systems clients.
-       Self-contained: this <section> plus the "AI TOOLS PARTNER TRACK" CSS block
-       are the only pieces this feature adds to the page body.
-       ========================================================================== -->
-  <section class="ai-track" id="ai-tools-partners" aria-labelledby="ai-track-heading">
-    <div class="container">
-      <div class="section-head">
-        <p class="eyebrow"><span class="mark">⬡</span> AI Tools Partner Track</p>
-        <h2 id="ai-track-heading">Promote Our AI Tools</h2>
-        <p class="lede">Some partners connect us to events. Some connect us to businesses that need a system. Others help get our AI tools into the hands of the people they were built for — students, SMEs, creators, and communities, wherever they are.</p>
-      </div>
-
-      <div class="ai-track-grid">
-        <div class="reveal">
-          <h3>What you'd be promoting</h3>
-          <div class="ai-tool-list">
-            <a class="ai-tool" href="ai-tools.html" target="_blank" rel="noopener">
-              <span class="mark" aria-hidden="true">⬡</span>
-              <span>
-                <span class="name">Business Plan Studio</span>
-                <span class="who">SMEs · Students</span>
-              </span>
-            </a>
-            <a class="ai-tool" href="ai-tools.html" target="_blank" rel="noopener">
-              <span class="mark" aria-hidden="true">⬡</span>
-              <span>
-                <span class="name">Digital Readiness</span>
-                <span class="who">SMEs · Institutions</span>
-              </span>
-            </a>
-            <a class="ai-tool" href="ai-tools.html" target="_blank" rel="noopener">
-              <span class="mark" aria-hidden="true">⬡</span>
-              <span>
-                <span class="name">Brand Architect</span>
-                <span class="who">Professionals · SMEs</span>
-              </span>
-            </a>
-            <a class="ai-tool" href="ai-tools.html" target="_blank" rel="noopener">
-              <span class="mark" aria-hidden="true">⬡</span>
-              <span>
-                <span class="name">Content Machine</span>
-                <span class="who">Creators · SMEs</span>
-              </span>
-            </a>
-            <a class="ai-tool" href="ai-tools.html" target="_blank" rel="noopener">
-              <span class="mark" aria-hidden="true">⬡</span>
-              <span>
-                <span class="name">CarouselCraft</span>
-                <span class="who">Creators · Marketers</span>
-              </span>
-            </a>
-            <a class="ai-tool" href="ai-tools.html" target="_blank" rel="noopener">
-              <span class="mark" aria-hidden="true">⬡</span>
-              <span>
-                <span class="name">Bayanihan Hub</span>
-                <span class="who">Governments · Communities</span>
-              </span>
-            </a>
-          </div>
-          <!--
-            TOOL LIST NOTE FOR WHOEVER MAINTAINS THIS:
-            These six mirror the tools listed on the live AI Tools page. When a
-            new tool ships there, copy one <a class="ai-tool"> block and update
-            the name + audience. Each link points at the AI Tools page rather
-            than an individual tool URL so this list can't go stale/broken.
-          -->
-          <p class="ai-note">The tools are free to try, so a partner can send someone straight to the page and let the tool speak for itself — no demo call or setup required.</p>
-        </div>
-
-        <div class="reveal">
-          <h3>What promoting actually looks like</h3>
-          <div class="ai-steps">
-            <div class="ai-step">
-              <span class="idx">01</span>
-              <div>
-                <h4>Tell us how you'd reach people</h4>
-                <p>Social content, your own community or org, campus groups, business networks, local government contacts — whatever channel you already have. There's no minimum audience.</p>
-              </div>
-            </div>
-            <div class="ai-step">
-              <span class="idx">02</span>
-              <div>
-                <h4>We get you oriented</h4>
-                <p>A walkthrough of what each tool does and who it's for, so you're never promoting something you haven't seen work.</p>
-              </div>
-            </div>
-            <div class="ai-step">
-              <span class="idx">03</span>
-              <div>
-                <h4>You share, we handle the rest</h4>
-                <p>Send people to the tools or route interested businesses back to us. We take it from there — onboarding, support, and follow-through stay on our side.</p>
-              </div>
-            </div>
-          </div>
-
-          <div class="btn-row">
-            <a href="#contact-form" class="btn btn-primary" data-prefill-need="Promote / Market Our AI Tools">Promote Our AI Tools</a>
-            <a href="ai-tools.html" class="btn btn-secondary" target="_blank" rel="noopener">See the Tools</a>
-          </div>
-          <p class="ai-note">
-            Interested but not sure which tools fit your audience? Reach out anyway — we'll figure out the right fit together.
-            <!--
-              [PROJECT OWNER] TO CONFIRM: partner terms, promo kit/assets, and any
-              arrangement details are handled in conversation, not published here —
-              consistent with the QA rule that commission/referral terms stay internal.
-            -->
-          </p>
-        </div>
-      </div>
-    </div>
-  </section>
-
   <!-- WHAT CAN WE HELP WITH? (bridge into the portfolio) -->
   <section class="bridge" id="capabilities" aria-labelledby="capabilities-heading">
     <div class="container">
@@ -1033,28 +999,246 @@
       <div class="section-head center">
         <p class="eyebrow" style="justify-content:center;"><span class="mark">✦⬡</span> Portfolio</p>
         <h2 id="build-heading">See What We Build</h2>
-        <p class="lede" style="margin-left:auto; margin-right:auto;">From events to business systems, explore some of the work our network helps bring to businesses and organizations.</p>
+        <p class="lede" style="margin-left:auto; margin-right:auto;">AI-powered systems, websites, and digital experiences — built around how your business actually works, with starting rates you can plan around.</p>
       </div>
     </div>
   </section>
 
-  <!-- DEMO 01 — EVENT STYLING -->
-  <section class="service" id="demo-event-styling" aria-labelledby="demo-01-heading">
+  <!-- 01 — AI & BUSINESS SYSTEMS -->
+  <section class="service" id="service-ai-systems" aria-labelledby="service-01-heading">
     <div class="container">
       <div class="service-grid">
         <div class="service-copy reveal">
-          <p class="eyebrow"><span class="mark">✦</span> 01 — Event Styling</p>
-          <h2 id="demo-01-heading">Designed to be experienced.</h2>
-          <p class="desc">Event styling, visual concepts, installations, corporate events, and creative experiences delivered through Destinevents.</p>
-          <a href="#contact" class="btn btn-primary">Discuss an Event</a>
+          <p class="eyebrow"><span class="mark">⬡</span> 01 — AI &amp; Business Systems</p>
+          <h2 id="service-01-heading">Let the system do the repetitive work.</h2>
+          <p class="desc">Smart systems that automate operations and help your business run efficiently.</p>
+          <ul class="feature-list">
+            <li>AI Agents &amp; Automation</li>
+            <li>Payroll &amp; 13th Month</li>
+            <li>Inventory Management</li>
+            <li>Enrollment &amp; Ticketing</li>
+            <li>Operations Dashboards</li>
+          </ul>
+          <div class="btn-row">
+            <a href="#contact" class="btn btn-primary">Discuss a System</a>
+            <a href="ai-tools.html" class="demo-link" data-demo-link data-demo-url="ai-tools.html" target="_blank" rel="noopener">Try Our AI Tools</a>
+          </div>
         </div>
         <div class="service-media reveal">
-          <article class="media-frame" data-portfolio-media data-type="image" data-src="" data-alt="Event styling — Reel, video, or gallery to be added" data-orientation="portrait">
-            <span class="media-badge">Reel / Photo / Gallery</span>
+          <article class="media-frame landscape" data-portfolio-media data-type="image" data-src="" data-alt="AI and business systems dashboard">
+            <span class="media-badge">Dashboard / Demo</span>
+            <div class="media-placeholder-inner">
+              <div class="ph-icon">⬡</div>
+              <span class="ph-label">Operations Dashboard</span>
+              <span class="ph-sub">Swap in the dashboard visual from the services deck, a screenshot, or a short screen recording.</span>
+            </div>
+          </article>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 02 — PAYROLL & HR MANAGEMENT -->
+  <section class="service alt" id="service-payroll" aria-labelledby="service-02-heading">
+    <div class="container">
+      <div class="service-grid">
+        <div class="service-media reveal">
+          <article class="media-frame landscape" data-portfolio-media data-type="image" data-src="" data-alt="Payroll and HR management system">
+            <span class="media-badge">Screenshot / Demo</span>
+            <div class="media-placeholder-inner">
+              <div class="ph-icon">⬡</div>
+              <span class="ph-label">Payroll Summary Screen</span>
+              <span class="ph-sub">Swap in the payroll visual from the services deck or a product screenshot.</span>
+            </div>
+          </article>
+        </div>
+        <div class="service-copy reveal">
+          <p class="eyebrow"><span class="mark">⬡</span> 02 — Payroll &amp; HR Management</p>
+          <h2 id="service-02-heading">Less manual work. More visibility.</h2>
+          <p class="desc">Automated payroll, time tracking, and employee management for accurate and stress-free HR operations.</p>
+          <ul class="feature-list">
+            <li>Daily Time &amp; Attendance</li>
+            <li>Payroll Computation</li>
+            <li>13th Month Processing</li>
+            <li>SSS, Pag-IBIG, PhilHealth</li>
+            <li>Employee Records &amp; Reports</li>
+          </ul>
+          <p class="rate">Starting rate <strong>₱8,000</strong></p>
+          <div>
+            <a href="#" class="demo-link" data-demo-link data-demo-url="">View Demo</a>
+            <p class="demo-note" data-demo-note>Demo link coming soon — add the project URL to activate.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 03 — INVENTORY MANAGEMENT -->
+  <section class="service" id="service-inventory" aria-labelledby="service-03-heading">
+    <div class="container">
+      <div class="service-grid">
+        <div class="service-copy reveal">
+          <p class="eyebrow"><span class="mark">⬡</span> 03 — Inventory Management</p>
+          <h2 id="service-03-heading">Know your stock. Know your business.</h2>
+          <p class="desc">Real-time inventory tracking across branches to prevent stockouts, reduce waste, and optimize purchasing.</p>
+          <ul class="feature-list">
+            <li>Real-time Stock Monitoring</li>
+            <li>Low Stock Alerts</li>
+            <li>Supplier &amp; Purchase Orders</li>
+            <li>Barcode / QR Integration</li>
+            <li>Inventory Reports</li>
+          </ul>
+          <p class="rate">Starting rate <strong>₱10,000</strong></p>
+          <div>
+            <a href="#" class="demo-link" data-demo-link data-demo-url="">View Demo</a>
+            <p class="demo-note" data-demo-note>Demo link coming soon — add the project URL to activate.</p>
+          </div>
+        </div>
+        <div class="service-media reveal">
+          <article class="media-frame landscape" data-portfolio-media data-type="image" data-src="" data-alt="Inventory management system">
+            <span class="media-badge">Screenshot / Demo</span>
+            <div class="media-placeholder-inner">
+              <div class="ph-icon">⬡</div>
+              <span class="ph-label">Inventory Overview Screen</span>
+              <span class="ph-sub">Swap in the inventory visual from the services deck or a product screenshot.</span>
+            </div>
+          </article>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 04 — ENROLLMENT & TICKETING SYSTEM -->
+  <section class="service alt" id="service-enrollment" aria-labelledby="service-04-heading">
+    <div class="container">
+      <div class="service-grid">
+        <div class="service-media reveal">
+          <article class="media-frame landscape" data-portfolio-media data-type="image" data-src="" data-alt="Enrollment and ticketing system">
+            <span class="media-badge">Screenshot / Demo</span>
+            <div class="media-placeholder-inner">
+              <div class="ph-icon">⬡</div>
+              <span class="ph-label">Event &amp; Registration Dashboard</span>
+              <span class="ph-sub">Swap in the event dashboard visual, a screenshot, or a short screen recording.</span>
+            </div>
+          </article>
+        </div>
+        <div class="service-copy reveal">
+          <p class="eyebrow"><span class="mark">⬡</span> 04 — Enrollment &amp; Ticketing</p>
+          <h2 id="service-04-heading">From registration to organized records.</h2>
+          <p class="desc">Streamlined registration, payment, and ticketing for events, classes, and membership programs.</p>
+          <ul class="feature-list">
+            <li>Online Registration</li>
+            <li>Payment Integration</li>
+            <li>QR Code Ticketing</li>
+            <li>Attendance Tracking</li>
+            <li>Real-time Reporting</li>
+          </ul>
+          <p class="rate">Starting rate <strong>₱10,000</strong></p>
+          <div>
+            <a href="https://fae-puce.vercel.app" class="demo-link" data-demo-link data-demo-url="https://fae-puce.vercel.app" target="_blank" rel="noopener">View Demo</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 05 — ACCOUNTING & FINANCIAL REPORTS -->
+  <section class="service" id="service-accounting" aria-labelledby="service-05-heading">
+    <div class="container">
+      <div class="service-grid">
+        <div class="service-copy reveal">
+          <p class="eyebrow"><span class="mark">⬡</span> 05 — Accounting &amp; Financial Reports</p>
+          <h2 id="service-05-heading">Numbers you can actually act on.</h2>
+          <p class="desc">Clear financial insights and automated reports to help you manage cash flow and grow profitably.</p>
+          <ul class="feature-list">
+            <li>Income &amp; Expense Tracking</li>
+            <li>Profit &amp; Loss Reports</li>
+            <li>Cash Flow Monitoring</li>
+            <li>Accounts Payable / Receivable</li>
+            <li>Export to Excel / PDF</li>
+          </ul>
+          <p class="rate">Starting rate <strong>₱10,000</strong></p>
+          <div>
+            <a href="#" class="demo-link" data-demo-link data-demo-url="">View Demo</a>
+            <p class="demo-note" data-demo-note>Demo link coming soon — add the project URL to activate.</p>
+          </div>
+        </div>
+        <div class="service-media reveal">
+          <article class="media-frame landscape" data-portfolio-media data-type="image" data-src="" data-alt="Accounting and financial reports system">
+            <span class="media-badge">Screenshot / Demo</span>
+            <div class="media-placeholder-inner">
+              <div class="ph-icon">⬡</div>
+              <span class="ph-label">Profit &amp; Loss Overview</span>
+              <span class="ph-sub">Swap in the financial reports visual from the services deck or a product screenshot.</span>
+            </div>
+          </article>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 06 — WEBSITES & LANDING PAGES -->
+  <section class="service alt" id="service-websites" aria-labelledby="service-06-heading">
+    <div class="container">
+      <div class="service-grid">
+        <div class="service-media reveal">
+          <article class="media-frame landscape" data-portfolio-media data-type="image" data-src="" data-alt="Websites and landing pages">
+            <span class="media-badge">Website / Demo</span>
+            <div class="media-placeholder-inner">
+              <div class="ph-icon">⬡</div>
+              <span class="ph-label">Website / Landing Page</span>
+              <span class="ph-sub">Swap in a live site screenshot, a scrolling capture, or a client project.</span>
+            </div>
+          </article>
+        </div>
+        <div class="service-copy reveal">
+          <p class="eyebrow"><span class="mark">✦</span> 06 — Websites &amp; Landing Pages</p>
+          <h2 id="service-06-heading">A presence that earns trust.</h2>
+          <p class="desc">Professional websites and landing pages that build credibility, generate leads, and convert visitors into paying customers.</p>
+          <ul class="feature-list">
+            <li>Business Websites</li>
+            <li>Landing Pages</li>
+            <li>SEO &amp; Mobile-Friendly</li>
+            <li>Campaign Pages</li>
+            <li>Contact &amp; Lead Forms</li>
+          </ul>
+          <p class="rate">Starting rate <strong>₱5,000</strong></p>
+          <div>
+            <a href="index.html" class="demo-link" data-demo-link data-demo-url="index.html" target="_blank" rel="noopener">View Demo</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 07 — QR & DIGITAL EXPERIENCES -->
+  <section class="service" id="service-qr" aria-labelledby="service-07-heading">
+    <div class="container">
+      <div class="service-grid">
+        <div class="service-copy reveal">
+          <p class="eyebrow"><span class="mark">✦</span> 07 — QR &amp; Digital Experiences</p>
+          <h2 id="service-07-heading">One scan, the whole experience.</h2>
+          <p class="desc">Interactive QR solutions and digital touchpoints that enhance engagement and customer experience.</p>
+          <ul class="feature-list">
+            <li>QR Code Menus</li>
+            <li>Digital Check-in</li>
+            <li>Surveys &amp; Feedback</li>
+            <li>Product Info &amp; Guides</li>
+            <li>Contactless Experiences</li>
+          </ul>
+          <p class="rate">Starting rate <strong>₱10,000</strong></p>
+          <div>
+            <a href="#" class="demo-link" data-demo-link data-demo-url="">View Demo</a>
+            <p class="demo-note" data-demo-note>Demo link coming soon — add the project URL to activate.</p>
+          </div>
+        </div>
+        <div class="service-media reveal">
+          <article class="media-frame" data-portfolio-media data-type="image" data-src="" data-alt="QR and digital experiences" data-orientation="portrait">
+            <span class="media-badge">Mobile / QR Demo</span>
             <div class="media-placeholder-inner">
               <div class="ph-icon">✦</div>
-              <span class="ph-label">Event Styling Reel / Image</span>
-              <span class="ph-sub">Drop in a vertical Reel, MP4, landscape photo, or gallery — the frame adapts automatically.</span>
+              <span class="ph-label">Scan-to-Explore Screen</span>
+              <span class="ph-sub">Drop in the mobile QR visual, a vertical Reel, or a photo of the experience in use.</span>
             </div>
           </article>
         </div>
@@ -1062,153 +1246,181 @@
     </div>
   </section>
 
-  <!-- DEMO 02 — PAYROLL SYSTEM -->
-  <section class="service alt" id="demo-payroll" aria-labelledby="demo-02-heading">
+  <!-- 08 — ESG & SUSTAINABILITY REPORTING -->
+  <section class="service alt" id="service-esg" aria-labelledby="service-08-heading">
     <div class="container">
       <div class="service-grid">
         <div class="service-media reveal">
-          <article class="media-frame landscape" data-portfolio-media data-type="image" data-src="" data-alt="Payroll system demo">
-            <span class="media-badge">Screenshot / Demo</span>
+          <article class="media-frame landscape" data-portfolio-media data-type="image" data-src="" data-alt="ESG and sustainability reporting system">
+            <span class="media-badge">Report / Demo</span>
             <div class="media-placeholder-inner">
               <div class="ph-icon">⬡</div>
-              <span class="ph-label">Payroll Screenshot / Demo</span>
-              <span class="ph-sub">Swap in a product screenshot, screen recording, or Reel.</span>
+              <span class="ph-label">ESG Summary Dashboard</span>
+              <span class="ph-sub">Swap in the ESG scorecard visual from the services deck or a sample report.</span>
             </div>
           </article>
         </div>
         <div class="service-copy reveal">
-          <p class="eyebrow"><span class="mark">⬡</span> 02 — Business Systems</p>
-          <h2 id="demo-02-heading">Less manual work. More visibility.</h2>
-          <p class="desc">A practical payroll workflow designed to help businesses organize employee information, payroll processes, records, and reporting.</p>
-          <a href="#" class="demo-link" data-demo-link data-demo-url="">View Demo</a>
-          <p class="demo-note" data-demo-note>Demo link coming soon — add the project URL to activate.</p>
+          <p class="eyebrow"><span class="mark">⬡</span> 08 — ESG &amp; Sustainability Reporting</p>
+          <h2 id="service-08-heading">Prove your impact, not just claim it.</h2>
+          <p class="desc">Measure, manage, and communicate your impact with data-driven sustainability and ESG reporting.</p>
+          <ul class="feature-list">
+            <li>ESG Scorecards</li>
+            <li>Waste &amp; Resource Tracking</li>
+            <li>Circular Economy Reports</li>
+            <li>Executive Summaries</li>
+            <li>Board-Ready Reports</li>
+          </ul>
+          <p class="rate">Starting rate <strong>₱15,000</strong></p>
+          <div>
+            <a href="#" class="demo-link" data-demo-link data-demo-url="">View Demo</a>
+            <p class="demo-note" data-demo-note>Demo link coming soon — add the project URL to activate.</p>
+          </div>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- DEMO 03 — INVENTORY SYSTEM -->
-  <section class="service" id="demo-inventory" aria-labelledby="demo-03-heading">
+  <!-- 09 — MANAGED SERVICES PACKAGES -->
+  <section class="plans" id="service-managed" aria-labelledby="service-09-heading">
     <div class="container">
-      <div class="service-grid">
-        <div class="service-copy reveal">
-          <p class="eyebrow"><span class="mark">⬡</span> 03 — Business Systems</p>
-          <h2 id="demo-03-heading">Know your stock. Know your business.</h2>
-          <p class="desc">An inventory management solution designed to help businesses monitor stock, movement, and operational information more efficiently.</p>
-          <a href="#" class="demo-link" data-demo-link data-demo-url="">View Demo</a>
-          <p class="demo-note" data-demo-note>Demo link coming soon — add the project URL to activate.</p>
+      <div class="plans-intro">
+        <div class="reveal">
+          <p class="eyebrow"><span class="mark">⬡</span> 09 — Managed Services</p>
+          <h2 id="service-09-heading" style="font-size:clamp(30px,4.2vw,46px); line-height:1.16; margin-bottom:20px;">We keep it running after launch.</h2>
+          <p>We keep your systems secure, updated, and performing at their best so you can focus on running your business.</p>
         </div>
-        <div class="service-media reveal">
-          <article class="media-frame landscape" data-portfolio-media data-type="image" data-src="" data-alt="Inventory system demo">
-            <span class="media-badge">Screenshot / Demo</span>
-            <div class="media-placeholder-inner">
-              <div class="ph-icon">⬡</div>
-              <span class="ph-label">Inventory Screenshot / Demo</span>
-              <span class="ph-sub">Swap in a product screenshot or screen recording.</span>
+
+        <div class="care-list reveal">
+          <div class="care-item">
+            <div class="mark">☁</div>
+            <div>
+              <h4>Reliable &amp; Secure</h4>
+              <p>Cloud hosting, backups, and security monitoring.</p>
             </div>
-          </article>
+          </div>
+          <div class="care-item">
+            <div class="mark">⚙</div>
+            <div>
+              <h4>Always Up-to-Date</h4>
+              <p>System updates, bug fixes, and performance tuning.</p>
+            </div>
+          </div>
+          <div class="care-item">
+            <div class="mark">☏</div>
+            <div>
+              <h4>Responsive Support</h4>
+              <p>Real people, real help when you need it.</p>
+            </div>
+          </div>
+          <div class="care-item">
+            <div class="mark">◨</div>
+            <div>
+              <h4>Proactive Monitoring</h4>
+              <p>We watch your system so you don't have to.</p>
+            </div>
+          </div>
         </div>
+      </div>
+
+      <div class="plans-lead reveal">
+        <h3>There's a plan for every need</h3>
+        <p>Choose the level of care that fits your system and business.</p>
+      </div>
+
+      <!-- Plan tiers — add or remove a .plan-card and the grid rebalances -->
+      <div class="plan-grid">
+        <article class="plan-card reveal">
+          <div class="plan-body">
+            <div class="mark">✿</div>
+            <h4 class="plan-name">Essential Care</h4>
+            <p class="plan-price">₱2,500 – ₱3,500</p>
+            <p class="plan-period">/ month</p>
+            <p class="plan-best"><span>Best for:</span>Simple systems like enrollment, information, and QR solutions.</p>
+          </div>
+          <div class="plan-tag t1">Basic Protection</div>
+        </article>
+
+        <article class="plan-card reveal">
+          <div class="plan-body">
+            <div class="mark">▤</div>
+            <h4 class="plan-name">Business Care</h4>
+            <p class="plan-price">₱4,500 – ₱6,500</p>
+            <p class="plan-period">/ month</p>
+            <p class="plan-best"><span>Best for:</span>Inventory, payroll, and operational systems for a single location.</p>
+          </div>
+          <div class="plan-tag t2">Reliable &amp; Efficient</div>
+        </article>
+
+        <article class="plan-card reveal">
+          <div class="plan-body">
+            <div class="mark">◫</div>
+            <h4 class="plan-name">Business Plus</h4>
+            <p class="plan-price">₱7,500 – ₱12,000</p>
+            <p class="plan-period">/ month</p>
+            <p class="plan-best"><span>Best for:</span>Advanced systems with multiple modules, P&amp;L, and procurement.</p>
+          </div>
+          <div class="plan-tag t3">Advanced Support</div>
+        </article>
+
+        <article class="plan-card reveal">
+          <div class="plan-body">
+            <div class="mark">⌂</div>
+            <h4 class="plan-name">Multi-Branch / Pro</h4>
+            <p class="plan-price">₱12,000 – ₱20,000+</p>
+            <p class="plan-period">/ month</p>
+            <p class="plan-best"><span>Best for:</span>Multiple locations, integrations, dashboards, and complex operations.</p>
+          </div>
+          <div class="plan-tag t4">Scalable &amp; Powerful</div>
+        </article>
+
+        <article class="plan-card reveal">
+          <div class="plan-body">
+            <div class="mark">✦</div>
+            <h4 class="plan-name">AI / Mission Critical</h4>
+            <p class="plan-price">₱15,000 – ₱30,000+</p>
+            <p class="plan-period">/ month</p>
+            <p class="plan-best"><span>Best for:</span>AI agents, heavy automation, high security, and critical business systems.</p>
+          </div>
+          <div class="plan-tag t5">Mission Critical Care</div>
+        </article>
+      </div>
+
+      <div class="plan-included reveal">
+        <h3>What's included in all plans</h3>
+        <div class="included-grid">
+          <div class="included-item"><span class="mark">☁</span> Cloud Hosting &amp; Infrastructure</div>
+          <div class="included-item"><span class="mark">⛁</span> Data Backup &amp; Recovery</div>
+          <div class="included-item"><span class="mark">⛨</span> Security &amp; Updates</div>
+          <div class="included-item"><span class="mark">◈</span> System Monitoring &amp; Performance</div>
+          <div class="included-item"><span class="mark">☏</span> Technical Support (hours vary by plan)</div>
+        </div>
+      </div>
+
+      <div class="model-row">
+        <div class="model-step reveal">
+          <span class="idx">01</span>
+          <h4>Implementation</h4>
+          <p>One-time fee to build and deploy your system.</p>
+        </div>
+        <div class="model-step reveal">
+          <span class="idx">02</span>
+          <h4>Managed Services</h4>
+          <p>Monthly care to keep your system running smoothly.</p>
+        </div>
+        <div class="model-step reveal">
+          <span class="idx">03</span>
+          <h4>Enhancements</h4>
+          <p>New features or major updates are quoted separately.</p>
+        </div>
+      </div>
+
+      <div class="btn-row" style="margin-top:44px;">
+        <a href="#contact" class="btn btn-primary">Find the Right Plan</a>
       </div>
     </div>
   </section>
 
-  <!-- DEMO 04 — ENROLLMENT SYSTEM -->
-  <section class="service alt" id="demo-enrollment" aria-labelledby="demo-04-heading">
-    <div class="container">
-      <div class="service-grid">
-        <div class="service-media reveal">
-          <article class="media-frame landscape" data-portfolio-media data-type="image" data-src="" data-alt="Enrollment system demo">
-            <span class="media-badge">Screenshot / Demo</span>
-            <div class="media-placeholder-inner">
-              <div class="ph-icon">⬡</div>
-              <span class="ph-label">Enrollment Screenshot / Demo</span>
-              <span class="ph-sub">Swap in a product screenshot or screen recording.</span>
-            </div>
-          </article>
-        </div>
-        <div class="service-copy reveal">
-          <p class="eyebrow"><span class="mark">⬡</span> 04 — Business Systems</p>
-          <h2 id="demo-04-heading">From registration to organized records.</h2>
-          <p class="desc">Digital enrollment and registration workflows designed to make information collection, applicant management, and processing easier.</p>
-          <a href="https://fae-puce.vercel.app" class="demo-link" data-demo-link data-demo-url="https://fae-puce.vercel.app" target="_blank" rel="noopener">View Demo</a>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- DEMO 05 — TICKETING SYSTEM -->
-  <section class="service" id="demo-ticketing" aria-labelledby="demo-05-heading">
-    <div class="container">
-      <div class="service-grid">
-        <div class="service-copy reveal">
-          <p class="eyebrow"><span class="mark">⬡</span> 05 — Business Systems</p>
-          <h2 id="demo-05-heading">Make every registration count.</h2>
-          <p class="desc">Digital ticketing and registration workflows for events, communities, and organizations.</p>
-          <a href="#" class="demo-link" data-demo-link data-demo-url="">View Demo</a>
-          <p class="demo-note" data-demo-note>Demo link coming soon — add the project URL to activate.</p>
-        </div>
-        <div class="service-media reveal">
-          <article class="media-frame landscape" data-portfolio-media data-type="image" data-src="" data-alt="Ticketing system demo">
-            <span class="media-badge">Screenshot / Reel / Demo</span>
-            <div class="media-placeholder-inner">
-              <div class="ph-icon">⬡</div>
-              <span class="ph-label">Ticketing Screenshot / Demo</span>
-              <span class="ph-sub">Swap in a product screenshot, screen recording, or Reel.</span>
-            </div>
-          </article>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- DEMO 06 — KUSINAIQ -->
-  <section class="service alt" id="demo-kusinaiq" aria-labelledby="demo-06-heading">
-    <div class="container">
-      <div class="service-grid">
-        <div class="service-media reveal">
-          <article class="media-frame landscape" data-portfolio-media data-type="image" data-src="" data-alt="KusinaIQ interface demo">
-            <span class="media-badge">Interface / Demo</span>
-            <div class="media-placeholder-inner">
-              <div class="ph-icon">⬡</div>
-              <span class="ph-label">KusinaIQ™ Interface / Demo</span>
-              <span class="ph-sub">Swap in interface visuals, a demo video, or a Reel.</span>
-            </div>
-          </article>
-        </div>
-        <div class="service-copy reveal">
-          <p class="eyebrow"><span class="mark">⬡</span> 06 — Business Systems</p>
-          <h2 id="demo-06-heading">Restaurant operations, organized.</h2>
-          <p class="desc">KusinaIQ™ is a cloud-based restaurant operations platform designed to bring inventory, workflows, records, and operational visibility into one practical system.</p>
-          <a href="#" class="demo-link" data-demo-link data-demo-url="">View Demo</a>
-          <p class="demo-note" data-demo-note>Demo link coming soon — add the project URL to activate.</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- DEMO 07 — AI TOOLS -->
-  <section class="service" id="demo-ai-tools" aria-labelledby="demo-07-heading">
-    <div class="container">
-      <div class="service-grid">
-        <div class="service-copy reveal">
-          <p class="eyebrow"><span class="mark">⬡</span> 07 — AI Tools</p>
-          <h2 id="demo-07-heading">AI that speaks your language.</h2>
-          <p class="desc">A free suite of culturally aware AI tools for students, SMEs, creators, and communities everywhere —business planning, digital readiness, branding, content, and more. Live now, and the easiest thing in our portfolio for a partner to share.</p>
-          <a href="ai-tools.html" class="demo-link" data-demo-link data-demo-url="ai-tools.html" target="_blank" rel="noopener">View Demo</a>
-        </div>
-        <div class="service-media reveal">
-          <article class="media-frame landscape" data-portfolio-media data-type="image" data-src="" data-alt="AI Tools platform demo">
-            <span class="media-badge">Screenshot / Demo</span>
-            <div class="media-placeholder-inner">
-              <div class="ph-icon">⬡</div>
-              <span class="ph-label">AI Tools Screenshot / Demo</span>
-              <span class="ph-sub">Screenshot the live AI Tools page, or swap in a short screen recording of a tool in use.</span>
-            </div>
-          </article>
-        </div>
-      </div>
-    </div>
-  </section>
 
   <!-- WHY WORK WITH US -->
   <section class="why" id="why" aria-labelledby="why-heading">
@@ -1250,7 +1462,7 @@
         <p class="eyebrow">Let's Work Together</p>
         <h2 id="contact-heading">Have a project in mind?</h2>
         <p>Whether you need an event styled, a business system organized, or you'd like to introduce us to someone who does — let's start with a conversation.</p>
-        <a href="#contact-form" class="btn btn-primary">Start a Conversation</a>
+        <a href="https://calendly.com/disenyodigitalsdemo" class="btn btn-primary" target="_blank" rel="noopener">Start a Conversation</a>
       </div>
 
       <div class="contact-tracks">
@@ -1267,7 +1479,7 @@
         <div class="track-card reveal">
           <span class="mark">⬡</span>
           <h3>AI Tools</h3>
-          <p>For using the tools in your business — or for helping us promote them to yours.</p>
+          <p>For putting our free AI tools to work in your business or organization.</p>
         </div>
       </div>
 
@@ -1279,69 +1491,42 @@
           </p>
         </div>
 
-        <form class="contact-form reveal" id="contact-form" novalidate>
-          <!--
-            INTEGRATION NOTE FOR DEVELOPER:
-            This form currently prevents default submission and shows a success
-            message client-side. Wire it up by either:
-              1) Adding a form backend action (e.g. Formspree, Netlify Forms,
-                 Basin) to the <form> tag and removing preventDefault() in the
-                 JS below, or
-              2) Sending the FormData via fetch() to your own API endpoint
-                 inside the submit handler (search "CONTACT FORM SUBMIT" in
-                 the <script> at the bottom of this file).
-            A honeypot field is included for basic spam protection.
-          -->
-          <div class="form-row">
-            <div class="field">
-              <label for="f-name">Name</label>
-              <input type="text" id="f-name" name="name" required autocomplete="name">
-            </div>
-            <div class="field">
-              <label for="f-org">Business / Organization</label>
-              <input type="text" id="f-org" name="organization" autocomplete="organization">
-            </div>
-          </div>
-          <div class="form-row">
-            <div class="field">
-              <label for="f-email">Email</label>
-              <input type="email" id="f-email" name="email" required autocomplete="email">
-            </div>
-            <div class="field">
-              <label for="f-need">What do you need?</label>
-              <select id="f-need" name="need" required>
-                <option value="" disabled selected>Select one</option>
-                <option>Introduce a Business / Partnership</option>
-                <option>Promote / Market Our AI Tools</option>
-                <option>AI Tools for My Business</option>
-                <option>Event Styling</option>
-                <option>Payroll System</option>
-                <option>Inventory System</option>
-                <option>Enrollment System</option>
-                <option>Ticketing System</option>
-                <option>Custom Digital System</option>
-                <option>Other</option>
-              </select>
-            </div>
-          </div>
-          <div class="field">
-            <label for="f-message">Message</label>
-            <textarea id="f-message" name="message" required placeholder="Tell us a bit about your event or the system you have in mind."></textarea>
-          </div>
-          <!-- Honeypot (leave empty; bots tend to fill it) -->
-          <div style="position:absolute; left:-9999px;" aria-hidden="true">
-            <label for="f-company">Leave blank</label>
-            <input type="text" id="f-company" name="company" tabindex="-1" autocomplete="off">
-          </div>
-
-          <div class="form-foot">
-            <button type="submit" class="btn btn-primary">Submit</button>
-            <span class="form-note">We typically reply within 1–2 business days.</span>
-          </div>
-          <div class="form-success" id="formSuccess" role="status" aria-live="polite">
-            Thanks — your message is ready to send. Connect this form to your inbox to receive it.
-          </div>
-        </form>
+        <div class="contact-card reveal">
+          <h3>Book a discovery call</h3>
+          <p>Pick a time that works for you and we&rsquo;ll walk through what you need &mdash; scope, timelines, and next steps. No obligation.</p>
+          <a href="https://calendly.com/disenyodigitalsdemo" class="btn btn-primary" target="_blank" rel="noopener">Schedule a Call</a>
+          <p class="contact-note">Prefer to message first? Call or email us directly below.</p>
+          <ul class="contact-details">
+            <li>
+              <span class="mark">&#9742;</span>
+              <div>
+                <span class="label">Phone</span>
+                <a class="value" href="tel:+639065713298">+63 906 571 3298</a>
+              </div>
+            </li>
+            <li>
+              <span class="mark">&#9993;</span>
+              <div>
+                <span class="label">Email</span>
+                <a class="value" href="mailto:info@destinevents.biz">info@destinevents.biz</a>
+              </div>
+            </li>
+            <li>
+              <span class="mark">&#9678;</span>
+              <div>
+                <span class="label">Studio</span>
+                <span class="value">Nevada Square, Baguio City</span>
+              </div>
+            </li>
+            <li>
+              <span class="mark">&#9881;</span>
+              <div>
+                <span class="label">Website</span>
+                <a class="value" href="index.html">disenyodigitals.com</a>
+              </div>
+            </li>
+          </ul>
+        </div>
       </div>
     </div>
   </section>
@@ -1357,8 +1542,8 @@
         <span class="line"><em>Let's talk.</em></span>
       </h2>
       <div class="btn-row" style="justify-content:center;">
-        <a href="#contact-form" class="btn btn-primary">Introduce a Business</a>
-        <a href="#contact-form" class="btn btn-secondary">Talk to Us</a>
+        <a href="https://calendly.com/disenyodigitalsdemo" class="btn btn-primary" target="_blank" rel="noopener">Introduce a Business</a>
+        <a href="https://calendly.com/disenyodigitalsdemo" class="btn btn-secondary" target="_blank" rel="noopener">Talk to Us</a>
       </div>
     </div>
   </section>
@@ -1377,7 +1562,7 @@
       <nav class="footer-links" aria-label="Footer">
         <a href="index.html">Home</a>
         <a href="#partner-network">Partner Network</a>
-        <a href="#ai-tools-partners">AI Tools</a>
+        <a href="ai-tools.html">AI Tools</a>
         <a href="#capabilities">Capabilities</a>
         <a href="#see-what-we-build">Our Work</a>
         <a href="#contact">Contact</a>
@@ -1512,38 +1697,6 @@
         if(note) note.classList.add('show');
       });
     }
-  });
-
-  /* CONTACT FORM SUBMIT */
-  var form = document.getElementById('contact-form');
-  var success = document.getElementById('formSuccess');
-  form.addEventListener('submit', function(e){
-    e.preventDefault(); // remove this line once a real form backend/action is wired up
-    if(!form.checkValidity()){
-      form.reportValidity();
-      return;
-    }
-    // TODO: send form data to your backend/service here, e.g.:
-    // fetch('/api/contact', { method:'POST', body: new FormData(form) });
-    success.classList.add('show');
-    form.reset();
-  });
-
-  /* ==========================================================================
-     PREFILL "What do you need?" — used by the AI Tools Partner Track CTA.
-     Any link with data-prefill-need="<exact option text>" preselects that
-     option before scrolling to the form. Purely additive: if the option text
-     is ever renamed, the link still scrolls, it just doesn't preselect.
-     ========================================================================== */
-  var needSelect = document.getElementById('f-need');
-  document.querySelectorAll('[data-prefill-need]').forEach(function(link){
-    link.addEventListener('click', function(){
-      if(!needSelect) return;
-      var wanted = link.getAttribute('data-prefill-need');
-      Array.prototype.forEach.call(needSelect.options, function(opt){
-        if(opt.text === wanted) needSelect.value = opt.value || opt.text;
-      });
-    });
   });
 
 })();
