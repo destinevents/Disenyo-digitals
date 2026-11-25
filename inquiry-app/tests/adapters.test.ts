@@ -12,7 +12,17 @@ import {
   MODEL,
   toMessageParams,
 } from '../server/agent.js';
-import { ALERT_TIMEOUT_MS, formatAlert, TelegramNotifier } from '../server/notifier.js';
+import {
+  ALERT_TIMEOUT_MS,
+  alertSubject,
+  formatAlert,
+  MultiNotifier,
+  parseEmailList,
+  ResendEmailNotifier,
+  TelegramNotifier,
+} from '../server/notifier.js';
+import { handlerFromEnv } from '../server/fromEnv.js';
+import type { Notifier } from '../server/types.js';
 import { STORE_TIMEOUT_MS, SupabaseStore } from '../server/stores/supabaseStore.js';
 import { emptyFields, type Alert } from '../server/types.js';
 import { isOriginAllowed, parseAllowedOrigins } from '../server/validate.js';
@@ -37,6 +47,66 @@ const alert: Alert = {
     timeline: 'January',
   },
 };
+
+describe('Email alert (Resend)', () => {
+  it('posts a plain-text email with a clear subject and the prospect as Reply-To', async () => {
+    const fetchImpl = vi.fn(async () => new Response(JSON.stringify({ id: 'abc' }), { status: 200 }));
+    const notifier = new ResendEmailNotifier('re_test', 'Disenyo <alerts@disenyodigitals.com>', ['info@destinevents.biz'], fetchImpl as unknown as typeof fetch);
+    await notifier.send({ ...alert, fields: { ...alert.fields, email: 'maria@bakery.ph' } });
+
+    const [url, init] = fetchImpl.mock.calls[0] as unknown as [string, RequestInit];
+    expect(url).toBe('https://api.resend.com/emails');
+    expect((init.headers as Record<string, string>).Authorization).toBe('Bearer re_test');
+    const body = JSON.parse(init.body as string);
+    expect(body).toMatchObject({
+      from: 'Disenyo <alerts@disenyodigitals.com>',
+      to: ['info@destinevents.biz'],
+      subject: 'New lead (score 4/5) – Inventory Management – Maria Santos',
+      reply_to: 'maria@bakery.ph',
+    });
+    expect(body.text).toContain('0917 123 4567');
+    expect(body.html).toBeUndefined();
+  });
+
+  it('leaves out Reply-To when the prospect gave no valid email, and throws on failure', async () => {
+    const fetchImpl = vi.fn(async () => new Response('bad', { status: 422 }));
+    const notifier = new ResendEmailNotifier('k', 'a@b.co', ['x@y.co'], fetchImpl as unknown as typeof fetch);
+    await expect(notifier.send({ ...alert, fields: { ...alert.fields, email: 'not an email' } })).rejects.toThrow(/Resend send failed: 422/);
+    const body = JSON.parse((fetchImpl.mock.calls[0] as unknown as [string, RequestInit])[1].body as string);
+    expect(body.reply_to).toBeUndefined();
+  });
+
+  it('keeps the subject on one line', () => {
+    expect(alertSubject({ ...alert, fields: { ...alert.fields, name: 'Maria\nBcc: x@y.co' } })).not.toMatch(/[\r\n]/);
+  });
+
+  it('parses the recipient list', () => {
+    expect(parseEmailList(' info@destinevents.biz, jenn@disenyodigitals.com ,nope')).toEqual(['info@destinevents.biz', 'jenn@disenyodigitals.com']);
+    expect(parseEmailList(undefined)).toEqual([]);
+  });
+});
+
+describe('alert channels', () => {
+  const ok: Notifier = { send: vi.fn(async () => {}) };
+  const bad: Notifier = { send: vi.fn(async () => { throw new Error('down'); }) };
+
+  it('counts as sent when at least one channel works', async () => {
+    const log = { error: vi.fn() };
+    await expect(new MultiNotifier([bad, ok], log).send(alert)).resolves.toBeUndefined();
+    expect(log.error).toHaveBeenCalledTimes(1);
+  });
+
+  it('throws when every channel fails, so the handler retries', async () => {
+    await expect(new MultiNotifier([bad, bad], { error: vi.fn() }).send(alert)).rejects.toThrow(/All alert channels failed/);
+  });
+
+  it('builds the handler with email only, Telegram only, or neither', () => {
+    const base = { ANTHROPIC_API_KEY: 'x' };
+    expect(() => handlerFromEnv({ ...base, RESEND_API_KEY: 're', INQUIRY_ALERT_EMAIL_TO: 'a@b.co' })).not.toThrow();
+    expect(() => handlerFromEnv({ ...base, INQUIRY_TELEGRAM_BOT_TOKEN: 't', INQUIRY_TELEGRAM_CHAT_ID: '1' })).not.toThrow();
+    expect(() => handlerFromEnv(base)).not.toThrow();
+  });
+});
 
 describe('Telegram alert', () => {
   it('matches the format in 06_API_SPEC.md', () => {

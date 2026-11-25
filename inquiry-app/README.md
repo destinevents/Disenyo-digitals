@@ -11,7 +11,7 @@ A visitor clicks **Inquire with AI** on disenyodigitals.com (`inquire-widget.js`
 3. asks Claude Haiku 5.5 for a reply plus the extracted lead fields, in one structured response;
 4. decides the stage and score itself, using the "ready for consultation" rule;
 5. saves the lead to `inquiry_leads` in HQ Supabase;
-6. sends one Telegram alert when the lead becomes ready or asks for a person, and one follow-up if contact details arrive after that alert.
+6. sends one alert (email and/or Telegram) when the lead becomes ready or asks for a person, and one follow-up if contact details arrive after that alert.
 
 The browser never sees a key. The planning docs (PRD, security review, budget) are kept privately, outside this public repo.
 
@@ -27,7 +27,7 @@ inquiry-app/
   server/agent.ts            Claude call (model, prompt caching, structured output, 25 s deadline)
   server/readiness.ts        ready rule, stage and score decisions, "delete my data"
   server/validate.ts         input and origin checks
-  server/notifier.ts         Telegram alert (console in dev)
+  server/notifier.ts         email (Resend) and Telegram alerts (console in dev)
   server/stores/             memoryStore (dev/tests), supabaseStore (prod)
   knowledge/disenyo.md       what the AI knows
   prompts/system.md          behaviour rules
@@ -70,22 +70,27 @@ To change behaviour (tone, question order, handoff rules), edit `prompts/system.
 
 ## Environment variables (Vercel project for disenyodigitals.com)
 
-The names start with `INQUIRY_` because the project already has `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` for the AYA registrations, which use a different database.
+The names start with `INQUIRY_` so they can't be confused with the PayMongo registration settings (`SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`), which point at a different database. `RESEND_API_KEY` keeps its standard name because the Vercel Resend integration sets it.
+
+Alerts go to every channel that is set up: email, Telegram, or both. With neither, they only appear in the Vercel function logs.
 
 | Name | Purpose |
 | --- | --- |
 | `ANTHROPIC_API_KEY` | A dedicated `disenyo-inquiry` key, not HQ's |
 | `INQUIRY_SUPABASE_URL` | HQ Supabase project URL |
 | `INQUIRY_SUPABASE_ANON_KEY` | HQ's public anon key. After migration 021 it can call the three inquiry functions. |
-| `INQUIRY_TELEGRAM_BOT_TOKEN` | From @BotFather |
-| `INQUIRY_TELEGRAM_CHAT_ID` | The team group's chat id |
+| `RESEND_API_KEY` | Email alerts. Set automatically by linking the team's Resend account (Vercel → Integrations → Resend). |
+| `INQUIRY_ALERT_EMAIL_TO` | Who gets alert emails, comma-separated, e.g. `info@destinevents.biz` |
+| `INQUIRY_ALERT_EMAIL_FROM` | Optional. Default `Disenyo AI Inquiries <alerts@disenyodigitals.com>` (disenyodigitals.com is verified in Resend) |
+| `INQUIRY_TELEGRAM_BOT_TOKEN` | Optional Telegram alerts: from @BotFather |
+| `INQUIRY_TELEGRAM_CHAT_ID` | Optional: the team group's chat id |
 | `INQUIRY_ALLOWED_ORIGINS` | `https://disenyodigitals.com,https://www.disenyodigitals.com`. Empty means localhost only. |
 | `INQUIRY_IP_HASH_SALT` | Any long random string. IPs are stored only as salted hashes. |
 
 ## Deploy
 
 1. Gab runs `database/migrations/021_inquiry_leads.sql`, then `database/tests/021_checks.sql`, in the HQ Supabase SQL Editor.
-2. Create the Telegram bot and get the chat id.
+2. Link the team's Resend account to the Vercel project (this sets `RESEND_API_KEY`) and set `INQUIRY_ALERT_EMAIL_TO`. Telegram is optional.
 3. Create the Anthropic key, add credit and set a monthly spend limit.
 4. Add the environment variables above to the disenyodigitals.com Vercel project.
 5. Push to `main`. Vercel deploys the site, `/inquire/` and `/api/inquiry` together.
@@ -97,7 +102,8 @@ The names start with `INQUIRY_` because the project already has `SUPABASE_URL` a
 ## Leads and alerts
 
 - Leads are stored in `inquiry_leads` in the HQ Supabase project. Only HQ admins can read them.
-- Alerts go to the Telegram group: once per lead when it becomes ready or asks for a person, plus any "delete my data" request. If that first alert had no phone or email, a second alert brings the contact details as soon as the prospect gives them.
+- Alerts go by email (and to the Telegram group, if set up): once per lead when it becomes ready or asks for a person, plus any "delete my data" request. If that first alert had no phone or email, a second alert brings the contact details as soon as the prospect gives them.
+- Alert emails come from `alerts@disenyodigitals.com`. When the prospect gave an email, it is the Reply-To, so the team can answer with Reply.
 - To export leads, open the table view in Supabase and download a CSV.
 
 ## Costs and limits

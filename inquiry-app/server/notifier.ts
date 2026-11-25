@@ -1,4 +1,4 @@
-// Team alerts (06_API_SPEC.md). Telegram in production, the server log in development.
+// Team alerts (06_API_SPEC.md): email (Resend) and/or Telegram in production, the server log in development.
 import type { Alert, Notifier } from './types.js';
 
 type FetchLike = typeof fetch;
@@ -73,6 +73,80 @@ export class TelegramNotifier implements Notifier {
       throw new Error(`Telegram sendMessage failed: ${response.status}`);
     }
   }
+}
+
+const EMAIL_LIKE = /^[^\s@<>",;]+@[^\s@<>",;]+\.[^\s@<>",;]+$/;
+
+/** One-line email subject: the alert's first line plus who it is about. */
+export function alertSubject(alert: Alert): string {
+  const first = formatAlert(alert).split('\n')[0] ?? 'Inquiry alert';
+  const who = alert.fields.name ?? alert.fields.business_name;
+  const subject = alert.kind === 'deletion_request' || !who ? first : `${first} – ${who}`;
+  // Model-extracted text: keep it to one short line.
+  return subject.replace(/[\r\n\t]+/g, ' ').slice(0, 180);
+}
+
+/**
+ * Email alerts through Resend (https://resend.com/docs/api-reference/emails/send-email).
+ * Plain text only, so prospect text can't inject HTML or links. When the prospect gave an
+ * email address, it becomes the Reply-To, so the team can answer straight from the alert.
+ */
+export class ResendEmailNotifier implements Notifier {
+  constructor(
+    private readonly apiKey: string,
+    private readonly from: string,
+    private readonly to: string[],
+    private readonly fetchImpl: FetchLike = fetch,
+  ) {}
+
+  async send(alert: Alert): Promise<void> {
+    const replyTo = alert.fields.email?.trim();
+    const body: Record<string, unknown> = {
+      from: this.from,
+      to: this.to,
+      subject: alertSubject(alert),
+      text: `${formatAlert(alert)}\n\n--\nSent by the "Inquire with AI" assistant on disenyodigitals.com.\nThe full conversation is in inquiry_leads in the HQ Supabase project.`,
+    };
+    if (replyTo && EMAIL_LIKE.test(replyTo)) body.reply_to = replyTo;
+
+    const response = await this.fetchImpl('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${this.apiKey}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+      signal: AbortSignal.timeout(ALERT_TIMEOUT_MS),
+    });
+    if (!response.ok) {
+      const detail = await response.text().catch(() => '');
+      throw new Error(`Resend send failed: ${response.status} ${detail.slice(0, 200)}`);
+    }
+  }
+}
+
+/**
+ * Sends each alert to every configured channel at once (email, Telegram).
+ * Counts as sent if at least one channel worked; throws only if all failed,
+ * so the handler retries on the next message.
+ */
+export class MultiNotifier implements Notifier {
+  constructor(
+    private readonly channels: Notifier[],
+    private readonly log: Pick<Console, 'error'> = console,
+  ) {}
+
+  async send(alert: Alert): Promise<void> {
+    const results = await Promise.allSettled(this.channels.map((c) => c.send(alert)));
+    const failed = results.filter((r): r is PromiseRejectedResult => r.status === 'rejected');
+    for (const f of failed) this.log.error('[inquiry] alert channel failed', f.reason);
+    if (failed.length === results.length) throw new Error('All alert channels failed');
+  }
+}
+
+/** Splits a comma-separated list of addresses. */
+export function parseEmailList(raw: string | undefined): string[] {
+  return (raw ?? '')
+    .split(',')
+    .map((s) => s.trim())
+    .filter((s) => EMAIL_LIKE.test(s));
 }
 
 export class ConsoleNotifier implements Notifier {

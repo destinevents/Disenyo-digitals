@@ -1,14 +1,18 @@
 // Wires real dependencies from environment variables (06_API_SPEC.md).
-// The names start with INQUIRY_ because this runs in the disenyodigitals.com Vercel project,
-// which already has SUPABASE_URL etc. for the AYA registrations (a different database).
-// Missing Supabase or Telegram settings fall back to dev versions, with a warning.
+// The names start with INQUIRY_ because this runs in the disenyodigitals.com Vercel project next to
+// the PayMongo registration functions, whose SUPABASE_URL points at a different database.
+// RESEND_API_KEY keeps its standard name: the Vercel Resend integration sets it.
+// Missing settings fall back to dev versions, with a warning.
 import { ClaudeAgent } from './agent.js';
 import { createInquiryHandler } from './handler.js';
-import { ConsoleNotifier, TelegramNotifier } from './notifier.js';
+import { ConsoleNotifier, MultiNotifier, parseEmailList, ResendEmailNotifier, TelegramNotifier } from './notifier.js';
 import { MemoryStore } from './stores/memoryStore.js';
 import { SupabaseStore } from './stores/supabaseStore.js';
 import type { LeadStore, Notifier } from './types.js';
 import { parseAllowedOrigins } from './validate.js';
+
+/** Sender for alert emails. disenyodigitals.com is verified in the team's Resend account. */
+export const DEFAULT_ALERT_FROM = 'Disenyo AI Inquiries <alerts@disenyodigitals.com>';
 
 export function handlerFromEnv(env: NodeJS.ProcessEnv = process.env): (request: Request) => Promise<Response> {
   const isProduction = env.VERCEL_ENV === 'production';
@@ -21,12 +25,21 @@ export function handlerFromEnv(env: NodeJS.ProcessEnv = process.env): (request: 
     store = new MemoryStore();
   }
 
-  let notifier: Notifier;
+  // Alerts go to every channel that is configured: email, Telegram, or both.
+  const channels: Notifier[] = [];
+  const emailTo = parseEmailList(env.INQUIRY_ALERT_EMAIL_TO);
+  if (env.RESEND_API_KEY && emailTo.length) {
+    channels.push(new ResendEmailNotifier(env.RESEND_API_KEY, env.INQUIRY_ALERT_EMAIL_FROM || DEFAULT_ALERT_FROM, emailTo));
+  }
   if (env.INQUIRY_TELEGRAM_BOT_TOKEN && env.INQUIRY_TELEGRAM_CHAT_ID) {
-    notifier = new TelegramNotifier(env.INQUIRY_TELEGRAM_BOT_TOKEN, env.INQUIRY_TELEGRAM_CHAT_ID);
-  } else {
-    console.warn('[inquiry] INQUIRY_TELEGRAM_BOT_TOKEN/INQUIRY_TELEGRAM_CHAT_ID not set: alerts go to the server log.');
+    channels.push(new TelegramNotifier(env.INQUIRY_TELEGRAM_BOT_TOKEN, env.INQUIRY_TELEGRAM_CHAT_ID));
+  }
+  let notifier: Notifier;
+  if (channels.length === 0) {
+    console.warn('[inquiry] No alert channel set (RESEND_API_KEY + INQUIRY_ALERT_EMAIL_TO, or INQUIRY_TELEGRAM_*): alerts go to the server log.');
     notifier = new ConsoleNotifier();
+  } else {
+    notifier = channels.length === 1 ? channels[0]! : new MultiNotifier(channels);
   }
 
   if (isProduction && !env.INQUIRY_IP_HASH_SALT) {
