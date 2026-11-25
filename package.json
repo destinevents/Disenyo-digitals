@@ -2,8 +2,17 @@
   "name": "disenyo-digitals",
   "version": "1.0.0",
   "private": true,
-  "description": "AYA x Destine Events registration site with PayMongo checkout",
+  "description": "Disenyo Digitals website, AYA x Destine Events registration (PayMongo), and the AI inquiry assistant",
   "engines": {
     "node": ">=18"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "1.12.0",
+    "zod": "4.6.7"
+  },
+  "scripts": {
+    "inquiry:dev": "npm --prefix inquiry-app run dev",
+    "inquiry:test": "npm --prefix inquiry-app test",
+    "inquiry:build": "npm --prefix inquiry-app run build"
   }
 }

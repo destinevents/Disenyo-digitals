@@ -1,0 +1,17 @@
+{
+  "//": "Used by Vercel to compile api/inquiry.ts. The chat app's own settings are in inquiry-app/tsconfig.json.",
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "CommonJS",
+    "moduleResolution": "Node10",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "types": ["node"],
+    "typeRoots": ["./inquiry-app/node_modules/@types", "./node_modules/@types"],
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "noEmit": true
+  },
+  "include": ["api/inquiry.ts", "inquiry-app/server"]
+}
