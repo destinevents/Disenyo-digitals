@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import Anthropic from '@anthropic-ai/sdk';
+import OpenAI from 'openai';
 import { readFileSync } from 'node:fs';
 import {
   AgentUnavailableError,
@@ -7,9 +7,9 @@ import {
   AI_DEADLINE_MS,
   AI_MAX_RETRIES,
   buildSystemPrompt,
-  ClaudeAgent,
   loadPromptFiles,
-  MODEL,
+  DEFAULT_MODEL,
+  OpenAIAgent,
   toMessageParams,
 } from '../server/agent.js';
 import {
@@ -101,7 +101,7 @@ describe('alert channels', () => {
   });
 
   it('builds the handler with email only, Telegram only, or neither', () => {
-    const base = { ANTHROPIC_API_KEY: 'x' };
+    const base = { OPENAI_API_KEY: 'x' };
     expect(() => handlerFromEnv({ ...base, RESEND_API_KEY: 're', INQUIRY_ALERT_EMAIL_TO: 'a@b.co' })).not.toThrow();
     expect(() => handlerFromEnv({ ...base, INQUIRY_TELEGRAM_BOT_TOKEN: 't', INQUIRY_TELEGRAM_CHAT_ID: '1' })).not.toThrow();
     expect(() => handlerFromEnv(base)).not.toThrow();
@@ -188,7 +188,7 @@ describe('Supabase store', () => {
   });
 });
 
-describe('Claude agent', () => {
+describe('OpenAI agent', () => {
   const prompt = { rules: 'RULES', knowledge: 'KB' };
 
   it('builds the system prompt from the rules and the knowledge base', () => {
@@ -215,50 +215,71 @@ describe('Claude agent', () => {
     ]);
   });
 
-  it('sends the fixed model, token limit and cached system prompt', async () => {
-    const parse = vi.fn(async () => ({
-      stop_reason: 'end_turn',
-      parsed_output: {
-        reply: ' Hi! ',
-        quick_replies: ['Website', '', 'x'.repeat(60), 'Talk to a person', 'Fourth'],
-        asking_for_contact: false,
-        requested_human: false,
-        requested_call: false,
-        handoff_reason: '',
-        stage: 'browsing',
-        score: 1,
-        summary: 'Browsing.',
-        fields: emptyFields(),
-      },
-    }));
-    const client = { messages: { parse } } as unknown as Anthropic;
-    const out = await new ClaudeAgent(client, prompt).respond({ history: [], message: 'hello' });
+  const parsed = {
+    reply: ' Hi! ',
+    quick_replies: ['Website', '', 'x'.repeat(60), 'Talk to a person', 'Fourth'],
+    asking_for_contact: false,
+    requested_human: false,
+    requested_call: false,
+    handoff_reason: '',
+    stage: 'browsing',
+    score: 1,
+    summary: 'Browsing.',
+    fields: emptyFields(),
+  };
+  const agentWith = (impl: (...args: unknown[]) => Promise<unknown>, model?: string) =>
+    new OpenAIAgent({ responses: { parse: vi.fn(impl) } } as unknown as OpenAI, prompt, model);
+
+  it('sends the model, instructions, token limit, no reasoning and no storage', async () => {
+    const parse = vi.fn(async () => ({ status: 'completed', output: [], output_parsed: parsed }));
+    const agent = new OpenAIAgent({ responses: { parse } } as unknown as OpenAI, prompt);
+    const out = await agent.respond({ history: [], message: 'hello' });
 
     const params = (parse.mock.calls[0] as unknown as [Record<string, unknown>])[0];
-    expect(params.model).toBe(MODEL);
-    expect(MODEL).toBe('claude-haiku-5-5');
-    expect(params.messages).toEqual([{ role: 'user', content: 'hello' }]);
-    expect((params.system as { cache_control: unknown }[])[0]!.cache_control).toEqual({ type: 'ephemeral' });
+    expect(DEFAULT_MODEL).toBe('gpt-6-luna');
+    expect(params).toMatchObject({
+      model: DEFAULT_MODEL,
+      input: [{ role: 'user', content: 'hello' }],
+      reasoning: { effort: 'none' },
+      store: false,
+    });
+    expect(params.instructions).toContain('<knowledge_base>');
+    expect((params.text as { format: { type: string } }).format.type).toBe('json_schema');
 
     expect(out.reply).toBe('Hi!');
     expect(out.quickReplies).toEqual(['Website', 'Talk to a person', 'Fourth']);
     expect(out.handoffReason).toBeNull();
   });
 
-  it('turns refusals, truncation and API errors into AgentUnavailableError', async () => {
-    const make = (impl: () => Promise<unknown>) =>
-      new ClaudeAgent({ messages: { parse: vi.fn(impl) } } as unknown as Anthropic, prompt);
+  it('uses the model it is given (INQUIRY_OPENAI_MODEL)', async () => {
+    const impl = vi.fn(async () => ({ status: 'completed', output: [], output_parsed: parsed }));
+    await agentWith(impl, 'gpt-6.1-terra').respond({ history: [], message: 'x' });
+    expect((impl.mock.calls[0] as unknown as [{ model: string }])[0].model).toBe('gpt-6.1-terra');
+  });
 
-    await expect(make(async () => ({ stop_reason: 'refusal', stop_details: null, parsed_output: null })).respond({ history: [], message: 'x' })).rejects.toBeInstanceOf(AgentUnavailableError);
-    await expect(make(async () => ({ stop_reason: 'max_tokens', parsed_output: null })).respond({ history: [], message: 'x' })).rejects.toBeInstanceOf(AgentUnavailableError);
+  it('turns refusals, truncation and API errors into AgentUnavailableError', async () => {
+    const refusal = { status: 'completed', output_parsed: null, output: [{ type: 'message', content: [{ type: 'refusal', refusal: 'no' }] }] };
+    const truncated = { status: 'incomplete', incomplete_details: { reason: 'max_output_tokens' }, output: [], output_parsed: null };
+    await expect(agentWith(async () => refusal).respond({ history: [], message: 'x' })).rejects.toThrow(/refused/);
+    await expect(agentWith(async () => truncated).respond({ history: [], message: 'x' })).rejects.toThrow(/max_output_tokens/);
     await expect(
-      make(async () => {
-        throw new Anthropic.APIConnectionError({ message: 'down' });
+      agentWith(async () => {
+        throw new OpenAI.APIConnectionError({ message: 'down' });
       }).respond({ history: [], message: 'x' }),
     ).rejects.toBeInstanceOf(AgentUnavailableError);
   });
 
-  it('gives up at the deadline when Claude never answers, and aborts the request', async () => {
+  it('answers with the fallback, not a crash, when OPENAI_API_KEY is missing', async () => {
+    const saved = process.env.OPENAI_API_KEY;
+    delete process.env.OPENAI_API_KEY;
+    try {
+      await expect(new OpenAIAgent(undefined, prompt).respond({ history: [], message: 'x' })).rejects.toBeInstanceOf(AgentUnavailableError);
+    } finally {
+      if (saved !== undefined) process.env.OPENAI_API_KEY = saved;
+    }
+  });
+
+  it('gives up at the deadline when OpenAI never answers, and aborts the request', async () => {
     vi.useFakeTimers();
     try {
       let signal: AbortSignal | undefined;
@@ -266,7 +287,7 @@ describe('Claude agent', () => {
         signal = options?.signal;
         return new Promise(() => {}); // never settles, like a retry stuck on retry-after
       });
-      const pending = new ClaudeAgent({ messages: { parse } } as unknown as Anthropic, prompt).respond({ history: [], message: 'x' });
+      const pending = new OpenAIAgent({ responses: { parse } } as unknown as OpenAI, prompt).respond({ history: [], message: 'x' });
       const outcome = expect(pending).rejects.toThrow(/did not answer within/);
 
       await vi.advanceTimersByTimeAsync(AI_DEADLINE_MS);
@@ -285,7 +306,7 @@ describe('function time budget', () => {
     };
     const limitMs = vercel.functions['api/inquiry.ts']!.maxDuration * 1000;
 
-    // Load session + rate limit, Claude, save, one alert, save alerted_at (server/handler.ts).
+    // Load session + rate limit, OpenAI, save, one alert, save alerted_at (server/handler.ts).
     const worstCaseMs = STORE_TIMEOUT_MS * 2 + AI_DEADLINE_MS + STORE_TIMEOUT_MS + ALERT_TIMEOUT_MS + STORE_TIMEOUT_MS;
     expect(worstCaseMs + 5_000).toBeLessThanOrEqual(limitMs); // 5 s for cold start and JSON work
 

@@ -1,5 +1,5 @@
 // POST /api/inquiry (06_API_SPEC.md). Built from injected parts so it can be tested
-// without Claude, Supabase or Telegram.
+// without OpenAI, Supabase or Telegram.
 import { createHash } from 'node:crypto';
 import { AgentUnavailableError } from './agent.js';
 import { decideStage, hasContact, isDeletionRequest, mergeFields, needsAlert } from './readiness.js';

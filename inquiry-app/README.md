@@ -8,7 +8,7 @@ A visitor clicks **Inquire with AI** on disenyodigitals.com (`inquire-widget.js`
 
 1. checks the origin, the input and the rate limits;
 2. loads the session's earlier messages;
-3. asks Claude Haiku 5.5 for a reply plus the extracted lead fields, in one structured response;
+3. asks OpenAI (`gpt-6-luna`) for a reply plus the extracted lead fields, in one structured response;
 4. decides the stage and score itself, using the "ready for consultation" rule;
 5. saves the lead to `inquiry_leads` in HQ Supabase;
 6. sends one alert (email and/or Telegram) when the lead becomes ready or asks for a person, and one follow-up if contact details arrive after that alert.
@@ -24,7 +24,7 @@ api/inquiry.ts               (site root) Vercel function entry point
 inquiry-app/
   index.html, src/           chat page source (plain TypeScript + CSS)
   server/handler.ts          request flow: validate, limits, agent, save, alert
-  server/agent.ts            Claude call (model, prompt caching, structured output, 25 s deadline)
+  server/agent.ts            OpenAI call (model, structured output, 25 s deadline)
   server/readiness.ts        ready rule, stage and score decisions, "delete my data"
   server/validate.ts         input and origin checks
   server/notifier.ts         email (Resend) and Telegram alerts (console in dev)
@@ -42,7 +42,7 @@ inquiry-app/
 ```bash
 cd inquiry-app
 npm install
-cp .env.example .env.local   # fill in ANTHROPIC_API_KEY at minimum
+cp .env.example .env.local   # fill in OPENAI_API_KEY at minimum
 npm run dev                  # http://localhost:5173/inquire/ , serves the page and /api/inquiry
 npm test                     # unit tests (no keys needed)
 ```
@@ -76,7 +76,8 @@ Alerts go to every channel that is set up: email, Telegram, or both. With neithe
 
 | Name | Purpose |
 | --- | --- |
-| `ANTHROPIC_API_KEY` | A dedicated `disenyo-inquiry` key, not HQ's |
+| `OPENAI_API_KEY` | OpenAI key (platform.openai.com), ideally in its own `disenyo-inquiry` project so its costs are separate |
+| `INQUIRY_OPENAI_MODEL` | Optional. Default `gpt-6-luna` |
 | `INQUIRY_SUPABASE_URL` | HQ Supabase project URL |
 | `INQUIRY_SUPABASE_ANON_KEY` | HQ's public anon key. After migration 021 it can call the three inquiry functions. |
 | `RESEND_API_KEY` | Email alerts. Set automatically by linking the team's Resend account (Vercel → Integrations → Resend). |
@@ -91,13 +92,13 @@ Alerts go to every channel that is set up: email, Telegram, or both. With neithe
 
 1. Gab runs `database/migrations/021_inquiry_leads.sql`, then `database/tests/021_checks.sql`, in the HQ Supabase SQL Editor.
 2. Link the team's Resend account to the Vercel project (this sets `RESEND_API_KEY`) and set `INQUIRY_ALERT_EMAIL_TO`. Telegram is optional.
-3. Create the Anthropic key, add credit and set a monthly spend limit.
+3. Create the OpenAI key, add credit and set a monthly budget.
 4. Add the environment variables above to the disenyodigitals.com Vercel project.
 5. Push to `main`. Vercel deploys the site, `/inquire/` and `/api/inquiry` together.
 6. Run the conversation scripts against `https://disenyodigitals.com/inquire/`.
 7. Optional: add the Heyzine link (`https://disenyodigitals.com/inquire/?source=heyzine`) and the iframe interaction.
 
-`vercel.json` sets the function to 256 MB and 60 s (Claude gets at most 25 s of that, so a slow answer still ends in a saved message), bundles `prompts/` and `knowledge/`, and lets only this site and Heyzine frame the chat page.
+`vercel.json` sets the function to 256 MB and 60 s (OpenAI gets at most 25 s of that, so a slow answer still ends in a saved message), bundles `prompts/` and `knowledge/`, and lets only this site and Heyzine frame the chat page.
 
 ## Leads and alerts
 
@@ -108,9 +109,9 @@ Alerts go to every channel that is set up: email, Telegram, or both. With neithe
 
 ## Costs and limits
 
-- Model: `claude-haiku-5-5`, with thinking off and at most 800 output tokens. The rules and knowledge base are prompt-cached.
+- Model: `gpt-6-luna` (US$0.10 / $0.50 per million input / output tokens, about ₱0.30 per conversation), with reasoning off and at most 800 output tokens. OpenAI caches the repeated rules and knowledge base automatically. Responses are sent with `store: false`, so OpenAI doesn't keep the chats.
 - Limits: 20 messages per session, 30 per IP per hour, 2,000 characters per message.
-- Set a monthly spend limit in the Anthropic console.
+- Set a monthly budget in the OpenAI dashboard.
 
 ## Privacy
 

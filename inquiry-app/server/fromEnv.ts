@@ -3,7 +3,7 @@
 // the PayMongo registration functions, whose SUPABASE_URL points at a different database.
 // RESEND_API_KEY keeps its standard name: the Vercel Resend integration sets it.
 // Missing settings fall back to dev versions, with a warning.
-import { ClaudeAgent } from './agent.js';
+import { DEFAULT_MODEL, OpenAIAgent } from './agent.js';
 import { createInquiryHandler } from './handler.js';
 import { ConsoleNotifier, MultiNotifier, parseEmailList, ResendEmailNotifier, TelegramNotifier } from './notifier.js';
 import { MemoryStore } from './stores/memoryStore.js';
@@ -42,6 +42,10 @@ export function handlerFromEnv(env: NodeJS.ProcessEnv = process.env): (request: 
     notifier = channels.length === 1 ? channels[0]! : new MultiNotifier(channels);
   }
 
+  if (!env.OPENAI_API_KEY) {
+    console.warn('[inquiry] OPENAI_API_KEY not set: every chat will get the "please message us" fallback.');
+  }
+
   if (isProduction && !env.INQUIRY_IP_HASH_SALT) {
     console.warn('[inquiry] INQUIRY_IP_HASH_SALT not set: IP hashes are unsalted.');
   }
@@ -49,7 +53,7 @@ export function handlerFromEnv(env: NodeJS.ProcessEnv = process.env): (request: 
   return createInquiryHandler({
     store,
     notifier,
-    agent: new ClaudeAgent(),
+    agent: new OpenAIAgent(undefined, undefined, env.INQUIRY_OPENAI_MODEL || DEFAULT_MODEL),
     config: {
       allowedOrigins: parseAllowedOrigins(env.INQUIRY_ALLOWED_ORIGINS),
       ipHashSalt: env.INQUIRY_IP_HASH_SALT ?? '',

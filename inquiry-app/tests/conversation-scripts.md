@@ -1,6 +1,6 @@
 # Conversation scripts (run by hand)
 
-Run these against `npm run dev` (http://localhost:5173/inquire/) with a real `ANTHROPIC_API_KEY`, then again on the deployed URL inside Heyzine on a real phone. Open a new private window for each script so each gets a fresh session.
+Run these against `npm run dev` (http://localhost:5173/inquire/) with a real `OPENAI_API_KEY`, then again on the deployed URL inside Heyzine on a real phone. Open a new private window for each script so each gets a fresh session.
 
 Watch the terminal (dev) or the Telegram group (prod) for alerts.
 

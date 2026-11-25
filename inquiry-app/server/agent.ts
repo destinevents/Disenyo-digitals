@@ -1,19 +1,23 @@
-// One Claude call per prospect message. The reply and the extracted lead fields come back
+// One OpenAI call per prospect message. The reply and the extracted lead fields come back
 // together as structured output, so they can't disagree with each other.
 import { existsSync, readFileSync } from 'node:fs';
 import path from 'node:path';
-import Anthropic from '@anthropic-ai/sdk';
-import { zodOutputFormat } from '@anthropic-ai/sdk/helpers/zod';
+import OpenAI from 'openai';
+import { zodTextFormat } from 'openai/helpers/zod';
 import { z } from 'zod';
 import type { Agent, AgentInput, AgentResult, ChatMessage } from './types.js';
 
-export const MODEL = 'claude-haiku-5-5';
+/**
+ * OpenAI's model for cost-sensitive, high-volume work (US$0.10 / $0.50 per 1M input / output tokens,
+ * checked Nov 2026). INQUIRY_OPENAI_MODEL overrides it without a code change.
+ */
+export const DEFAULT_MODEL = 'gpt-6-luna';
 
 // 05_SECURITY.md suggests 400. The structured output (reply + fields + summary) needs more room,
-// and 800 output tokens still costs well under ₱0.05 on Haiku 5.5.
+// and 800 output tokens still costs well under ₱0.05.
 export const MAX_TOKENS = 800;
 
-// Time budget for one Claude answer. Each attempt may take AI_ATTEMPT_TIMEOUT_MS, with one retry,
+// Time budget for one AI answer. Each attempt may take AI_ATTEMPT_TIMEOUT_MS, with one retry,
 // but the whole call (retry waits included) is cut off at AI_DEADLINE_MS. The rest of the
 // function's maxDuration (vercel.json) is left for the Supabase calls and the Telegram alert,
 // so a slow answer still ends in a saved message and a 503, not a killed function.
@@ -69,7 +73,7 @@ export function toAgentResult(output: AgentOutput): AgentResult {
   };
 }
 
-/** Thrown when Claude can't produce a usable reply. The handler answers 503 and keeps the message. */
+/** Thrown when the AI can't produce a usable reply. The handler answers 503 and keeps the message. */
 export class AgentUnavailableError extends Error {
   constructor(message: string, options?: { cause?: unknown }) {
     super(message, options);
@@ -101,7 +105,7 @@ export function buildSystemPrompt(rules: string, knowledge: string): string {
  * Convert stored chat history to API messages. Consecutive turns from the same role are joined
  * (this happens when an earlier message got no reply because the assistant was unavailable).
  */
-export function toMessageParams(history: ChatMessage[]): Anthropic.MessageParam[] {
+export function toMessageParams(history: ChatMessage[]): { role: 'user' | 'assistant'; content: string }[] {
   const out: { role: 'user' | 'assistant'; content: string }[] = [];
   for (const m of history) {
     const last = out[out.length - 1];
@@ -113,18 +117,39 @@ export function toMessageParams(history: ChatMessage[]): Anthropic.MessageParam[
   return out;
 }
 
-export class ClaudeAgent implements Agent {
+/** True when the model declined to answer (a refusal item instead of output text). */
+function hasRefusal(response: { output?: unknown[] }): boolean {
+  return (response.output ?? []).some(
+    (item) =>
+      typeof item === 'object' &&
+      item !== null &&
+      Array.isArray((item as { content?: unknown }).content) &&
+      ((item as { content: { type?: string }[] }).content).some((c) => c?.type === 'refusal'),
+  );
+}
+
+export class OpenAIAgent implements Agent {
   private readonly systemPrompt: string;
+  private client: OpenAI | undefined;
 
   constructor(
-    private readonly client: Anthropic = new Anthropic({ timeout: AI_ATTEMPT_TIMEOUT_MS, maxRetries: AI_MAX_RETRIES }),
+    // Created on first use: the SDK throws when OPENAI_API_KEY is missing, and that should
+    // become the normal 503 fallback for one message, not a crashed function.
+    client?: OpenAI,
     prompt: { rules: string; knowledge: string } = loadPromptFiles(),
+    private readonly model: string = DEFAULT_MODEL,
   ) {
+    this.client = client;
     this.systemPrompt = buildSystemPrompt(prompt.rules, prompt.knowledge);
   }
 
+  private getClient(): OpenAI {
+    this.client ??= new OpenAI({ timeout: AI_ATTEMPT_TIMEOUT_MS, maxRetries: AI_MAX_RETRIES });
+    return this.client;
+  }
+
   async respond({ history, message }: AgentInput): Promise<AgentResult> {
-    const messages = toMessageParams([...history, { role: 'user', content: message, at: '' }]);
+    const input = toMessageParams([...history, { role: 'user', content: message, at: '' }]);
 
     // A hard deadline over the SDK's own timeout and retries: a retry can wait on a
     // retry-after header, which the per-attempt timeout doesn't cover.
@@ -132,46 +157,48 @@ export class ClaudeAgent implements Agent {
     let timer: ReturnType<typeof setTimeout> | undefined;
     const deadline = new Promise<never>((_, reject) => {
       timer = setTimeout(() => {
-        reject(new AgentUnavailableError(`Claude did not answer within ${AI_DEADLINE_MS} ms`));
+        reject(new AgentUnavailableError(`OpenAI did not answer within ${AI_DEADLINE_MS} ms`));
         controller.abort();
       }, AI_DEADLINE_MS);
     });
 
     let response;
     try {
-      const call = this.client.messages.parse(
+      const call = this.getClient().responses.parse(
         {
-          model: MODEL,
-          max_tokens: MAX_TOKENS,
-          // Short, rule-following chat replies: thinking adds latency and cost without helping.
-          thinking: { type: 'disabled' },
-          // Rules + knowledge base are identical on every request, so cache them.
-          system: [{ type: 'text', text: this.systemPrompt, cache_control: { type: 'ephemeral' } }],
-          messages,
-          output_config: { format: zodOutputFormat(AgentOutputSchema) },
+          model: this.model,
+          // Rules + knowledge base: identical on every request, so OpenAI caches them automatically.
+          instructions: this.systemPrompt,
+          input,
+          text: { format: zodTextFormat(AgentOutputSchema, 'inquiry_reply') },
+          // Short, rule-following chat replies: reasoning adds latency and cost without helping.
+          reasoning: { effort: 'none' },
+          max_output_tokens: MAX_TOKENS,
+          // Prospects' messages stay in our own database only, not stored at OpenAI for 30 days.
+          store: false,
+          prompt_cache_key: 'disenyo-inquiry',
         },
         { signal: controller.signal },
       );
       response = await Promise.race([call, deadline]);
     } catch (error) {
       if (error instanceof AgentUnavailableError) throw error;
-      if (error instanceof Anthropic.APIError) {
-        throw new AgentUnavailableError(`Claude API error ${error.status ?? 'connection'}`, { cause: error });
+      if (error instanceof OpenAI.APIError) {
+        throw new AgentUnavailableError(`OpenAI API error ${error.status ?? 'connection'}`, { cause: error });
       }
       // Missing credentials, a schema mismatch in the output, or another client-side failure.
       const detail = error instanceof Error ? error.message : String(error);
-      throw new AgentUnavailableError(`Claude call failed: ${detail.slice(0, 200)}`, { cause: error });
+      throw new AgentUnavailableError(`OpenAI call failed: ${detail.slice(0, 200)}`, { cause: error });
     } finally {
       clearTimeout(timer);
     }
 
-    if (response.stop_reason === 'refusal') {
-      throw new AgentUnavailableError(`Claude refused (${response.stop_details?.category ?? 'unknown'})`);
-    }
-    if (response.stop_reason === 'max_tokens' || !response.parsed_output) {
-      throw new AgentUnavailableError(`No structured output (stop_reason ${response.stop_reason})`);
+    if (hasRefusal(response)) throw new AgentUnavailableError('OpenAI refused to answer');
+    if (response.status !== 'completed' || !response.output_parsed) {
+      const reason = response.incomplete_details?.reason ?? response.status;
+      throw new AgentUnavailableError(`No structured output (${reason})`);
     }
 
-    return toAgentResult(response.parsed_output);
+    return toAgentResult(response.output_parsed);
   }
 }
