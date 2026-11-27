@@ -33,6 +33,7 @@ export const AgentOutputSchema = z.object({
   asking_for_contact: z.boolean(),
   requested_human: z.boolean(),
   requested_call: z.boolean(),
+  wants_demo: z.boolean(),
   handoff_reason: text,
   stage: z.enum(['browsing', 'qualifying']),
   score: z.number().int(),
@@ -68,6 +69,7 @@ export function toAgentResult(output: AgentOutput): AgentResult {
     stage: output.stage,
     requestedHuman: output.requested_human,
     requestedCall: output.requested_call,
+    wantsDemo: output.wants_demo,
     handoffReason: output.handoff_reason?.trim() || null,
     askingForContact: output.asking_for_contact,
   };

@@ -1,6 +1,7 @@
 // POST /api/inquiry (06_API_SPEC.md). Built from injected parts so it can be tested
 // without OpenAI, Supabase or Telegram.
 import { createHash } from 'node:crypto';
+import { linksForFlags, matchQuickIntent, mergeQuickReplies, quickAnswer, type ChatLink } from './actions.js';
 import { AgentUnavailableError } from './agent.js';
 import { decideStage, hasContact, isDeletionRequest, mergeFields, needsAlert } from './readiness.js';
 import type { Agent, AlertKind, ChatMessage, LeadSession, LeadStore, LeadUpdate, Notifier, Source, Stage } from './types.js';
@@ -37,6 +38,10 @@ export interface InquiryResponse {
   reply: string;
   quickReplies: string[];
   stage: Stage;
+  /** Buttons shown under the reply (demo videos, the Calendly booking page). Open in a new tab. */
+  links?: ChatLink[];
+  /** A second bubble after the reply (the booking invitation after demo videos). */
+  followUp?: { reply: string; links: ChatLink[] };
   /** Present on the one reply that must show the privacy consent line. */
   consentNotice?: string;
 }
@@ -192,6 +197,34 @@ export function createInquiryHandler(deps: HandlerDeps): (request: Request) => P
       return json(200, { reply: DELETION_REPLY, quickReplies: [], stage: 'handoff' } satisfies InquiryResponse, corsOrigin);
     }
 
+    // Demo, booking and "talk to a person" requests get fixed replies with the right links,
+    // straight away and without an AI call. Nothing is sent to the team from the chat:
+    // Calendly collects the visitor's details and emails the team for each booking.
+    const intent = matchQuickIntent(message);
+    if (intent) {
+      const answer = quickAnswer(intent);
+      const { stage, score } = decideStage(session.stage, session.fields, {
+        stage: 'qualifying',
+        score: session.score ?? 2,
+        requestedHuman: answer.requestedHuman,
+        requestedCall: answer.requestedCall,
+        handoffReason: null,
+      });
+      const replies: ChatMessage[] = [{ role: 'assistant', content: answer.reply, at, links: answer.links }];
+      if (answer.followUp) replies.push({ role: 'assistant', content: answer.followUp.reply, at, links: answer.followUp.links });
+      await save({
+        ...base,
+        stage,
+        score,
+        summary: session.summary,
+        fields: session.fields,
+        messages: [...session.messages, userMessage, ...replies],
+      });
+      const response: InquiryResponse = { reply: answer.reply, quickReplies: answer.quickReplies, stage, links: answer.links };
+      if (answer.followUp) response.followUp = answer.followUp;
+      return json(200, response, corsOrigin);
+    }
+
     let result;
     try {
       result = await agent.respond({ history: session.messages, message });
@@ -218,7 +251,9 @@ export function createInquiryHandler(deps: HandlerDeps): (request: Request) => P
     // Consent is recorded when contact details are given after the notice was shown.
     const consentAt = session.consentAt ?? (consentAlreadyShown && hasContact(fields) ? at : null);
 
+    const links = linksForFlags(result);
     const assistantMessage: ChatMessage = { role: 'assistant', content: result.reply, at };
+    if (links.length) assistantMessage.links = links;
     if (showConsent) assistantMessage.consentNotice = true;
 
     const update: LeadUpdate = {
@@ -233,16 +268,14 @@ export function createInquiryHandler(deps: HandlerDeps): (request: Request) => P
 
     await save(update);
 
-    if (needsAlert(stage) && !session.alertedAt) {
+    // Alert only when the team can act on it: the prospect left a phone or email in the chat.
+    // Everyone else is sent to Calendly, which emails the team for each booking.
+    if (needsAlert(stage) && !session.alertedAt && hasContact(fields)) {
       await alertOnce('lead', update, result.handoffReason ?? (result.requestedHuman ? 'asked for a person' : null));
-    } else if (session.alertedAt && !hasContact(session.fields) && hasContact(fields)) {
-      // The alert went out before we had a phone or email (e.g. "talk to a person" first).
-      // Send the contact details once, as soon as they arrive. Fields are never erased,
-      // so this can only happen once per lead.
-      await alertOnce('contact_update', update, null);
     }
 
-    const response: InquiryResponse = { reply: result.reply, quickReplies: result.quickReplies, stage };
+    const response: InquiryResponse = { reply: result.reply, quickReplies: mergeQuickReplies(result.quickReplies), stage };
+    if (links.length) response.links = links;
     if (showConsent) response.consentNotice = CONSENT_NOTICE;
     return json(200, response, corsOrigin);
   };

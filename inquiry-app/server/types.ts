@@ -59,6 +59,8 @@ export interface ChatMessage {
   at: string; // ISO timestamp
   /** True on the assistant message that showed the privacy consent line. */
   consentNotice?: boolean;
+  /** Buttons shown under this assistant message (demo videos, Calendly). */
+  links?: { label: string; url: string }[];
 }
 
 /** What the server knows about one chat session (one inquiry_leads row). */
@@ -98,6 +100,8 @@ export interface AgentResult {
   stage: 'browsing' | 'qualifying';
   requestedHuman: boolean;
   requestedCall: boolean;
+  /** True when the prospect wants to see a demo or sample work. The page then shows the demo video. */
+  wantsDemo: boolean;
   /** Set when the rules say to hand off: upset, complaint, existing project, legal/contract/payment. */
   handoffReason: string | null;
   /** True when this reply asks for the prospect's name or contact details. */

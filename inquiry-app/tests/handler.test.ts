@@ -17,6 +17,7 @@ function result(overrides: Partial<AgentResult> = {}, fields: Partial<LeadFields
     stage: 'qualifying',
     requestedHuman: false,
     requestedCall: false,
+    wantsDemo: false,
     handoffReason: null,
     askingForContact: false,
     ...overrides,
@@ -63,7 +64,11 @@ describe('POST /api/inquiry: validation', () => {
     const { handle } = setup();
     const res = await handle(post(msg('Magkano ang website?')));
     expect(res.status).toBe(200);
-    expect(await res.json()).toEqual({ reply: 'Our websites start at ₱10,000.', quickReplies: ['Talk to a person'], stage: 'qualifying' });
+    expect(await res.json()).toEqual({
+      reply: 'Our websites start at ₱10,000.',
+      quickReplies: ['Watch demo', 'Book a call', 'Talk to a person', 'Browse demos (Clinic / Staycation)'],
+      stage: 'qualifying',
+    });
     expect(res.headers.get('access-control-allow-origin')).toBe(ORIGIN);
   });
 
@@ -169,32 +174,55 @@ describe('POST /api/inquiry: saving and alerts', () => {
     expect(store.leads.get(SESSION)!.alertedAt).not.toBeNull();
   });
 
-  it('hands off and alerts when the first message asks for a person', async () => {
-    const { handle, alerts } = setup([result({ requestedHuman: true, stage: 'browsing' })]);
-    const res = await handle(post(msg('Can I talk to a person?')));
-    expect((await res.json()).stage).toBe('handoff');
-    expect(alerts).toHaveLength(1);
-    expect(alerts[0]!.handoffReason).toBe('asked for a person');
+  it('answers "talk to a person" with the Calendly link, without the AI and without an alert', async () => {
+    const { handle, agent, alerts, store } = setup();
+    const body = await (await handle(post(msg('Can I talk to a person?')))).json();
+    expect(body.reply).toMatch(/Our team can call you/);
+    expect(body.links).toEqual([{ label: 'Book a free 30-minute call', url: 'https://calendly.com/disenyodigitalsdemo' }]);
+    expect(body.stage).toBe('handoff');
+    expect(body.reply).not.toMatch(/business name|contact|sent to/i);
+    expect(agent.respond).not.toHaveBeenCalled();
+    expect(alerts).toHaveLength(0);
+    // The exchange is still saved, links included, so the team can see it.
+    expect(store.leads.get(SESSION)!.messages[1]!.links?.[0]!.url).toBe('https://calendly.com/disenyodigitalsdemo');
   });
 
-  it('sends the contact details once when they arrive after a handoff alert without them', async () => {
+  it('answers a demo request with the All Services demo, then booking', async () => {
+    const { handle, agent } = setup();
+    const body = await (await handle(post(msg('Discuss a demo')))).json();
+    expect(body.links.map((l: { label: string }) => l.label)).toEqual(['All Services demo']);
+    expect(body.followUp.reply).toContain('Book a free 30-minute call with our team:');
+    expect(body.followUp.links[0].url).toBe('https://calendly.com/disenyodigitalsdemo');
+    expect(body.quickReplies).toContain('Browse demos (Clinic / Staycation)');
+    expect(agent.respond).not.toHaveBeenCalled();
+  });
+
+  it('answers "Browse demos" with the clinic and staycation demos', async () => {
+    const { handle } = setup();
+    const body = await (await handle(post(msg('Browse demos (Clinic / Staycation)')))).json();
+    expect(body.links.map((l: { label: string }) => l.label)).toEqual(['Clinic system demo', 'Staycation / Cleaning system demo']);
+    expect(body.followUp.links[0].label).toBe('Book a free 30-minute call');
+  });
+
+  it('adds the Calendly link when the AI sees a request for a person, and alerts only once contact is given', async () => {
     const { handle, alerts } = setup([
-      result({ requestedHuman: true, stage: 'browsing' }),
-      result({}, { name: 'Maria', phone: '0917 123 4567' }),
-      result({}, { email: 'maria@bakery.ph' }),
+      result({ requestedHuman: true }),
+      result({}, { name: 'Maria', phone: '0917 123 4567', service_type: 'Inventory Management' }),
     ]);
-    await handle(post(msg('Can I talk to a person?')));
-    expect(alerts).toHaveLength(1);
-    expect(alerts[0]!.fields.phone).toBeNull();
+    const first = await (await handle(post(msg('Pwede po ba may tumawag sa akin?')))).json();
+    expect(first.links).toEqual([{ label: 'Book a free 30-minute call', url: 'https://calendly.com/disenyodigitalsdemo' }]);
+    expect(alerts).toHaveLength(0); // no phone or email yet: nothing the team could act on
 
     await handle(post(msg('Maria, 0917 123 4567')));
-    expect(alerts).toHaveLength(2);
-    expect(alerts[1]).toMatchObject({ kind: 'contact_update', stage: 'handoff' });
-    expect(alerts[1]!.fields).toMatchObject({ name: 'Maria', phone: '0917 123 4567' });
+    expect(alerts).toHaveLength(1);
+    expect(alerts[0]).toMatchObject({ kind: 'lead', stage: 'handoff' });
+    expect(alerts[0]!.fields.phone).toBe('0917 123 4567');
+  });
 
-    // More contact details later don't repeat it.
-    await handle(post(msg('or email maria@bakery.ph')));
-    expect(alerts).toHaveLength(2);
+  it('never offers buttons that ask for contact details', async () => {
+    const { handle } = setup([result({ quickReplies: ['Share business name', 'Give my number'] })]);
+    const body = await (await handle(post(msg('I need an inventory system')))).json();
+    expect(body.quickReplies).toEqual(['Watch demo', 'Book a call', 'Talk to a person', 'Browse demos (Clinic / Staycation)']);
   });
 
   it('sends no contact follow-up when the first alert already had contact details', async () => {

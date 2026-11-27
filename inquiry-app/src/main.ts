@@ -1,5 +1,6 @@
 // Chat page. All message text is rendered with textContent, never as HTML (05_SECURITY.md).
-import { sendMessage, type Source, type Stage } from './api';
+// Links (demo videos, Calendly) are built as <a> elements from an allow-list in api.ts.
+import { CALENDLY_URL, safeLinks, sendMessage, type ChatLink, type Source } from './api';
 
 const SESSION_KEY = 'disenyo-inquiry:session';
 const TRANSCRIPT_KEY = 'disenyo-inquiry:transcript';
@@ -7,12 +8,14 @@ const SOURCES: Source[] = ['heyzine', 'link', 'qr', 'website'];
 
 const OPENING =
   "Hi! I'm Disenyo's AI assistant. I can tell you about our AI systems, websites and digital solutions, and help you get a quote. What are you looking to build?";
-const OPENING_CHIPS = ['Business systems', 'Website', 'Clinic or resort', 'Just browsing'];
-const SENT_TO_TEAM = 'Your inquiry has been sent to the Disenyo team.';
+const OPENING_CHIPS = ['Business systems', 'Website', 'Clinic or resort', 'Watch demo'];
+// These buttons open the Calendly booking page in a new tab (and still show the reply in the chat).
+const CALENDLY_CHIPS = ['Book a call', 'Talk to a person'];
 
 type Entry =
-  | { kind: 'user' | 'assistant'; text: string }
-  | { kind: 'notice'; text: string; tone: 'consent' | 'saved' | 'error' };
+  | { kind: 'user'; text: string }
+  | { kind: 'assistant'; text: string; links?: ChatLink[] }
+  | { kind: 'notice'; text: string; tone: 'consent' | 'error' };
 
 const log = document.getElementById('log') as HTMLElement;
 const chips = document.getElementById('chips') as HTMLElement;
@@ -55,7 +58,6 @@ function getSource(): Source {
 const sessionId = getSessionId();
 const source = getSource();
 let transcript: Entry[] = [];
-let sentToTeam = false;
 let busy = false;
 
 function render(entry: Entry): void {
@@ -67,6 +69,22 @@ function render(entry: Entry): void {
   }
   el.textContent = entry.text;
   log.appendChild(el);
+  if (entry.kind === 'assistant' && entry.links?.length) log.appendChild(renderLinks(entry.links));
+}
+
+function renderLinks(links: ChatLink[]): HTMLElement {
+  const wrap = document.createElement('div');
+  wrap.className = 'links';
+  for (const link of links) {
+    const a = document.createElement('a');
+    a.className = link.url.startsWith(CALENDLY_URL) ? 'link-button primary' : 'link-button';
+    a.href = link.url;
+    a.target = '_blank';
+    a.rel = 'noopener noreferrer';
+    a.textContent = link.label;
+    wrap.appendChild(a);
+  }
+  return wrap;
 }
 
 function add(entry: Entry, persist = true): void {
@@ -89,9 +107,15 @@ function setChips(options: string[]): void {
     button.type = 'button';
     button.className = 'chip';
     button.textContent = option;
-    button.addEventListener('click', () => void submit(option));
+    button.addEventListener('click', () => {
+      // Open Calendly straight away, from the click itself so it isn't blocked as a pop-up.
+      if (CALENDLY_CHIPS.includes(option)) window.open(CALENDLY_URL, '_blank', 'noopener');
+      void submit(option);
+    });
     chips.appendChild(button);
   }
+  // The buttons change the height of the conversation area: keep the newest message in view.
+  scrollToEnd();
 }
 
 function showTyping(): HTMLElement {
@@ -130,13 +154,10 @@ async function submit(text: string): Promise<void> {
   typing.remove();
 
   if (result.ok) {
-    const { reply, quickReplies, stage, consentNotice } = result.data;
-    add({ kind: 'assistant', text: reply });
+    const { reply, quickReplies, links, followUp, consentNotice } = result.data;
+    add({ kind: 'assistant', text: reply, links });
+    if (followUp) add({ kind: 'assistant', text: followUp.reply, links: followUp.links });
     if (consentNotice) add({ kind: 'notice', text: consentNotice, tone: 'consent' });
-    if (!sentToTeam && isWithTeam(stage)) {
-      sentToTeam = true;
-      add({ kind: 'notice', text: SENT_TO_TEAM, tone: 'saved' });
-    }
     setChips(quickReplies);
   } else {
     add({ kind: 'notice', text: result.message, tone: 'error' }, false);
@@ -146,19 +167,20 @@ async function submit(text: string): Promise<void> {
   input.focus({ preventScroll: true });
 }
 
-function isWithTeam(stage: Stage): boolean {
-  return stage === 'ready_for_consultation' || stage === 'handoff';
-}
-
 function restore(): boolean {
   const raw = readStorage(TRANSCRIPT_KEY);
   if (!raw) return false;
   try {
-    const saved = JSON.parse(raw) as Entry[];
-    if (!Array.isArray(saved) || saved.length === 0) return false;
+    const parsed = JSON.parse(raw) as unknown;
+    if (!Array.isArray(parsed) || parsed.length === 0) return false;
+    // Drop the old "Your inquiry has been sent" notice from chats saved before it was removed,
+    // and re-check any saved links against the allow-list.
+    const saved = (parsed as Entry[])
+      .filter((e) => !(e.kind === 'notice' && (e.tone as string) === 'saved'))
+      .map((e) => (e.kind === 'assistant' && e.links ? { ...e, links: safeLinks(e.links) } : e));
     transcript = saved;
+    writeStorage(TRANSCRIPT_KEY, JSON.stringify(transcript));
     for (const entry of saved) render(entry);
-    sentToTeam = saved.some((e) => e.kind === 'notice' && e.tone === 'saved');
     scrollToEnd();
     return true;
   } catch {

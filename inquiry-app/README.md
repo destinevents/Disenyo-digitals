@@ -100,10 +100,13 @@ Alerts go to every channel that is set up: email, Telegram, or both. With neithe
 
 `vercel.json` sets the function to 256 MB and 60 s (OpenAI gets at most 25 s of that, so a slow answer still ends in a saved message), bundles `prompts/` and `knowledge/`, and lets only this site and Heyzine frame the chat page.
 
-## Leads and alerts
+## Demos, booking and leads
 
-- Leads are stored in `inquiry_leads` in the HQ Supabase project. Only HQ admins can read them.
-- Alerts go by email (and to the Telegram group, if set up): once per lead when it becomes ready or asks for a person, plus any "delete my data" request. If that first alert had no phone or email, a second alert brings the contact details as soon as the prospect gives them.
+- **Demos and booking are handled in code** (`server/actions.ts`), not by the AI, so the links are always right: "demo", "sample work", "portfolio" and the "Watch demo" button show the All Services demo; "Browse demos (Clinic / Staycation)" shows the clinic and staycation demos; every one of these ends with the booking link.
+- **"Talk to a person" and "Book a call"** answer straight away with the Calendly link (https://calendly.com/disenyodigitalsdemo). The chat never asks for a name or contact details: Calendly collects them and emails the team for every booking. Nothing is "sent to the team" from the chat, and the chat never says so.
+- To add a demo, add it to `DEMOS` in `server/actions.ts` and to `quickAnswer`, then run `npm test` and `npm run build`.
+- Every conversation is still saved in `inquiry_leads` in the HQ Supabase project. Only HQ admins can read them.
+- Alert emails (and Telegram, if set up) go out only when a prospect volunteers a phone or email in the chat and is ready or asks for a person, plus any "delete my data" request. Bookings come by email from Calendly instead.
 - Alert emails come from `alerts@disenyodigitals.com`. When the prospect gave an email, it is the Reply-To, so the team can answer with Reply.
 - To export leads, open the table view in Supabase and download a CSV.
 

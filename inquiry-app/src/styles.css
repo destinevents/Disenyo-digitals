@@ -152,6 +152,58 @@ body {
   border-bottom-right-radius: 6px;
 }
 
+/* Link buttons under an assistant reply (demo videos, Calendly). Open in a new tab. */
+.links {
+  align-self: flex-start;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-width: 86%;
+  margin-top: -4px;
+}
+
+.link-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 40px;
+  padding: 9px 14px;
+  border-radius: 12px;
+  border: 1px solid var(--tan);
+  background: var(--paper);
+  color: var(--tan-ink);
+  font-weight: 500;
+  font-size: 0.925rem;
+  text-decoration: none;
+  overflow-wrap: anywhere;
+}
+
+.link-button::after {
+  content: '\2197'; /* north-east arrow: opens in a new tab */
+  margin-left: auto;
+  padding-left: 6px;
+  opacity: 0.7;
+}
+
+.link-button:hover {
+  background: var(--cream-deep);
+}
+
+.link-button.primary {
+  background: var(--brown);
+  border-color: var(--brown);
+  color: var(--cream);
+}
+
+.link-button.primary:hover {
+  background: var(--brown-soft);
+}
+
+.link-button:focus-visible {
+  outline: 2px solid var(--brown);
+  outline-offset: 2px;
+}
+
 .notice {
   align-self: stretch;
   margin: 2px 4px;
@@ -167,10 +219,6 @@ body {
   border-color: var(--line);
   background: var(--cream-deep);
   color: var(--ink);
-}
-
-.notice.saved {
-  font-weight: 500;
 }
 
 .typing {
