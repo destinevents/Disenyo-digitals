@@ -57,6 +57,7 @@ export function handlerFromEnv(env: NodeJS.ProcessEnv = process.env): (request: 
     config: {
       allowedOrigins: parseAllowedOrigins(env.INQUIRY_ALLOWED_ORIGINS),
       ipHashSalt: env.INQUIRY_IP_HASH_SALT ?? '',
+      alertsReachTeam: channels.length > 0,
     },
   });
 }

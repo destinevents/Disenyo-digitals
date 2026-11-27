@@ -121,4 +121,4 @@ Alerts go to every channel that is set up: email, Telegram, or both. With neithe
 
 - The consent line ("Disenyo Digitals will use your name and contact details only to respond to this inquiry...") is shown once, when contact details are first asked for or given. `consent_at` is recorded when contact details are given after the line was shown.
 - Retention: 12 months (a placeholder for Jenn to confirm).
-- Deletion: when a prospect types "delete my data", the chat confirms and the team gets a Telegram alert. An admin then deletes the row in Supabase.
+- Deletion: when a prospect types "delete my data", the team gets an alert email (and Telegram, if set up), and an admin deletes the row in Supabase. The chat only says the team was told if that alert was actually delivered; otherwise it asks the prospect to email info@destinevents.biz.

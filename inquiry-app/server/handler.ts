@@ -17,12 +17,22 @@ export const CONTACT_EMAIL = 'info@destinevents.biz';
 export const CONSENT_NOTICE =
   'Disenyo Digitals will use your name and contact details only to respond to this inquiry. We keep them for up to 12 months. Reply "delete my data" anytime.';
 
+/** Shown only when the deletion alert really reached the team (email or Telegram). */
 export const DELETION_REPLY =
-  "Noted. We've asked the Disenyo team to delete your details from this inquiry. A team member will confirm once it's done. You can also email info@destinevents.biz.";
+  "Noted. We've emailed the Disenyo team to delete your details from this chat. If you'd like a confirmation, email info@destinevents.biz.";
+
+/** Shown when no alert could be delivered: the chat must not claim it told anyone. */
+export const DELETION_REPLY_EMAIL_US =
+  'To have your details deleted, please email info@destinevents.biz and the team will take care of it.';
 
 export interface HandlerConfig {
   allowedOrigins: string[];
   ipHashSalt: string;
+  /**
+   * False when no alert channel is set up (alerts only go to the server log). The chat then
+   * never says it notified the team. Defaults to true.
+   */
+  alertsReachTeam?: boolean;
 }
 
 export interface HandlerDeps {
@@ -94,7 +104,8 @@ export function createInquiryHandler(deps: HandlerDeps): (request: Request) => P
     }
   }
 
-  async function alertOnce(kind: AlertKind, update: LeadUpdate, handoffReason: string | null): Promise<void> {
+  /** Returns true only if the alert was delivered. */
+  async function alertOnce(kind: AlertKind, update: LeadUpdate, handoffReason: string | null): Promise<boolean> {
     try {
       await notifier.send({
         kind,
@@ -108,9 +119,10 @@ export function createInquiryHandler(deps: HandlerDeps): (request: Request) => P
     } catch (error) {
       // alerted_at stays empty, so the next message from this session retries the alert.
       log.error('[inquiry] alert failed', update.sessionId, error);
-      return;
+      return false;
     }
     if (kind === 'lead') await save({ ...update, alertedAt: now().toISOString() });
+    return true;
   }
 
   return async function handle(request: Request): Promise<Response> {
@@ -183,18 +195,19 @@ export function createInquiryHandler(deps: HandlerDeps): (request: Request) => P
 
     // "Delete my data" is handled in code so it never depends on the model.
     if (isDeletionRequest(message)) {
-      const messages = [...session.messages, userMessage, { role: 'assistant' as const, content: DELETION_REPLY, at }];
       const update: LeadUpdate = {
         ...base,
         stage: 'handoff',
         score: session.score,
         summary: session.summary,
         fields: session.fields,
-        messages,
+        messages: [...session.messages, userMessage],
       };
-      await save(update);
-      await alertOnce('deletion_request', update, 'data deletion request');
-      return json(200, { reply: DELETION_REPLY, quickReplies: [], stage: 'handoff' } satisfies InquiryResponse, corsOrigin);
+      // Only say the team was told if the alert really went out.
+      const delivered = config.alertsReachTeam !== false && (await alertOnce('deletion_request', update, 'data deletion request'));
+      const reply = delivered ? DELETION_REPLY : DELETION_REPLY_EMAIL_US;
+      await save({ ...update, messages: [...update.messages, { role: 'assistant', content: reply, at }] });
+      return json(200, { reply, quickReplies: [], stage: 'handoff' } satisfies InquiryResponse, corsOrigin);
     }
 
     // Demo, booking and "talk to a person" requests get fixed replies with the right links,

@@ -1,6 +1,13 @@
 import { describe, expect, it, vi } from 'vitest';
 import { AgentUnavailableError } from '../server/agent.js';
-import { CONSENT_NOTICE, createInquiryHandler, IP_HOURLY_LIMIT, SESSION_MESSAGE_LIMIT } from '../server/handler.js';
+import {
+  CONSENT_NOTICE,
+  createInquiryHandler,
+  DELETION_REPLY,
+  DELETION_REPLY_EMAIL_US,
+  IP_HOURLY_LIMIT,
+  SESSION_MESSAGE_LIMIT,
+} from '../server/handler.js';
 import { MemoryStore } from '../server/stores/memoryStore.js';
 import { emptyFields, type Agent, type AgentResult, type Alert, type LeadFields, type Notifier } from '../server/types.js';
 
@@ -300,6 +307,31 @@ describe('POST /api/inquiry: privacy', () => {
     expect(res.stage).toBe('handoff');
     expect(agent.respond).not.toHaveBeenCalled();
     expect(alerts).toEqual([expect.objectContaining({ kind: 'deletion_request' })]);
+    expect(res.reply).toBe(DELETION_REPLY);
+  });
+
+  it('never claims the team was told when the deletion alert fails', async () => {
+    const { handle, notifier, store } = setup();
+    vi.mocked(notifier.send).mockRejectedValueOnce(new Error('email down'));
+    const res = await (await handle(post(msg('delete my data')))).json();
+    expect(res.reply).toBe(DELETION_REPLY_EMAIL_US);
+    expect(res.reply).not.toMatch(/we've|emailed the|asked the/i);
+    expect(store.leads.get(SESSION)!.messages.at(-1)!.content).toBe(DELETION_REPLY_EMAIL_US);
+  });
+
+  it('never claims the team was told when no alert channel is set up', async () => {
+    const store = new MemoryStore();
+    const notifier: Notifier = { send: vi.fn(async () => {}) };
+    const handle = createInquiryHandler({
+      store,
+      notifier,
+      agent: { respond: vi.fn() },
+      log: { error: vi.fn(), warn: vi.fn() },
+      config: { allowedOrigins: [ORIGIN], ipHashSalt: 'test', alertsReachTeam: false },
+    });
+    const res = await (await handle(post(msg('delete my data')))).json();
+    expect(res.reply).toBe(DELETION_REPLY_EMAIL_US);
+    expect(notifier.send).not.toHaveBeenCalled();
   });
 
   it('stores a hashed IP, never the raw IP', async () => {
