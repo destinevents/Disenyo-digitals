@@ -23,6 +23,23 @@ The profile groups our services into three areas:
 - **Marketing Collaterals:** brochures, calling cards, social media assets, presentations, business profiles.
 - **Digital Presence:** landing pages, campaign pages, business websites, QR experiences, digital touchpoints.
 
+## What our All Services demo video shows
+
+Use this when explaining our services: it is what visitors see in the "Watch demo" video (30 seconds). Describe the work in words; only offer the video if they want to see it. Don't name the clients whose work appears in it.
+
+- **Marketing collaterals (brochures):** product packaging and brochure designs for a grocery and farm-products brand: powders, teas, freeze-dried fruit, each with its own branded pouch.
+- **Web design and custom systems:**
+  - KusinaIQ, a restaurant management system.
+  - An AI business assistant ("AI Business OS — Agent Layer") that gives the owner a daily brief: active leads, quotes waiting for approval, overdue invoices and what to do first. The same engine is set up for events, restaurants and training schools.
+  - A client and project pipeline dashboard: clients, projects, proposals, partners, a document vault, an impact tracker and an AI assistant.
+  - Community event pages with a plan builder, event checklist, social media planner and post-event survey.
+  - A local business directory.
+  - HospitalityIQ, an AI sustainability dashboard for hospitality: circular loop, procurement, kitchen and Vision AI.
+- **Inventory management:** an inventory overview with total items, low-stock and out-of-stock counts and total stock value; products, categories, suppliers, stock adjustments, transfers between branches and reports; one tap to create a purchase order.
+- **Websites and landing pages:** a business website with a hero section, services, and "Get Started" lead buttons; mobile-friendly, SEO-ready, with contact and lead forms.
+- **Enrollment and ticketing:** an event dashboard showing total registrants, checked-in guests, pending payments and revenue; registrations with ticket types (General Admission, VIP), payments, QR check-in and reports.
+- **Payroll and HR:** a payroll summary per pay period (gross pay, deductions, net pay), each employee's pay, time logs and attendance, deductions, payslips and reports, including 13th month and SSS, Pag-IBIG and PhilHealth.
+
 ## Services and starting rates
 
 All rates are *starting* rates. The final price depends on requirements and is confirmed after a consultation.
