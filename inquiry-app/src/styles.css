@@ -83,40 +83,26 @@ body {
   text-transform: uppercase;
 }
 
-.person summary {
-  list-style: none;
-  cursor: pointer;
+/* "Talk to a person": opens the Calendly booking page in a new tab. */
+.person {
+  flex: none;
   white-space: nowrap;
   font-size: 0.85rem;
   font-weight: 500;
   padding: 7px 12px;
   border: 1px solid rgba(245, 239, 230, 0.45);
   border-radius: 999px;
-}
-
-.person summary::-webkit-details-marker {
-  display: none;
-}
-
-.person summary:focus-visible,
-.person a:focus-visible {
-  outline: 2px solid var(--tan);
-  outline-offset: 2px;
-}
-
-.person-card {
-  display: grid;
-  gap: 4px;
-  margin-top: 8px;
-  padding: 10px 12px;
-  border-radius: 12px;
-  background: var(--brown-soft);
-  font-size: 0.9rem;
-}
-
-.person-card a {
   color: var(--cream);
   text-decoration: none;
+}
+
+.person:hover {
+  background: var(--brown-soft);
+}
+
+.person:focus-visible {
+  outline: 2px solid var(--tan);
+  outline-offset: 2px;
 }
 
 /* Conversation */
