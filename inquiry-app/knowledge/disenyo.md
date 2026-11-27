@@ -152,7 +152,9 @@ We keep your systems secure, updated and performing at their best, so you can fo
 
 ## Contact
 
-- Phone: +63 906 571 3298 · +61 422 770 601
+- Mobile / Viber: 0906 571 3298 (+63 906 571 3298)
+- WhatsApp: +61 422 770 601
+- Messenger: disenyodigitals
 - Email: info@destinevents.biz
 - Locations: Baguio City (Nevada Square), Pasay City
 - Web: disenyodigitals.com

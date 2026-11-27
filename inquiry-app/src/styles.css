@@ -83,21 +83,28 @@ body {
   text-transform: uppercase;
 }
 
-/* "Talk to a person": opens the Calendly booking page in a new tab. */
+/* "Talk to a person": shows the team's mobile, Viber, WhatsApp and Messenger in the chat. */
 .person {
   flex: none;
   white-space: nowrap;
+  font: inherit;
   font-size: 0.85rem;
   font-weight: 500;
   padding: 7px 12px;
   border: 1px solid rgba(245, 239, 230, 0.45);
   border-radius: 999px;
+  background: transparent;
   color: var(--cream);
-  text-decoration: none;
+  cursor: pointer;
 }
 
-.person:hover {
+.person:hover:not(:disabled) {
   background: var(--brown-soft);
+}
+
+.person:disabled {
+  opacity: 0.6;
+  cursor: default;
 }
 
 .person:focus-visible {
@@ -169,6 +176,11 @@ body {
   margin-left: auto;
   padding-left: 6px;
   opacity: 0.7;
+}
+
+/* Phone and Viber: open the dialler or the app, not a new tab. */
+.link-button.dial::after {
+  content: '\260E'; /* telephone */
 }
 
 .link-button:hover {
@@ -258,6 +270,40 @@ body {
   padding-bottom: max(10px, env(safe-area-inset-bottom));
   background: var(--cream);
   border-top: 1px solid var(--line);
+}
+
+/* "What type of business is this for?" dropdown. */
+.picker {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 8px;
+}
+
+.picker:empty {
+  display: none;
+}
+
+.picker label {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--tan-ink);
+}
+
+.picker select {
+  font: inherit;
+  font-size: 16px; /* 16px stops iOS zooming into the field */
+  min-height: 42px;
+  padding: 8px 12px;
+  border-radius: 12px;
+  border: 1px solid var(--tan);
+  background: var(--paper);
+  color: var(--ink);
+}
+
+.picker select:focus-visible {
+  outline: 2px solid var(--brown);
+  outline-offset: 2px;
 }
 
 .chips {

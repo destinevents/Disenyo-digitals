@@ -1,7 +1,7 @@
 // POST /api/inquiry (06_API_SPEC.md). Built from injected parts so it can be tested
 // without OpenAI, Supabase or Telegram.
 import { createHash } from 'node:crypto';
-import { linksForFlags, matchQuickIntent, mergeQuickReplies, quickAnswer, type ChatLink } from './actions.js';
+import { BUSINESS_TYPES, linksForFlags, matchQuickIntent, mergeQuickReplies, quickAnswer, type ChatLink } from './actions.js';
 import { AgentUnavailableError } from './agent.js';
 import { decideStage, hasContact, isDeletionRequest, mergeFields, needsAlert } from './readiness.js';
 import type { Agent, AlertKind, ChatMessage, LeadSession, LeadStore, LeadUpdate, Notifier, Source, Stage } from './types.js';
@@ -54,7 +54,11 @@ export interface InquiryResponse {
   followUp?: { reply: string; links: ChatLink[] };
   /** Present on the one reply that must show the privacy consent line. */
   consentNotice?: string;
+  /** A "type of business" dropdown under the reply. The page adds "Others" (type it in). */
+  businessPicker?: { prompt: string; options: string[] };
 }
+
+export const BUSINESS_PICKER_PROMPT = 'What type of business is this for?';
 
 function json(status: number, body: unknown, origin: string | null): Response {
   const headers: Record<string, string> = {
@@ -210,13 +214,14 @@ export function createInquiryHandler(deps: HandlerDeps): (request: Request) => P
       return json(200, { reply, quickReplies: [], stage: 'handoff' } satisfies InquiryResponse, corsOrigin);
     }
 
-    // Demo, booking and "talk to a person" requests get fixed replies with the right links,
-    // straight away and without an AI call. Nothing is sent to the team from the chat:
-    // Calendly collects the visitor's details and emails the team for each booking.
+    // Brochure, demo, booking, "talk to a person" and business-type answers get fixed replies with
+    // the right links, straight away and without an AI call. Nothing is sent to the team from the
+    // chat: Calendly collects the visitor's details and emails the team for each booking.
     const intent = matchQuickIntent(message);
     if (intent) {
-      const answer = quickAnswer(intent);
-      const { stage, score } = decideStage(session.stage, session.fields, {
+      const answer = quickAnswer(intent, message);
+      const fields = answer.industry ? { ...session.fields, industry: answer.industry } : session.fields;
+      const { stage, score } = decideStage(session.stage, fields, {
         stage: 'qualifying',
         score: session.score ?? 2,
         requestedHuman: answer.requestedHuman,
@@ -230,7 +235,7 @@ export function createInquiryHandler(deps: HandlerDeps): (request: Request) => P
         stage,
         score,
         summary: session.summary,
-        fields: session.fields,
+        fields,
         messages: [...session.messages, userMessage, ...replies],
       });
       const response: InquiryResponse = { reply: answer.reply, quickReplies: answer.quickReplies, stage, links: answer.links };
@@ -289,6 +294,9 @@ export function createInquiryHandler(deps: HandlerDeps): (request: Request) => P
 
     const response: InquiryResponse = { reply: result.reply, quickReplies: mergeQuickReplies(result.quickReplies), stage };
     if (links.length) response.links = links;
+    // Once they've asked about a service, the page offers a "type of business" dropdown instead of
+    // the AI asking for their industry (the dropdown then shows the matching demo and booking).
+    if (fields.service_type && !fields.industry && !result.requestedHuman) response.businessPicker = { prompt: BUSINESS_PICKER_PROMPT, options: [...BUSINESS_TYPES] };
     if (showConsent) response.consentNotice = CONSENT_NOTICE;
     return json(200, response, corsOrigin);
   };

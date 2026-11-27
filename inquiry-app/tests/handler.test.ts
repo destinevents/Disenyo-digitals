@@ -73,7 +73,7 @@ describe('POST /api/inquiry: validation', () => {
     expect(res.status).toBe(200);
     expect(await res.json()).toEqual({
       reply: 'Our websites start at ₱10,000.',
-      quickReplies: ['Watch demo', 'Book a call', 'Talk to a person', 'Browse demos (Clinic / Staycation)'],
+      quickReplies: ['Watch demo', 'Book a call', 'Talk to a person', 'Specific business demo'],
       stage: 'qualifying',
     });
     expect(res.headers.get('access-control-allow-origin')).toBe(ORIGIN);
@@ -181,17 +181,48 @@ describe('POST /api/inquiry: saving and alerts', () => {
     expect(store.leads.get(SESSION)!.alertedAt).not.toBeNull();
   });
 
-  it('answers "talk to a person" with the Calendly link, without the AI and without an alert', async () => {
+  it('answers "talk to a person" with mobile, Viber, WhatsApp and Messenger, without the AI and without an alert', async () => {
     const { handle, agent, alerts, store } = setup();
     const body = await (await handle(post(msg('Can I talk to a person?')))).json();
-    expect(body.reply).toMatch(/Our team can call you/);
-    expect(body.links).toEqual([{ label: 'Book a free 30-minute call', url: 'https://calendly.com/disenyodigitalsdemo' }]);
+    expect(body.reply).toMatch(/reach our team directly/);
+    expect(body.links.map((l: { url: string }) => l.url)).toEqual([
+      'tel:+639065713298',
+      'viber://chat?number=%2B639065713298',
+      'https://wa.me/61422770601',
+      'https://m.me/disenyodigitals',
+    ]);
     expect(body.stage).toBe('handoff');
-    expect(body.reply).not.toMatch(/business name|contact|sent to/i);
+    expect(body.reply).not.toMatch(/business name|sent to/i);
     expect(agent.respond).not.toHaveBeenCalled();
     expect(alerts).toHaveLength(0);
     // The exchange is still saved, links included, so the team can see it.
-    expect(store.leads.get(SESSION)!.messages[1]!.links?.[0]!.url).toBe('https://calendly.com/disenyodigitalsdemo');
+    expect(store.leads.get(SESSION)!.messages[1]!.links?.[0]!.url).toBe('tel:+639065713298');
+  });
+
+  it('answers "Browse service brochure" with the Heyzine brochure, then booking', async () => {
+    const { handle, agent } = setup();
+    const body = await (await handle(post(msg('Browse service brochure')))).json();
+    expect(body.links).toEqual([{ label: 'Open the service brochure', url: 'https://heyzine.com/flip-book/a6a6b9c519.html#page/4' }]);
+    expect(body.followUp.links[0].url).toBe('https://calendly.com/disenyodigitalsdemo');
+    expect(agent.respond).not.toHaveBeenCalled();
+  });
+
+  it('shows the business dropdown after a service question instead of asking for the industry', async () => {
+    const { handle } = setup([result({}, { service_type: 'Inventory Management' })]);
+    const body = await (await handle(post(msg('How much is an inventory system?')))).json();
+    expect(body.businessPicker.prompt).toBe('What type of business is this for?');
+    expect(body.businessPicker.options).toContain('Café / Restaurant');
+  });
+
+  it('saves the business picked in the dropdown and answers with its demo and booking', async () => {
+    const { handle, store, agent } = setup([result({}, { service_type: 'Inventory Management' })]);
+    await handle(post(msg('How much is an inventory system?')));
+    const body = await (await handle(post(msg('My business: Café / Restaurant')))).json();
+    expect(body.links).toEqual([{ label: 'Café system demo', url: 'https://disenyodigitals.com/demos/cafe-inventory-demo.mp4' }]);
+    expect(body.followUp.links[0].url).toBe('https://calendly.com/disenyodigitalsdemo');
+    expect(body.businessPicker).toBeUndefined();
+    expect(store.leads.get(SESSION)!.fields.industry).toBe('Café / Restaurant');
+    expect(agent.respond).toHaveBeenCalledTimes(1);
   });
 
   it('answers a demo request with the All Services demo, then booking', async () => {
@@ -200,24 +231,30 @@ describe('POST /api/inquiry: saving and alerts', () => {
     expect(body.links.map((l: { label: string }) => l.label)).toEqual(['All Services demo']);
     expect(body.followUp.reply).toContain('Book a free 30-minute call with our team:');
     expect(body.followUp.links[0].url).toBe('https://calendly.com/disenyodigitalsdemo');
-    expect(body.quickReplies).toContain('Browse demos (Clinic / Staycation)');
+    expect(body.quickReplies).toContain('Specific business demo');
     expect(agent.respond).not.toHaveBeenCalled();
   });
 
-  it('answers "Browse demos" with the clinic and staycation demos', async () => {
+  it('answers "Specific business demo" with each business demo and Others → Calendly', async () => {
     const { handle } = setup();
-    const body = await (await handle(post(msg('Browse demos (Clinic / Staycation)')))).json();
-    expect(body.links.map((l: { label: string }) => l.label)).toEqual(['Clinic system demo', 'Staycation / Cleaning system demo']);
-    expect(body.followUp.links[0].label).toBe('Book a free 30-minute call');
+    const body = await (await handle(post(msg('Specific business demo')))).json();
+    expect(body.links.map((l: { label: string }) => l.label)).toEqual([
+      'Inventory system demo',
+      'Café system demo',
+      'Payroll system demo',
+      'Clinic system demo',
+      'Staycation / Cleaning system demo',
+      'Others: book a call with our team',
+    ]);
   });
 
-  it('adds the Calendly link when the AI sees a request for a person, and alerts only once contact is given', async () => {
+  it('adds the team contacts when the AI sees a request for a person, and alerts only once contact is given', async () => {
     const { handle, alerts } = setup([
       result({ requestedHuman: true }),
       result({}, { name: 'Maria', phone: '0917 123 4567', service_type: 'Inventory Management' }),
     ]);
     const first = await (await handle(post(msg('Pwede po ba may tumawag sa akin?')))).json();
-    expect(first.links).toEqual([{ label: 'Book a free 30-minute call', url: 'https://calendly.com/disenyodigitalsdemo' }]);
+    expect(first.links[0]).toEqual({ label: 'Call or text: 0906 571 3298', url: 'tel:+639065713298' });
     expect(alerts).toHaveLength(0); // no phone or email yet: nothing the team could act on
 
     await handle(post(msg('Maria, 0917 123 4567')));
@@ -229,7 +266,7 @@ describe('POST /api/inquiry: saving and alerts', () => {
   it('never offers buttons that ask for contact details', async () => {
     const { handle } = setup([result({ quickReplies: ['Share business name', 'Give my number'] })]);
     const body = await (await handle(post(msg('I need an inventory system')))).json();
-    expect(body.quickReplies).toEqual(['Watch demo', 'Book a call', 'Talk to a person', 'Browse demos (Clinic / Staycation)']);
+    expect(body.quickReplies).toEqual(['Watch demo', 'Book a call', 'Talk to a person', 'Specific business demo']);
   });
 
   it('sends no contact follow-up when the first alert already had contact details', async () => {

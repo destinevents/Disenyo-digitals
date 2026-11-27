@@ -21,13 +21,14 @@
           <p class="brand-name">Disenyo Digitals Collective</p>
           <p class="brand-line">AI + Digital Solutions</p>
         </div>
-        <!-- Opens the team's Calendly booking page, like the "Talk to a person" button in the chat. -->
-        <a class="person" href="https://calendly.com/disenyodigitalsdemo" target="_blank" rel="noopener noreferrer">Talk to a person</a>
+        <!-- Shows the team's mobile, Viber, WhatsApp and Messenger in the chat, like the "Talk to a person" chip. -->
+        <button id="person" class="person" type="button">Talk to a person</button>
       </header>
 
       <main id="log" class="log" role="log" aria-live="polite" aria-label="Conversation"></main>
 
       <footer class="composer">
+        <div id="picker" class="picker"></div>
         <div id="chips" class="chips" aria-label="Suggested replies"></div>
         <form id="form" class="form" autocomplete="off">
           <label for="input" class="visually-hidden">Your message</label>

@@ -1,16 +1,21 @@
 // Chat page. All message text is rendered with textContent, never as HTML (05_SECURITY.md).
-// Links (demo videos, Calendly) are built as <a> elements from an allow-list in api.ts.
-import { CALENDLY_URL, safeLinks, sendMessage, type ChatLink, type Source } from './api';
+// Links (brochure, demo videos, Calendly, phone/Viber/WhatsApp/Messenger) are built as <a>
+// elements from an allow-list in api.ts.
+import { CALENDLY_URL, isDialLink, safeLinks, sendMessage, type ChatLink, type Source } from './api';
 
 const SESSION_KEY = 'disenyo-inquiry:session';
 const TRANSCRIPT_KEY = 'disenyo-inquiry:transcript';
 const SOURCES: Source[] = ['heyzine', 'link', 'qr', 'website'];
 
 const OPENING =
-  "Hi! I'm Disenyo's AI assistant. I can tell you about our AI systems, websites and digital solutions, and help you get a quote. What are you looking to build?";
-const OPENING_CHIPS = ['Business systems', 'Website', 'Clinic or resort', 'Watch demo'];
+  "Hi! I'm Disenyo's AI assistant. I can tell you about our AI systems, websites and digital solutions, and help you get a quote. Browse our brochure, watch a demo, or tell me what you're looking to build.";
+const OPENING_CHIPS = ['Browse service brochure', 'Watch demo', 'Specific business demo', 'Talk to a person'];
 // These buttons open the Calendly booking page in a new tab (and still show the reply in the chat).
-const CALENDLY_CHIPS = ['Book a call', 'Talk to a person'];
+const CALENDLY_CHIPS = ['Book a call'];
+// Must match BUSINESS_PREFIX in server/actions.ts.
+const BUSINESS_PREFIX = 'My business: ';
+const OTHERS = 'Others (type it in)';
+const DEFAULT_PLACEHOLDER = 'Type your question…';
 
 type Entry =
   | { kind: 'user'; text: string }
@@ -22,6 +27,8 @@ const chips = document.getElementById('chips') as HTMLElement;
 const form = document.getElementById('form') as HTMLFormElement;
 const input = document.getElementById('input') as HTMLTextAreaElement;
 const sendButton = document.getElementById('send') as HTMLButtonElement;
+const picker = document.getElementById('picker') as HTMLElement;
+const personButton = document.getElementById('person') as HTMLButtonElement;
 
 // sessionStorage can throw (private mode, blocked storage, some iframes). The chat still works without it.
 function readStorage(key: string): string | null {
@@ -59,6 +66,8 @@ const sessionId = getSessionId();
 const source = getSource();
 let transcript: Entry[] = [];
 let busy = false;
+// True after "Others" in the business dropdown: the next typed message is their type of business.
+let typingBusiness = false;
 
 function render(entry: Entry): void {
   const el = document.createElement('div');
@@ -77,11 +86,16 @@ function renderLinks(links: ChatLink[]): HTMLElement {
   wrap.className = 'links';
   for (const link of links) {
     const a = document.createElement('a');
-    a.className = link.url.startsWith(CALENDLY_URL) ? 'link-button primary' : 'link-button';
     a.href = link.url;
-    a.target = '_blank';
-    a.rel = 'noopener noreferrer';
     a.textContent = link.label;
+    if (isDialLink(link.url)) {
+      // Phone and Viber links open the dialler or the app, not a page.
+      a.className = 'link-button dial';
+    } else {
+      a.className = link.url.startsWith(CALENDLY_URL) ? 'link-button primary' : 'link-button';
+      a.target = '_blank';
+      a.rel = 'noopener noreferrer';
+    }
     wrap.appendChild(a);
   }
   return wrap;
@@ -118,6 +132,32 @@ function setChips(options: string[]): void {
   scrollToEnd();
 }
 
+/** The "type of business" dropdown. Picking one sends it; "Others" lets them type their own. */
+function setPicker(config?: { prompt: string; options: string[] }): void {
+  picker.replaceChildren();
+  if (!config) return;
+  const label = document.createElement('label');
+  label.htmlFor = 'business';
+  label.textContent = config.prompt;
+  const select = document.createElement('select');
+  select.id = 'business';
+  const placeholder = new Option('Choose one…', '', true, true);
+  placeholder.disabled = true;
+  select.add(placeholder);
+  for (const option of [...config.options, OTHERS]) select.add(new Option(option, option));
+  select.addEventListener('change', () => {
+    if (select.value === OTHERS) {
+      typingBusiness = true;
+      input.placeholder = 'Type your type of business…';
+      input.focus();
+      return;
+    }
+    if (select.value) void submit(BUSINESS_PREFIX + select.value);
+  });
+  picker.append(label, select);
+  scrollToEnd();
+}
+
 function showTyping(): HTMLElement {
   const el = document.createElement('div');
   el.className = 'typing';
@@ -131,7 +171,9 @@ function showTyping(): HTMLElement {
 function setBusy(value: boolean): void {
   busy = value;
   sendButton.disabled = value;
+  personButton.disabled = value;
   for (const chip of chips.querySelectorAll('button')) chip.disabled = value;
+  for (const select of picker.querySelectorAll('select')) select.disabled = value;
 }
 
 function autoGrow(): void {
@@ -140,11 +182,16 @@ function autoGrow(): void {
 }
 
 async function submit(text: string): Promise<void> {
-  const message = text.trim();
+  let message = text.trim();
   if (!message || busy) return;
+  // Typed after "Others" in the business dropdown (unless they used a button instead).
+  if (typingBusiness && text === input.value) message = BUSINESS_PREFIX + message;
+  typingBusiness = false;
+  input.placeholder = DEFAULT_PLACEHOLDER;
 
   setBusy(true);
   setChips([]);
+  setPicker();
   add({ kind: 'user', text: message });
   input.value = '';
   autoGrow();
@@ -154,10 +201,11 @@ async function submit(text: string): Promise<void> {
   typing.remove();
 
   if (result.ok) {
-    const { reply, quickReplies, links, followUp, consentNotice } = result.data;
+    const { reply, quickReplies, links, followUp, consentNotice, businessPicker } = result.data;
     add({ kind: 'assistant', text: reply, links });
     if (followUp) add({ kind: 'assistant', text: followUp.reply, links: followUp.links });
     if (consentNotice) add({ kind: 'notice', text: consentNotice, tone: 'consent' });
+    setPicker(businessPicker);
     setChips(quickReplies);
   } else {
     add({ kind: 'notice', text: result.message, tone: 'error' }, false);
@@ -201,6 +249,9 @@ input.addEventListener('keydown', (event) => {
 });
 
 input.addEventListener('input', autoGrow);
+
+// Header "Talk to a person": shows the team's mobile, Viber, WhatsApp and Messenger in the chat.
+personButton.addEventListener('click', () => void submit('Talk to a person'));
 
 // Inside the "Inquire with AI" panel on disenyodigitals.com, Escape closes the panel.
 // Key presses inside this frame never reach the website, so tell it. The message carries no data.

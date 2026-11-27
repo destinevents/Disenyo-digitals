@@ -102,9 +102,10 @@ Alerts go to every channel that is set up: email, Telegram, or both. With neithe
 
 ## Demos, booking and leads
 
-- **Demos and booking are handled in code** (`server/actions.ts`), not by the AI, so the links are always right: "demo", "sample work", "portfolio" and the "Watch demo" button show the All Services demo; "Browse demos (Clinic / Staycation)" shows the clinic and staycation demos; every one of these ends with the booking link.
-- **"Talk to a person" and "Book a call"** answer straight away with the Calendly link (https://calendly.com/disenyodigitalsdemo). The chat never asks for a name or contact details: Calendly collects them and emails the team for every booking. Nothing is "sent to the team" from the chat, and the chat never says so.
-- The clinic demo video is hosted on the site itself (`demos/clinic-demo.mp4`); the other two are on Google Drive and must stay shared as "Anyone with the link can view".
+- **Brochure, demos and booking are handled in code** (`server/actions.ts`), not by the AI, so the links are always right: "Browse service brochure" opens the Heyzine flip-book; "demo", "sample work", "portfolio" and "Watch demo" show the All Services demo; "Specific business demo" lists the Inventory, Café, Payroll, Clinic and Staycation demos plus "Others" (Calendly).
+- **Type of business:** the AI no longer asks for industry or location. Once someone asks about a service, the page shows a "What type of business is this for?" dropdown (with "Others" to type it in). The choice is saved as the lead's industry and answered with the closest demo and the booking link.
+- **"Talk to a person"** (chip and header button) shows Call/text and Viber (0906 571 3298), WhatsApp (+61 422 770 601) and Messenger (disenyodigitals). **"Book a call"** opens Calendly (https://calendly.com/disenyodigitalsdemo). The chat never asks for a name or contact details. Nothing is "sent to the team" from the chat, and the chat never says so.
+- The clinic, café/inventory and payroll videos are hosted on the site (`demos/`); All Services and Staycation are on Google Drive and must stay shared as "Anyone with the link can view".
 - To add a demo, add it to `DEMOS` in `server/actions.ts` and to `quickAnswer`, then run `npm test` and `npm run build`.
 - Every conversation is still saved in `inquiry_leads` in the HQ Supabase project. Only HQ admins can read them.
 - Alert emails (and Telegram, if set up) go out only when a prospect volunteers a phone or email in the chat and is ready or asks for a person, plus any "delete my data" request. Bookings come by email from Calendly instead.

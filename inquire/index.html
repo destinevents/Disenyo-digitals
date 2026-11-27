@@ -12,8 +12,8 @@
       rel="stylesheet"
       href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&display=swap"
     />
-    <script type="module" crossorigin src="/inquire/assets/index-DsxH19Ol.js"></script>
-    <link rel="stylesheet" crossorigin href="/inquire/assets/index-Drb9EEKz.css">
+    <script type="module" crossorigin src="/inquire/assets/index-CuWQ7TE4.js"></script>
+    <link rel="stylesheet" crossorigin href="/inquire/assets/index-BNcPspFe.css">
   </head>
   <body>
     <div class="app">
@@ -22,13 +22,14 @@
           <p class="brand-name">Disenyo Digitals Collective</p>
           <p class="brand-line">AI + Digital Solutions</p>
         </div>
-        <!-- Opens the team's Calendly booking page, like the "Talk to a person" button in the chat. -->
-        <a class="person" href="https://calendly.com/disenyodigitalsdemo" target="_blank" rel="noopener noreferrer">Talk to a person</a>
+        <!-- Shows the team's mobile, Viber, WhatsApp and Messenger in the chat, like the "Talk to a person" chip. -->
+        <button id="person" class="person" type="button">Talk to a person</button>
       </header>
 
       <main id="log" class="log" role="log" aria-live="polite" aria-label="Conversation"></main>
 
       <footer class="composer">
+        <div id="picker" class="picker"></div>
         <div id="chips" class="chips" aria-label="Suggested replies"></div>
         <form id="form" class="form" autocomplete="off">
           <label for="input" class="visually-hidden">Your message</label>
