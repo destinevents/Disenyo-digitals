@@ -26,7 +26,7 @@ describe('demo, booking and "talk to a person" requests', () => {
 
   it('uses exactly the three demo videos and the Calendly page', () => {
     expect(DEMOS.all.url).toBe('https://drive.google.com/file/d/1U1AZf_98SaXkd-j5AnXHUfgH4zoxKnVZ/view?usp=sharing');
-    expect(DEMOS.clinic.url).toBe('https://drive.google.com/file/d/1lp3oBCl7fDgissR1AHgYWpwhURvCQEWB/view?usp=sharing');
+    expect(DEMOS.clinic.url).toBe('https://disenyodigitals.com/demos/clinic-demo.mp4');
     expect(DEMOS.staycation.url).toBe('https://drive.google.com/file/d/17Mjn3ebqKTDW8dT1-fyOm6IOzL-iOgPM/view?usp=drive_link');
     expect(CALENDLY_URL).toBe('https://calendly.com/disenyodigitalsdemo');
   });

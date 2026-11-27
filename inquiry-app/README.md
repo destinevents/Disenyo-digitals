@@ -104,6 +104,7 @@ Alerts go to every channel that is set up: email, Telegram, or both. With neithe
 
 - **Demos and booking are handled in code** (`server/actions.ts`), not by the AI, so the links are always right: "demo", "sample work", "portfolio" and the "Watch demo" button show the All Services demo; "Browse demos (Clinic / Staycation)" shows the clinic and staycation demos; every one of these ends with the booking link.
 - **"Talk to a person" and "Book a call"** answer straight away with the Calendly link (https://calendly.com/disenyodigitalsdemo). The chat never asks for a name or contact details: Calendly collects them and emails the team for every booking. Nothing is "sent to the team" from the chat, and the chat never says so.
+- The clinic demo video is hosted on the site itself (`demos/clinic-demo.mp4`); the other two are on Google Drive and must stay shared as "Anyone with the link can view".
 - To add a demo, add it to `DEMOS` in `server/actions.ts` and to `quickAnswer`, then run `npm test` and `npm run build`.
 - Every conversation is still saved in `inquiry_leads` in the HQ Supabase project. Only HQ admins can read them.
 - Alert emails (and Telegram, if set up) go out only when a prospect volunteers a phone or email in the chat and is ready or asks for a person, plus any "delete my data" request. Bookings come by email from Calendly instead.

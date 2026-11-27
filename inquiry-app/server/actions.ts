@@ -12,7 +12,8 @@ export const CALENDLY_URL = 'https://calendly.com/disenyodigitalsdemo';
 
 export const DEMOS = {
   all: { label: 'All Services demo', url: 'https://drive.google.com/file/d/1U1AZf_98SaXkd-j5AnXHUfgH4zoxKnVZ/view?usp=sharing' },
-  clinic: { label: 'Clinic system demo', url: 'https://drive.google.com/file/d/1lp3oBCl7fDgissR1AHgYWpwhURvCQEWB/view?usp=sharing' },
+  // Hosted on the website itself (demos/clinic-demo.mp4): the Google Drive link was not found.
+  clinic: { label: 'Clinic system demo', url: 'https://disenyodigitals.com/demos/clinic-demo.mp4' },
   staycation: {
     label: 'Staycation / Cleaning system demo',
     url: 'https://drive.google.com/file/d/17Mjn3ebqKTDW8dT1-fyOm6IOzL-iOgPM/view?usp=drive_link',

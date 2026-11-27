@@ -22,7 +22,7 @@ export interface ReplyPayload {
 export const CALENDLY_URL = 'https://calendly.com/disenyodigitalsdemo';
 
 // Links are only ever shown for these sites (demo videos, booking), whatever the server sends.
-const LINK_HOSTS = ['drive.google.com', 'calendly.com'];
+const LINK_HOSTS = ['drive.google.com', 'calendly.com', 'disenyodigitals.com', 'www.disenyodigitals.com'];
 
 /** Keeps only https links to the allowed sites, with a short plain-text label. */
 export function safeLinks(raw: unknown): ChatLink[] {
